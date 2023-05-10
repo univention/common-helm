@@ -30,6 +30,7 @@ To be defined.
 
 ## Design notes
 
+
 ### Named template parameters
 
 Named templates need various parameters to be available. Some parameters have
@@ -60,6 +61,7 @@ data:
 {{- end -}}
 ```
 
+
 #### Alternatives considered but not used
 
 Other Helm charts which provide common functionality use the concept of
@@ -74,6 +76,35 @@ difficult.
 Examples:
 
 - https://github.com/helm/charts/blob/master/incubator/common/templates/_util.tpl
+
+
+
+### Template customization options
+
+Named templates which render a Manifest should support easy customization of the
+result. Two aspects are important in this regard:
+
+1. Tweaking some of the values by overriding them.
+2. Passing in specific context values.
+
+
+#### Overriding values
+
+The named template should make use of a parameter called `overrides` which can
+be optionally set to the name of a named template which shall be merged into the
+result.
+
+Note: The utility `common.utils.merge` already treats the parameter `overrides`
+as optional.
+
+
+#### Specific context values
+
+The template for an Ingress is commonly using the values from the key
+`.Values.ingress` to render itself. Still, a named template like
+`common.ingress` should allow to explicitly pass in a different context. This
+does allow to create multiple Ingress Manifests within one chart for special
+cases, yet it sill allows to rely on the default for all simple charts.
 
 
 ## Related external sources
