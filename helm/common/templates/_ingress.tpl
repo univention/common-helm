@@ -55,9 +55,13 @@ Arguments are passed as a dict with the following keys:
 - ingress: (optional) The ingress values, defaults to .Values.ingress from .top.
 
 - overrides: (optional) Overrides to apply.
+
+Only renders output if ".ingress.enabled" evaluates to "true".
 */}}
 
 {{- define "common.ingress" -}}
   {{- $_ := set . "ingress" (default .top.Values.ingress .ingress) -}}
-  {{- include "common.utils.merge" (set . "base" "common.ingress.tpl") }}
+  {{- if .ingress.enabled }}
+    {{- include "common.utils.merge" (set . "base" "common.ingress.tpl") }}
+  {{- end }}
 {{- end }}
