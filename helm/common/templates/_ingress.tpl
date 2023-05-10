@@ -9,7 +9,7 @@ Arguments are passed as a dict with the following keys:
 - ingress: The ingress values, typically .Values.ingress
 
 */}}
-{{- define "common.ingress.tpl" -}}
+{{- define "common.ingress.tpl" }}
 
 apiVersion: {{ include "common.capabilities.ingress.apiVersion" .top }}
 kind: Ingress
@@ -43,8 +43,21 @@ spec:
             backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" $.top) "servicePort" "http" "context" $.top) | nindent 14 }}
           {{- end }}
 
-{{- end -}}
+{{- end }}
+
+{{- /*
+common.ingress will render an Ingress manifest and apply overrides if provided.
+
+Arguments are passed as a dict with the following keys:
+
+- top: The top level context
+
+- ingress: (optional) The ingress values, defaults to .Values.ingress from .top.
+
+- overrides: (optional) Overrides to apply.
+*/}}
 
 {{- define "common.ingress" -}}
+  {{- $_ := set . "ingress" (default .top.Values.ingress .ingress) -}}
   {{- include "common.utils.merge" (set . "base" "common.ingress.tpl") }}
 {{- end }}

@@ -27,6 +27,55 @@ approach.
 
 To be defined.
 
+
+## Design notes
+
+### Named template parameters
+
+Named templates need various parameters to be available. Some parameters have
+sane defaults and can be made optional.
+
+The passing of parameters is modeled after the approach of "Named Parameters".
+In Helm charts this translates into passing a `dict` as the context to the names
+template, so that the keys in this `dict` are the named parameters. The
+background is that named templates only allow a single parameter to be passed as
+context.
+
+Examples:
+
+```yaml
+# 1 - Applying local overrides
+{{ include "common.ingress" (dict "top" . "ingress" .Values.ingress "overrides" "portal-server.ingress") }}
+# 2 - Not applying any overrides
+{{ include "common.ingress" (dict "top" . "ingress" .Values.ingress) }}
+
+# 3 - Relying on the default of the parameter "ingress"
+{{ include "common.ingress" (dict "top" .) }}
+
+
+# The local overrides are defined also as a named template
+{{- define "portal-server.ingress" -}}
+data:
+  myvalue: "local overrides applied"
+{{- end -}}
+```
+
+#### Alternatives considered but not used
+
+Other Helm charts which provide common functionality use the concept of
+positional parameters and pass a `list` object as the context. This does result
+into many calls to `index` with the respective number to fetch a parameter.
+
+Compared to using named parameters the `include` call is less verbose. The
+drawback is that the implementation is not as easy to understand anymore,
+especially tracing a value through multiple named templates can be very
+difficult.
+
+Examples:
+
+- https://github.com/helm/charts/blob/master/incubator/common/templates/_util.tpl
+
+
 ## Related external sources
 
 ### Former common chart from incubator project

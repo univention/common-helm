@@ -1,12 +1,22 @@
 {{- /*
 common.utils.merge will merge two YAML templates and output the result.
-This takes an array of three values:
-- the top context
-- the template name of the overrides (destination)
-- the template name of the base (source)
+
+This takes the following parameters:
+- top: the top context
+- overrides: the template name of the overrides (destination)
+- base: the template name of the base (source)
+
+The parameter dict is passed into the templates which shall be merged.
 */}}
+
 {{- define "common.utils.merge" -}}
-{{- $overrides := fromYaml (include .overrides .) | default (dict ) -}}
-{{- $tpl := fromYaml (include .base .) | default (dict ) -}}
+{{- $_ := set . "overrides" (default "common.utils._empty" .overrides) -}}
+{{- $overrides := fromYaml (include .overrides .) | default (dict) -}}
+{{- $tpl := fromYaml (include .base .) | default (dict) -}}
 {{- toYaml (merge $overrides $tpl) -}}
 {{- end -}}
+
+
+{{- /* Internal helper used to make overrides optional */}}
+{{- define "common.utils._empty" }}
+{{- end }}
