@@ -64,7 +64,7 @@ spec:
           securityContext:
             {{- toYaml .top.Values.securityContext | nindent 12 }}
           {{- with .top.Values.image }}
-          image: "{{ .registry }}/{{ .repository }}{{ if .sha256 }}@sha256:{{ .sha256 }}{{ else }}:{{ .tag }}{{ end }}"
+          image: "{{ if .registry }}{{ .registry }}/{{ end }}{{ .repository }}{{ if .sha256 }}@sha256:{{ .sha256 }}{{ else }}:{{ .tag }}{{ end }}"
           imagePullPolicy: {{ .imagePullPolicy }}
           {{- end }}
           envFrom:
