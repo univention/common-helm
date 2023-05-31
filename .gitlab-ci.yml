@@ -5,4 +5,6 @@ include:
     file:
       - defaults/stages.yaml
       - defaults/souvap-workflow.yaml
+      - jobs/lint-commit-messages.yaml
+      - jobs/lint-pre-commit.yaml
       - jobs/package-and-publish-helm-charts.yaml

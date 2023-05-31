@@ -1,0 +1,93 @@
+---
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+exclude: '^.*\.patch$'
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.4.0
+  hooks:
+  # "Check for added large files"
+  - id: check-added-large-files
+  # "Check for merge conflicts"
+  - id: check-merge-conflict
+  # "Check Yaml"
+  - id: check-yaml
+    exclude: ^helm/.+/templates/
+  # "Fix python encoding pragma"
+  # - id: fix-encoding-pragma
+  # "Trim Trailing Whitespace"
+  - id: trailing-whitespace
+
+# "Commit messages"
+- repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v2.1.1
+  hooks:
+    - id: conventional-pre-commit
+      stages: [commit-msg]
+
+# "flake8"
+- repo: https://github.com/PyCQA/flake8
+  rev: 5.0.4
+  hooks:
+  - id: flake8
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: 'v0.0.246'
+  hooks:
+    - id: ruff
+    - id: ruff
+      alias: "ruff-fix"
+      stages: [ manual ]
+      args: ["--fix"]
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: v2.0.2
+  hooks:
+  -   id: autopep8
+      args: ["-d"]
+  -   id: autopep8
+      alias: "autopep8-fix"
+      stages: [ manual ]
+      args: ["-i"]
+
+# "docker-compose.yaml linter"
+- repo: https://gitlab.com/univention/pre-commit-hooks/docker-compose-check
+  rev: 7702a8801a158b8595569dd29e2dd655d8a08310
+  hooks:
+  - id: docker-compose-check
+
+# "Dockerfile linter"
+- repo: https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit
+  rev: v2.0.0
+  hooks:
+  - id: hadolint-system
+
+# "Helm chart linter"
+- repo: https://github.com/gruntwork-io/pre-commit
+  rev: v0.1.20
+  hooks:
+  - id: helmlint
+
+- repo: https://github.com/norwoodj/helm-docs
+  rev: v1.11.0
+  hooks:
+  - id: helm-docs
+    args:
+      - --chart-search-root=helm
+    description: Uses 'helm-docs' to create documentation from the Helm chart's 'values.yaml' file, and inserts the result into a corresponding 'README.md' file.
+    entry: git-hook/helm-docs
+    files: (README\.md\.gotmpl|(Chart|requirements|values)\.yaml)$
+    language: script
+    name: Helm Docs
+    require_serial: true
+  - id: helm-docs-built
+    args: []
+    description: Uses auto built 'helm-docs' to create documentation from the Helm chart's 'values.yaml' file, and inserts the result into a corresponding 'README.md' file.
+    entry: helm-docs
+    files: (README\.md\.gotmpl|(Chart|requirements|values)\.yaml)$
+    language: golang
+    name: Helm Docs Built
+    require_serial: true
+...
