@@ -1,0 +1,8 @@
+
+include:
+  - project: univention/customers/dataport/upx/common-ci
+    ref: jbornhold/publish-local-helm-packages
+    file:
+      - defaults/stages.yaml
+      - defaults/souvap-workflow.yaml
+      - jobs/package-and-publish-helm-charts.yaml
