@@ -5,7 +5,7 @@ Arguments are passed as a dict with the following keys:
 
 - top: The top level context
 
-- overrides: (optional) Overrides to apply, this should set the values in "data".
+- overrides: (optional) Overrides to apply.
 
 */}}
 
