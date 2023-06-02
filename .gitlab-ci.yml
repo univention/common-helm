@@ -8,3 +8,16 @@ include:
       - jobs/lint-commit-messages.yaml
       - jobs/lint-pre-commit.yaml
       - jobs/package-and-publish-helm-charts.yaml
+
+
+# TODO: move into common-ci template
+publish-helm-charts-locally:
+  image:
+    name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine/helm:3.10.2"
+    entrypoint: [""]
+  script:
+    - |
+      helm registry login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+      for _filename in `find packages -type f`; do
+        helm push $_filename oci://${CI_REGISTRY_IMAGE}/helm
+      done
