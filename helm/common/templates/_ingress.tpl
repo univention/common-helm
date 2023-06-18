@@ -12,8 +12,8 @@ Arguments are passed as a dict with the following keys:
 Only renders output if ".ingress.enabled" evaluates to "true".
 */}}
 
-{{- define "common.ingress" -}}
-  {{- $_ := set . "ingress" (default .top.Values.ingress .ingress) -}}
+{{- define "common.ingress" }}
+  {{- $_ := set . "ingress" (default .top.Values.ingress .ingress) }}
   {{- if .ingress.enabled }}
     {{- include "common.utils.merge" (set . "base" "common.ingress.tpl") }}
   {{- end }}
