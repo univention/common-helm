@@ -47,7 +47,7 @@ spec:
   ports:
     {{- range $key, $value := .service.ports }}
     - port: {{ $value.port }}
-      targetPort: {{ $key }}
+      targetPort: {{ default $key $value.containerPort }}
       protocol: {{ $value.protocol }}
       name: {{ $key }}
       {{- if and (eq $.service.type "NodePort") $value.nodePort }}
