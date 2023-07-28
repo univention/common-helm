@@ -55,6 +55,10 @@ spec:
       nodeSelector:
         {{ toYaml . | nindent 8 | trim }}
       {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .top.Values.podSecurityContext }}
       securityContext:
         {{ toYaml . | nindent 8 | trim }}
