@@ -74,6 +74,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.fullname" .top }}
+          volumeMounts:
+            {{- if .top.Values.mountSecrets }}
+            - name: "secrets"
+              # TODO: conflict with /run/secrets, should use a namespace
+              mountPath: "/var/secrets"
+            {{- end }}
           ports:
             {{- range $key, $value := .top.Values.service.ports }}
             - name: {{ $key }}
@@ -102,4 +108,10 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .top.Values.resources | nindent 12 }}
+      volumes:
+        {{- if .top.Values.mountSecrets }}
+        - name: "secrets"
+          secret:
+            secretName: {{ include "common.names.fullname" .top | quote }}
+        {{- end }}
 {{- end }}
