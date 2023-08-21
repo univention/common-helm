@@ -2,9 +2,9 @@
 
 Common utilities and fragments for Helm charts
 
-- **Version**: 0.2.0
+- **Version**: 0.3.0
 - **Type**: library
-- **AppVersion**: 1.16.0
+- **AppVersion**:
 -
 
 ## Introduction
