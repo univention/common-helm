@@ -1,15 +1,18 @@
+---
 
 include:
-  - project: univention/customers/dataport/upx/common-ci
-    ref: HEAD
+  - project: "univention/customers/dataport/upx/common-ci"
+    ref: "v0.0.1"
     file:
-      - defaults/stages.yaml
-      - defaults/souvap-workflow.yaml
-      - jobs/lint-commit-messages.yaml
-      - jobs/lint-pre-commit.yaml
-      - jobs/package-and-publish-helm-charts.yaml
+      - "defaults/stages.yaml"
+      - "defaults/souvap-workflow.yaml"
+      - "jobs/lint-commit-messages.yaml"
+      - "jobs/lint-pre-commit.yaml"
+      - "jobs/package-and-publish-helm-charts.yaml"
 
 
 lint-pre-commit:
   before_script:
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - "helm repo add bitnami https://charts.bitnami.com/bitnami"
+
+...
