@@ -56,6 +56,7 @@ spec:
     {{- /* TODO: Validation should be done in a different way.
            Might be that this should be part of the using chart and not in this library. */}}
     - host: {{ required "The hostname has to be set in \"ingress.host\"." .ingress.host | quote }}
+      {{- if .ingress.paths }}
       http:
         paths:
           {{- range .ingress.paths }}
@@ -63,5 +64,6 @@ spec:
             path: {{ .path }}
             backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" $.top) "servicePort" "http" "context" $.top) | nindent 14 }}
           {{- end }}
+      {{- end }}
 
 {{- end }}
