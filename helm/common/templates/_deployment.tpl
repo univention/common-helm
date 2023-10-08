@@ -76,6 +76,9 @@ spec:
             - configMapRef:
                 name: {{ include "common.names.fullname" .top }}
           volumeMounts:
+            {{- if .top.Values.extraVolumeMounts }}
+            {{ toYaml .top.Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
             {{- if .top.Values.mountSecrets }}
             - name: "secrets"
               # TODO: conflict with /run/secrets, should use a namespace
@@ -110,6 +113,9 @@ spec:
           resources:
             {{- toYaml .top.Values.resources | nindent 12 }}
       volumes:
+        {{- if .top.Values.extraVolumes }}
+        {{ toYaml .top.Values.extraVolumes | nindent 8 }}
+        {{- end }}
         {{- if .top.Values.mountSecrets }}
         - name: "secrets"
           secret:
