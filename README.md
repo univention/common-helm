@@ -107,6 +107,32 @@ does allow to create multiple Ingress Manifests within one chart for special
 cases, yet it sill allows to rely on the default for all simple charts.
 
 
+
+## Common behavior
+
+
+### `Deployment` resources
+
+The resources of type `Deployment` do support the injection of extra volumes in
+the following way:
+
+```yaml
+extraVolumeMounts:
+  - name: "custom-entrypoints"
+    mountPath: "/test"
+    readOnly: true
+
+extraVolumes:
+  - name: "custom-entrypoints"
+    configMap:
+      name: "ums-umc-customization"
+```
+
+This mechanism is intended as a feature of last resort to plug customization in
+when no cleaner way exists.
+
+
+
 ## Related external sources
 
 ### Former common chart from incubator project
