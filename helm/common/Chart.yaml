@@ -1,6 +1,7 @@
 apiVersion: v2
 name: common
 description: Common utilities and fragments for Helm charts
+home: https://git.knut.univention.de/univention/customers/dataport/upx/common-helm
 
 # A chart can be either an 'application' or a 'library' chart.
 #
