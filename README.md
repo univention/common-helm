@@ -75,7 +75,7 @@ difficult.
 
 Examples:
 
-- https://github.com/helm/charts/blob/master/incubator/common/templates/_util.tpl
+- <https://github.com/helm/charts/blob/master/incubator/common/templates/_util.tpl>
 
 
 
@@ -123,14 +123,14 @@ Especially the second aspect goes beyond what we see in the Bitnami chart.
 <https://github.com/helm/charts/tree/master/incubator/common>
 
 
-### Hahow's fork of incubator/common
+### *Hahow's* fork of incubator/common
 
 It's basically a maintained version.
 
 <https://github.com/hahow/common-chart>
 
 
-### technosophos' fork of incubator/common
+### *technosophos'* fork of incubator/common
 
 This does seem to be a more modified fork of the common basis. Did not do an
 in-depth inspection yet.
