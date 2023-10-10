@@ -7,5 +7,6 @@ Common Helm
    :maxdepth: 2
 
    about
+   charts
    genindex
    glossary
