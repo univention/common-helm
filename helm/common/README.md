@@ -4,7 +4,6 @@ Common utilities and fragments for Helm charts
 
 - **Version**: 0.3.1
 - **Type**: library
-- **AppVersion**:
 -
 
 ## Introduction
