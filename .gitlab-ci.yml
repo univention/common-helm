@@ -15,4 +15,9 @@ lint-pre-commit:
   before_script:
     - "helm repo add bitnami https://charts.bitnami.com/bitnami"
 
+
+lint-pre-commit:
+  before_script:
+    - "helm repo add bitnami https://charts.bitnami.com/bitnami"
+
 ...
