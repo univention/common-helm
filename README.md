@@ -113,6 +113,20 @@ cases, yet it sill allows to rely on the default for all simple charts.
 
 ### `Deployment` resources
 
+
+#### `global.configMapUcr`
+
+The parameter `global.configMapUcr` can be used to refer to a `ConfigMap` which
+contains the parameters for the Univention Configuration Registry (UCR).
+
+If provided, then the key `base.conf` from this `ConfigMap` will be mounted into
+the file `/etc/univention/base.conf`.
+
+This is intended to make it easier to apply a stack wide UCR configuration.
+
+
+#### `extraVolumes` and `extraVolumeMounts`
+
 The resources of type `Deployment` do support the injection of extra volumes in
 the following way:
 
