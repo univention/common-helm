@@ -33,7 +33,7 @@ class Helm:
             os.remove(path)
 
         # This should only be displayed if the test failed
-        print(output)
+        print(output.decode())
 
         return yaml.safe_load_all(output)
 
