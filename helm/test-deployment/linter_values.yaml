@@ -1,0 +1,5 @@
+---
+# This value file is used to run "helm lint", e.g. by "pre-commit".
+# Run it like this: "helm lint -f values.yaml -f linter_values.yaml".
+
+...

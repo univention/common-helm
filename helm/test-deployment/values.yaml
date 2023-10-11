@@ -1,0 +1,16 @@
+---
+
+# This set of values is the minimal set needed to make the deployment template
+# work.
+#
+# Adding values for a test case should be done by means of the testing
+# infrastructure. Essentially it should lead to usage of the parameters
+# "--values" or "--set" in the call to the "helm" utility.
+
+image: {}
+
+service: {}
+
+probes:
+  liveness: {}
+  readiness: {}

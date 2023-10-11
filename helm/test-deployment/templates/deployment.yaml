@@ -1,0 +1,6 @@
+---
+{{ include "common.deployment" (dict "top" . "overrides" "test-deployment.deployment") }}
+...
+
+{{- define "test-deployment.deployment" }}
+{{- end }}
