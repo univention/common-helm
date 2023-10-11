@@ -79,7 +79,7 @@ spec:
             {{- if .top.Values.extraVolumeMounts }}
             {{ toYaml .top.Values.extraVolumeMounts | nindent 12 }}
             {{- end }}
-            {{- if .top.Values.global.configMapUcr }}
+            {{- if (and .top.Values.global .top.Values.global.configMapUcr) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
@@ -121,7 +121,7 @@ spec:
         {{- if .top.Values.extraVolumes }}
         {{ toYaml .top.Values.extraVolumes | nindent 8 }}
         {{- end }}
-        {{- if .top.Values.global.configMapUcr }}
+        {{- if (and .top.Values.global .top.Values.global.configMapUcr) }}
         - name: "config-map-ucr"
           configMap:
             name: "{{ .top.Values.global.configMapUcr }}"
