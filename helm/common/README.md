@@ -2,7 +2,7 @@
 
 Common utilities and fragments for Helm charts
 
-- **Version**: 0.4.0
+- **Version**: 0.4.1
 - **Type**: library
 - **Homepage:** <https://git.knut.univention.de/univention/customers/dataport/upx/common-helm>
 
