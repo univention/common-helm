@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytest = "*"
+pytest-helm = {ref = "7e576e8d0179c465102010ae49d0a22d3d46d4d3", git = "https://git.knut.univention.de/univention/customers/dataport/upx/tooling/pytest_helm.git"}
+pyyaml = "*"
+setuptools = "*"
+pdbpp = "*"
+python-jsonpath = "*"
+
+[dev-packages]
+
+[requires]
