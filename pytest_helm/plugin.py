@@ -22,5 +22,8 @@ def pytest_report_header(config):
 
 @pytest.fixture
 def helm(request):
+    """
+    Return a :class:`Helm` instance to help with `helm` interaction.
+    """
     helm_path = request.config.getoption("helm_path")
     return Helm(helm_path)
