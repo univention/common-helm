@@ -32,7 +32,8 @@ class Helm:
         finally:
             os.remove(path)
 
-        print(output)  # This should only be displayed if the test failed
+        # This should only be displayed if the test failed
+        print(output)
 
         return yaml.safe_load_all(output)
 
