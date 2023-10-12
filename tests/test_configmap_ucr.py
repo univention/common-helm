@@ -1,12 +1,13 @@
+from yaml import safe_load
+
 from utils import findone
 
 
 def test_mounts_configmap_ucr(helm, chart_test_deployment):
-    values = {
-        "global": {
-            "configMapUcr": "test-configmap",
-        },
-    }
+    values = safe_load("""
+      global:
+        configMapUcr: test-configmap
+    """)
     result = helm.helm_template(chart_test_deployment, values)
 
     deployment = helm.get_resource(
