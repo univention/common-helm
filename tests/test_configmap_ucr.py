@@ -9,12 +9,7 @@ def test_mounts_configmap_ucr(helm, chart_test_deployment):
         configMapUcr: test-configmap
     """)
     result = helm.helm_template(chart_test_deployment, values)
-
-    deployment = helm.get_resource(
-        result,
-        kind="Deployment",
-        name="release-name-test-deployment",
-    )
+    deployment = helm.get_resource(result, kind="Deployment")
 
     expected_volumes = [
         {
