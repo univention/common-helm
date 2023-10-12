@@ -79,9 +79,19 @@ spec:
             {{- if .top.Values.extraVolumeMounts }}
             {{ toYaml .top.Values.extraVolumeMounts | nindent 12 }}
             {{- end }}
-            {{- if (and .top.Values.global .top.Values.global.configMapUcr) }}
+            {{- if .top.Values.mountUcr }}
+            - name: "config-map-ucr-defaults"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if (and .top.Values.mountUcr .top.Values.global .top.Values.global.configMapUcr) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if (and .top.Values.mountUcr .top.Values.global .top.Values.global.configMapUcrForced) }}
+            - name: "config-map-ucr-forced"
+              mountPath: "/etc/univention/base-forced.conf"
               subPath: "base.conf"
             {{- end }}
             {{- if .top.Values.mountSecrets }}
@@ -121,10 +131,20 @@ spec:
         {{- if .top.Values.extraVolumes }}
         {{ toYaml .top.Values.extraVolumes | nindent 8 }}
         {{- end }}
-        {{- if (and .top.Values.global .top.Values.global.configMapUcr) }}
+        {{- if .top.Values.mountUcr }}
+        - name: "config-map-ucr-defaults"
+          configMap:
+            name: {{ required "Please provide the name of the UCR ConfigMap in .Values.global.configMapUcrDefaults!" .top.Values.global.configMapUcrDefaults | quote }}
+        {{- end }}
+        {{- if (and .top.Values.mountUcr .top.Values.global .top.Values.global.configMapUcr) }}
         - name: "config-map-ucr"
           configMap:
             name: "{{ .top.Values.global.configMapUcr }}"
+        {{- end }}
+        {{- if (and .top.Values.mountUcr .top.Values.global .top.Values.global.configMapUcrForced) }}
+        - name: "config-map-ucr-forced"
+          configMap:
+            name: "{{ .top.Values.global.configMapUcrForced }}"
         {{- end }}
         {{- if .top.Values.mountSecrets }}
         - name: "secrets"
