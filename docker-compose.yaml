@@ -1,6 +1,14 @@
 
 services:
 
+  test:
+    build:
+      context: ./docker/testrunner/
+    profiles:
+      - test
+    volumes:
+      - ".:/app"
+
   # Environment to build the documentation
   docs:
     image: docker-registry.knut.univention.de/sphinx:latest
