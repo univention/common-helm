@@ -28,4 +28,15 @@ build-testrunner-image:
     KANIKO_BUILD_CONTEXT: "docker/testrunner"
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/testrunner"
 
+
+test-common-unit:
+  stage: test
+  needs:
+    - job: build-testrunner-image
+  image: "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+  script:
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - helm dep build helm/common
+    - pytest
+
 ...
