@@ -1,8 +1,4 @@
-import jsonpath
-
-
-def findone(data, path):
-    return jsonpath.match(path, data).obj
+from utils import findone
 
 
 def test_nothing_is_mounted_by_default(helm, chart_test_deployment):

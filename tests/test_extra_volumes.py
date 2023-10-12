@@ -1,8 +1,4 @@
-import jsonpath
-
-
-def findone(data, path):
-    return jsonpath.match(path, data).obj
+from utils import findone
 
 
 def test_adds_extra_volumes_to_pod(helm, chart_test_deployment):
