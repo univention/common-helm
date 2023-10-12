@@ -1,12 +1,4 @@
 import jsonpath
-import pytest
-
-
-@pytest.fixture()
-def chart_test_deployment():
-    # TODO: Compute path so that it works independently of where you called
-    # pytest from
-    return "../helm/test-deployment"
 
 
 def findone(data, path):
