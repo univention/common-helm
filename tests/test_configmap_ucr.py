@@ -1,14 +1,60 @@
+import jsonpath
+import pytest
 
-def test_nothing_is_mounted_by_default(helm):
-    common = "../helm/test-deployment"
-    result = helm.helm_template(common)
 
-    # TODO: Use the functions on the "helm" fixture instead
-    result = list(result)
-    deployment = result[0]
+@pytest.fixture()
+def chart_test_deployment():
+    # TODO: Compute path so that it works independently of where you called
+    # pytest from
+    return "../helm/test-deployment"
 
-    # TODO: I'd love to write "deployment['spec.template.spec.volumes']" or similar
-    assert not deployment["spec"]["template"]["spec"]["volumes"]
-    assert not deployment["spec"]["template"]["spec"]["containers"][0]["volumeMounts"]
 
-    assert False, "Finish me!"
+def findone(data, path):
+    return jsonpath.match(path, data).obj
+
+
+def test_nothing_is_mounted_by_default(helm, chart_test_deployment):
+    result = helm.helm_template(chart_test_deployment)
+
+    deployment = helm.get_resource(
+        result,
+        kind="Deployment",
+        name="release-name-test-deployment",
+    )
+
+    assert not findone(deployment, "spec.template.spec.volumes")
+    assert not findone(deployment, "spec.template.spec.containers[0].volumeMounts")
+
+
+def test_mounts_configmap_ucr(helm, chart_test_deployment):
+    values = {
+        "global": {
+            "configMapUcr": "test-configmap",
+        },
+    }
+    result = helm.helm_template(chart_test_deployment, values)
+
+    deployment = helm.get_resource(
+        result,
+        kind="Deployment",
+        name="release-name-test-deployment",
+    )
+
+    expected_volumes = [
+        {
+            "configMap": {
+                "name": "test-configmap",
+            },
+            "name": "config-map-ucr",
+        },
+    ]
+    assert findone(deployment, "spec.template.spec.volumes") == expected_volumes
+
+    expected_volume_mounts = [
+        {
+            "mountPath": "/etc/univention/base.conf",
+            "name": "config-map-ucr",
+            "subPath": "base.conf",
+        },
+    ]
+    assert findone(deployment, "spec.template.spec.containers[0].volumeMounts") == expected_volume_mounts
