@@ -9,6 +9,7 @@ include:
       - "jobs/sphinx-docs.yaml"
       - "defaults/souvap-workflow.yaml"
       - "defaults/stages.yaml"
+      - "templates/kaniko.yaml"
       - "jobs/lint-commit-messages.yaml"
       - "jobs/lint-pre-commit.yaml"
       - "jobs/package-and-publish-helm-charts.yaml"
@@ -17,5 +18,14 @@ include:
 lint-pre-commit:
   before_script:
     - "helm repo add bitnami https://charts.bitnami.com/bitnami"
+
+
+build-testrunner-image:
+  stage: build
+  extends: .kaniko
+  needs: []
+  variables:
+    KANIKO_BUILD_CONTEXT: "docker/testrunner"
+    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/testrunner"
 
 ...
