@@ -4,7 +4,7 @@ name: common
 description: Common utilities and fragments for Helm charts
 home: https://git.knut.univention.de/univention/customers/dataport/upx/common-helm
 type: library
-version: 0.4.1
+version: 0.5.0
 
 dependencies:
   # We inherit the common naming pattern and utility functions from the Bitnami
