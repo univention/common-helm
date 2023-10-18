@@ -7,7 +7,7 @@ exclude: '^.*\.patch$'
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.4.0
+  rev: v4.4.0
   hooks:
   # "Check for added large files"
   - id: check-added-large-files
@@ -29,34 +29,26 @@ repos:
 
 # "Commit messages"
 - repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v2.1.1
+  rev: v2.4.0
   hooks:
     - id: conventional-pre-commit
       stages: [commit-msg]
 
-# "flake8"
-- repo: https://github.com/PyCQA/flake8
-  rev: 5.0.4
-  hooks:
-  - id: flake8
-
+# "Ruff Python linter"
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: 'v0.0.246'
+  rev: 'v0.0.287'
   hooks:
     - id: ruff
     - id: ruff
       alias: "ruff-fix"
       stages: [ manual ]
       args: ["--fix"]
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.2
-  hooks:
-  -   id: autopep8
-      args: ["-d"]
-  -   id: autopep8
-      alias: "autopep8-fix"
-      stages: [ manual ]
-      args: ["-i"]
+
+# "Black Python formatter"
+-   repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+    -   id: black
 
 # "docker-compose.yaml linter"
 - repo: https://gitlab.com/univention/pre-commit-hooks/docker-compose-check
@@ -72,7 +64,7 @@ repos:
 
 # "Helm chart linter"
 - repo: https://github.com/gruntwork-io/pre-commit
-  rev: v0.1.20
+  rev: v0.1.22
   hooks:
   - id: helmlint
 

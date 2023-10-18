@@ -4,13 +4,15 @@ from utils import findone
 
 
 def test_adds_extra_volumes_to_pod(helm, chart_test_deployment):
-    values = safe_load("""
+    values = safe_load(
+        """
       extraVolumes:
         - name: custom-entrypoints
           configMap:
             name: ums-umc-customization
             defaultMode: 0555
-    """)
+    """,
+    )
     result = helm.helm_template(chart_test_deployment, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -19,7 +21,8 @@ def test_adds_extra_volumes_to_pod(helm, chart_test_deployment):
 
 
 def test_adds_extra_volume_mounts_to_containers(helm, chart_test_deployment):
-    values = safe_load("""
+    values = safe_load(
+        """
       extraVolumeMounts:
         - name: custom-entrypoints
           mountPath: /entrypoint.d/10-pre-entrypoint.sh
@@ -27,9 +30,13 @@ def test_adds_extra_volume_mounts_to_containers(helm, chart_test_deployment):
         - name: custom-entrypoints
           mountPath: /entrypoint.d/90-post-entrypoint.sh
           subPath: post-entrypoint.sh
-    """)
+    """,
+    )
     result = helm.helm_template(chart_test_deployment, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
     expected_volume_mounts = values["extraVolumeMounts"]
-    assert findone(deployment, "spec.template.spec.containers[0].volumeMounts") == expected_volume_mounts
+    assert (
+        findone(deployment, "spec.template.spec.containers[0].volumeMounts")
+        == expected_volume_mounts
+    )
