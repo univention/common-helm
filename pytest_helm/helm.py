@@ -5,8 +5,9 @@ import os
 
 
 class Helm:
-    def __init__(self, helm_cmd="helm"):
+    def __init__(self, helm_cmd="helm", values=None):
         self.helm_cmd = helm_cmd
+        self.values = values or tuple()
 
     def run_command(self, *args):
         """
@@ -27,8 +28,14 @@ class Helm:
         try:
             with os.fdopen(fd, 'w') as tmp:
                 tmp.write(yaml.dump(values))
+
+            values = []
+            for item in self.values:
+                values.extend(('--values', item))
+            values.extend(('--values', path))
+
             output = self.run_command(
-                self.helm_cmd, 'template', chart, '--values', path)
+                self.helm_cmd, 'template', chart, *values)
         finally:
             os.remove(path)
 

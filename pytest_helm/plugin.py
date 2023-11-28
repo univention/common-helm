@@ -12,12 +12,20 @@ def pytest_addoption(parser):
         default='helm',
         help='Path to the helm binary.',
     )
+    group.addoption(
+        "--values",
+        action="append",
+        help="Value files to use. Can be used multiple times.",
+    )
 
     parser.addini('HELM_PATH', 'Path to the helm binary')
 
 
 def pytest_report_header(config):
-    return "helm binary: {}".format(config.getoption("helm_path"))
+    return [
+        f"helm binary: {config.getoption('helm_path')}",
+        f"values: {config.getoption('values')}",
+    ]
 
 
 @pytest.fixture
@@ -25,5 +33,6 @@ def helm(request):
     """
     Return a :class:`Helm` instance to help with `helm` interaction.
     """
-    helm_path = request.config.getoption("helm_path")
-    return Helm(helm_path)
+    helm_path = request.config.option.helm_path
+    values = request.config.option.values
+    return Helm(helm_path, values)
