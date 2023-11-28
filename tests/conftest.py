@@ -8,12 +8,14 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture()
-def chart_test_deployment(pytestconfig):
+def chart_path(pytestconfig):
     """
     Path to the Helm chart which shall be tested.
     """
     chart_path = pytestconfig.option.chart_path
     if not chart_path:
         tests_path = os.path.dirname(os.path.abspath(__file__))
-        chart_path = os.path.normpath(os.path.join(tests_path, "../helm/test-deployment"))
+        chart_path = os.path.normpath(
+            os.path.join(tests_path, "../helm/test-deployment")
+        )
     return chart_path

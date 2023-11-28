@@ -5,7 +5,7 @@ from yaml import safe_load
 from utils import findone
 
 
-def test_mounts_configmap_ucr(helm, chart_test_deployment):
+def test_mounts_configmap_ucr(helm, chart_path):
     """Test that charts which have `mountUcr: true` get the UCR's base*.conf file mounted."""
     values = safe_load(
         """
@@ -16,7 +16,7 @@ def test_mounts_configmap_ucr(helm, chart_test_deployment):
         configMapUcrForced: test-configmap-forced
     """,
     )
-    result = helm.helm_template(chart_test_deployment, values)
+    result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
     expected_volumes = [
@@ -64,14 +64,14 @@ def test_mounts_configmap_ucr(helm, chart_test_deployment):
     )
 
 
-def test_mounts_no_configmap_ucr(helm, chart_test_deployment):
+def test_mounts_no_configmap_ucr(helm, chart_path):
     """Test that charts which have `mountUcr: false` do not get the UCR's base*.conf file mounted."""
     values = safe_load(
         """
       mountUcr: false
     """,
     )
-    result = helm.helm_template(chart_test_deployment, values)
+    result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
     volume_mounts = findone(deployment, "spec.template.spec.containers[0].volumeMounts")
