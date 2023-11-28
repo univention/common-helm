@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "88742c13c482c7fdea869696e0584a521b418e7dd6417d1787ef12329a5e7a23"
+            "sha256": "fdf6a3c077dd1c107ee067c69fe5eba7582b8f90f261e7782061fc1503e2eb33"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -24,11 +24,11 @@
         },
         "exceptiongroup": {
             "hashes": [
-                "sha256:097acd85d473d75af5bb98e41b61ff7fe35efe6675e4f9370ec6ec5126d160e9",
-                "sha256:343280667a4585d195ca1cf9cef84a4e178c4b6cf2274caef9859782b567d5e3"
+                "sha256:4bfd3996ac73b41e9b9628b04e079f193850720ea5945fc96a08633c66912f14",
+                "sha256:91f5c769735f051a4290d52edd0858999b57e5876e9f85937691bd4c9fa3ed68"
             ],
             "markers": "python_version < '3.11'",
-            "version": "==1.1.3"
+            "version": "==1.2.0"
         },
         "fancycompleter": {
             "hashes": [
@@ -71,11 +71,11 @@
         },
         "pygments": {
             "hashes": [
-                "sha256:13fc09fa63bc8d8671a6d247e1eb303c4b343eaee81d861f3404db2935653692",
-                "sha256:1daff0494820c69bc8941e407aa20f577374ee88364ee10a98fdbe0aece96e29"
+                "sha256:b27c2826c47d0f3219f29554824c30c5e8945175d888647acd804ddd04af846c",
+                "sha256:da46cec9fd2de5be3a8a784f434e4c4ab670b4ff54d605c4c2717e9d49c4c367"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2.16.1"
+            "version": "==2.17.2"
         },
         "pyrepl": {
             "hashes": [
@@ -85,23 +85,23 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:1d881c6124e08ff0a1bb75ba3ec0bfd8b5354a01c194ddd5a0a870a48d99b002",
-                "sha256:a766259cfab564a2ad52cb1aae1b881a75c3eb7e34ca3779697c23ed47c47069"
+                "sha256:0d009c083ea859a71b76adf7c1d502e4bc170b80a8ef002da5806527b9591fac",
+                "sha256:d989d136982de4e3b29dabcc838ad581c64e8ed52c11fbe86ddebd9da0818cd5"
             ],
             "index": "pypi",
-            "version": "==7.4.2"
+            "version": "==7.4.3"
         },
         "pytest-helm": {
             "git": "https://git.knut.univention.de/univention/customers/dataport/upx/tooling/pytest_helm.git",
-            "ref": "7e576e8d0179c465102010ae49d0a22d3d46d4d3"
+            "ref": "14c7125027386ec5b26a1fdca3feac04c4bc5e56"
         },
         "python-jsonpath": {
             "hashes": [
-                "sha256:1899ad5bab459c197b9a881b61ca20b577fb19f1a470297abe93854149ebaa60",
-                "sha256:c69ea2b0cf219b93958182a25e9eb7846795f7ab0ab5bb172c62ef68a1855e5c"
+                "sha256:1ab894d11499378c4d7572ba13a5fa9ddcb0402975ece77e3a6a7877d02a9eb5",
+                "sha256:32ddd17b417224325c1de034efc0cc67f12c2cbe32d8d22d271d79958e311e0e"
             ],
             "index": "pypi",
-            "version": "==0.10.1"
+            "version": "==0.10.2"
         },
         "pyyaml": {
             "hashes": [
@@ -161,11 +161,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87",
-                "sha256:b454a35605876da60632df1a60f736524eb73cc47bbc9f3f1ef1b644de74fd2a"
+                "sha256:1e8fdff6797d3865f37397be788a4e3cba233608e9b509382a2777d25ebde7f2",
+                "sha256:735896e78a4742605974de002ac60562d286fa8051a7e2299445e8e8fbb01aa6"
             ],
             "index": "pypi",
-            "version": "==68.2.2"
+            "version": "==69.0.2"
         },
         "tomli": {
             "hashes": [
