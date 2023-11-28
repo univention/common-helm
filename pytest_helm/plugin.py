@@ -10,7 +10,7 @@ def pytest_addoption(parser):
         action='store',
         dest='helm_path',
         default='helm',
-        help='Path to the helm binary.'
+        help='Path to the helm binary.',
     )
 
     parser.addini('HELM_PATH', 'Path to the helm binary')
