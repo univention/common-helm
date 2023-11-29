@@ -70,7 +70,7 @@ spec:
             {{- toYaml .top.Values.securityContext | nindent 12 }}
           {{- $registry := .top.Values.image.registry | default .top.Values.global.imageRegistry }}
           {{- with .top.Values.image }}
-          image: "{{ if $registry }}{{ $registry }}/{{ end }}{{ .repository }}{{ if .sha256 }}@sha256:{{ .sha256 }}{{ else }}:{{ .tag }}{{ end }}"
+          image: "{{ if $registry }}{{ $registry }}/{{ end }}{{ .repository }}{{ if .tag }}:{{ .tag }}{{ end }}{{ if .sha256 }}@sha256:{{ .sha256 }}{{ end }}"
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           envFrom:

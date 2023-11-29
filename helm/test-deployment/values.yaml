@@ -9,7 +9,8 @@
 
 global: {}
 
-image: {}
+image:
+  repository: "stub-image-repository"
 
 service: {}
 

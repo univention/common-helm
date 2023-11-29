@@ -7,10 +7,6 @@ def test_global_registry_is_used_as_default(helm, chart_path):
     values = safe_load("""
         global:
           imageRegistry: "stub-global-registry"
-
-        image:
-          registry: ""
-          tag: "stub-image-tag"
     """)
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
