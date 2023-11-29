@@ -93,3 +93,28 @@ def test_image_tag_can_be_configured(image_tag, helm, chart_path):
     expected_tag = image_tag
     image = findone(deployment, "spec.template.spec.containers[0].image")
     assert f":{expected_tag}" in image
+
+
+def test_image_digest_without_tag_can_be_configured(helm, chart_path):
+    values = safe_load(f"""
+        image:
+          digest: "sha256:stub-digest"
+    """)
+    result = helm.helm_template(chart_path, values)
+    deployment = helm.get_resource(result, kind="Deployment")
+
+    image = findone(deployment, "spec.template.spec.containers[0].image")
+    assert f"@sha256:stub-digest" in image
+
+
+def test_image_digest_and_tag_can_be_configured(helm, chart_path):
+    values = safe_load(f"""
+        image:
+          tag: "stub-tag"
+          digest: "sha256:stub-digest"
+    """)
+    result = helm.helm_template(chart_path, values)
+    deployment = helm.get_resource(result, kind="Deployment")
+
+    image = findone(deployment, "spec.template.spec.containers[0].image")
+    assert ":stub-tag@sha256:stub-digest" in image
