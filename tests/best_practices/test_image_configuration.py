@@ -62,3 +62,16 @@ def test_image_pull_secrets_can_be_provided(helm, chart_path):
     expected_secrets = ["stub-secret-a", "stub-secret-b"]
     image_pull_secrets = findone(deployment, "spec.template.spec.imagePullSecrets")
     assert image_pull_secrets == expected_secrets
+
+
+def test_image_repository_can_be_configured(helm, chart_path):
+    values = safe_load("""
+        image:
+          repository: "stub-fragment/stub-image"
+    """)
+    result = helm.helm_template(chart_path, values)
+    deployment = helm.get_resource(result, kind="Deployment")
+
+    expected_repository = "stub-fragment/stub-image"
+    image = findone(deployment, "spec.template.spec.containers[0].image")
+    assert expected_repository in image
