@@ -55,8 +55,8 @@ spec:
       nodeSelector:
         {{ toYaml . | nindent 8 | trim }}
       {{- end }}
-      # TODO: Remove `Values.imagePullSecrets` once it has been replaced by `image.pullSecrets` everywhere.
-      {{- with (coalesce .top.Values.image.pullSecrets .top.Values.imagePullSecrets) }}
+      # TODO: Consolidate this to only support "global.imagePullSecrets"
+      {{- with (coalesce .top.Values.global.imagePullSecrets .top.Values.image.pullSecrets .top.Values.imagePullSecrets) }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
