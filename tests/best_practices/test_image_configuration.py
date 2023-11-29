@@ -16,6 +16,22 @@ def test_global_registry_is_used_as_default(helm, chart_path):
     assert image.startswith(expected_registry + "/")
 
 
+def test_image_registry_overrides_global_default_registry(helm, chart_path):
+    values = safe_load("""
+        global:
+          imageRegistry: "stub-global-registry"
+
+        image:
+          registry: "stub-registry"
+    """)
+    result = helm.helm_template(chart_path, values)
+    deployment = helm.get_resource(result, kind="Deployment")
+
+    expected_registry = "stub-registry"
+    image = findone(deployment, "spec.template.spec.containers[0].image")
+    assert image.startswith(expected_registry + "/")
+
+
 def test_global_registry_is_using_knut_registry_per_default(helm, chart_path):
     """
     The UMS Charts point to the internal registry in the knut domain.
