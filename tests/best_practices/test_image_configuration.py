@@ -1,3 +1,4 @@
+import pytest
 from yaml import safe_load
 
 from utils import findone
@@ -75,3 +76,20 @@ def test_image_repository_can_be_configured(helm, chart_path):
     expected_repository = "stub-fragment/stub-image"
     image = findone(deployment, "spec.template.spec.containers[0].image")
     assert expected_repository in image
+
+
+@pytest.mark.parametrize("image_tag", [
+    "stub_tag",
+    "stub_tag@sha256:with-stub-digest-in-tag",
+])
+def test_image_tag_can_be_configured(image_tag, helm, chart_path):
+    values = safe_load(f"""
+        image:
+          tag: "{image_tag}"
+    """)
+    result = helm.helm_template(chart_path, values)
+    deployment = helm.get_resource(result, kind="Deployment")
+
+    expected_tag = image_tag
+    image = findone(deployment, "spec.template.spec.containers[0].image")
+    assert f":{expected_tag}" in image
