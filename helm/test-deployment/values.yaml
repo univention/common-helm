@@ -7,6 +7,8 @@
 # infrastructure. Essentially it should lead to usage of the parameters
 # "--values" or "--set" in the call to the "helm" utility.
 
+global: {}
+
 image: {}
 
 service: {}
