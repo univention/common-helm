@@ -28,10 +28,19 @@ usage patterns of the "common" chart's deployment template.
 	</thead>
 	<tbody>
 		<tr>
-			<td>image</td>
-			<td>object</td>
+			<td>global.imageRegistry</td>
+			<td>string</td>
 			<td><pre lang="json">
-{}
+"gitregistry.knut.univention.de"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>image.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"stub-image-repository"
 </pre>
 </td>
 			<td></td>

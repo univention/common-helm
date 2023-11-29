@@ -5,10 +5,12 @@ from utils import findone
 
 
 def test_global_registry_is_used_as_default(helm, chart_path):
-    values = safe_load("""
+    values = safe_load(
+        """
         global:
           imageRegistry: "stub-global-registry"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -18,13 +20,15 @@ def test_global_registry_is_used_as_default(helm, chart_path):
 
 
 def test_image_registry_overrides_global_default_registry(helm, chart_path):
-    values = safe_load("""
+    values = safe_load(
+        """
         global:
           imageRegistry: "stub-global-registry"
 
         image:
           registry: "stub-registry"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -51,12 +55,14 @@ def test_global_registry_is_using_knut_registry_per_default(helm, chart_path):
 
 
 def test_image_pull_secrets_can_be_provided(helm, chart_path):
-    values = safe_load("""
+    values = safe_load(
+        """
         global:
           imagePullSecrets:
             - "stub-secret-a"
             - "stub-secret-b"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -66,10 +72,12 @@ def test_image_pull_secrets_can_be_provided(helm, chart_path):
 
 
 def test_image_repository_can_be_configured(helm, chart_path):
-    values = safe_load("""
+    values = safe_load(
+        """
         image:
           repository: "stub-fragment/stub-image"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -78,15 +86,20 @@ def test_image_repository_can_be_configured(helm, chart_path):
     assert expected_repository in image
 
 
-@pytest.mark.parametrize("image_tag", [
-    "stub_tag",
-    "stub_tag@sha256:with-stub-digest-in-tag",
-])
+@pytest.mark.parametrize(
+    "image_tag",
+    [
+        "stub_tag",
+        "stub_tag@sha256:with-stub-digest-in-tag",
+    ],
+)
 def test_image_tag_can_be_configured(image_tag, helm, chart_path):
-    values = safe_load(f"""
+    values = safe_load(
+        f"""
         image:
           tag: "{image_tag}"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -96,10 +109,12 @@ def test_image_tag_can_be_configured(image_tag, helm, chart_path):
 
 
 def test_image_digest_without_tag_can_be_configured(helm, chart_path):
-    values = safe_load(f"""
+    values = safe_load(
+        f"""
         image:
           digest: "sha256:stub-digest"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -108,11 +123,13 @@ def test_image_digest_without_tag_can_be_configured(helm, chart_path):
 
 
 def test_image_digest_and_tag_can_be_configured(helm, chart_path):
-    values = safe_load(f"""
+    values = safe_load(
+        f"""
         image:
           tag: "stub-tag"
           digest: "sha256:stub-digest"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
@@ -121,15 +138,20 @@ def test_image_digest_and_tag_can_be_configured(helm, chart_path):
 
 
 def test_all_image_values_are_configured(helm, chart_path):
-    values = safe_load(f"""
+    values = safe_load(
+        f"""
         image:
           registry: "stub-registry.example"
           repository: "stub-fragment/stub-repository"
           tag: "stub-tag"
           digest: "sha256:stub-digest"
-    """)
+    """
+    )
     result = helm.helm_template(chart_path, values)
     deployment = helm.get_resource(result, kind="Deployment")
 
     image = findone(deployment, "spec.template.spec.containers[0].image")
-    assert "stub-registry.example/stub-fragment/stub-repository:stub-tag@sha256:stub-digest" in image
+    assert (
+        "stub-registry.example/stub-fragment/stub-repository:stub-tag@sha256:stub-digest"
+        in image
+    )
