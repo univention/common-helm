@@ -68,9 +68,8 @@ spec:
         - name: {{ include "common.names.name" .top }}
           securityContext:
             {{- toYaml .top.Values.securityContext | nindent 12 }}
-          {{- $registry := .top.Values.image.registry | default .top.Values.global.imageRegistry }}
+          image: {{ include "common.images.image" ( dict "imageRoot" .top.Values.image "global" .top.Values.global ) | quote }}
           {{- with .top.Values.image }}
-          image: "{{ if $registry }}{{ $registry }}/{{ end }}{{ .repository }}{{ if .tag }}:{{ .tag }}{{ end }}{{ if .digest }}@{{ .digest }}{{ end }}"
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           envFrom:
