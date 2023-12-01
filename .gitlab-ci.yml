@@ -2,38 +2,45 @@
 
 include:
   - project: "univention/customers/dataport/upx/common-ci"
-    ref: "v0.0.4"
+    ref: "v1.9.9"
     file:
       # TODO: Sphinx docs inherits a stage definition from upstream,
       # has to be included before our default stages to avoid trouble.
       - "jobs/sphinx-docs.yaml"
       - "defaults/souvap-workflow.yaml"
       - "defaults/stages.yaml"
-      - "templates/kaniko.yaml"
-      - "jobs/lint-commit-messages.yaml"
       - "jobs/lint-pre-commit.yaml"
+      - "jobs/lint-commit-messages.yaml"
+      - "jobs/container-build.yaml"
+      - "jobs/semantic-release-env.yaml"
       - "jobs/package-and-publish-helm-charts.yaml"
 
+variables:
+  IMAGE_NAME: &IMAGE_NAME "testrunner"
+
+container-build:
+  variables:
+    IMAGE_NAME: *IMAGE_NAME
+
+container-generate-sbom:
+  variables:
+    IMAGE_NAME: *IMAGE_NAME
+
+container-sign:
+  variables:
+    IMAGE_NAME: *IMAGE_NAME
+
+container-security-scan:
+  variables:
+    IMAGE_NAME: *IMAGE_NAME
 
 lint-pre-commit:
   before_script:
     - "helm repo add bitnami https://charts.bitnami.com/bitnami"
 
-
-build-testrunner-image:
-  stage: build
-  extends: .kaniko
-  needs: []
-  variables:
-    KANIKO_BUILD_CONTEXT: "docker/testrunner"
-    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/testrunner"
-
-
 test-common-unit:
   stage: test
-  needs:
-    - job: build-testrunner-image
-  image: "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+  image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
   script:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dep build helm/common
