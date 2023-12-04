@@ -1,3 +1,6 @@
+# Ruff has problems with multiline f-strings
+# ruff: noqa: F541
+
 import pytest
 from yaml import safe_load
 
