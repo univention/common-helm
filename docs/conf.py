@@ -20,6 +20,7 @@ from sphinx.locale import _
 # -- Project information -----------------------------------------------------
 
 project = "Common Helm"
+# pylint: disable=redefined-builtin
 copyright = "2023, Univention GmbH"
 author = "Team SouvAP Dev"
 

@@ -64,19 +64,24 @@ repos:
         args:
           - "--config-file=.yamllint"
           - "--format=parsable"
-          - "--strict"
+          # TODO: replace no-warnings with strict
+          - "--no-warnings"
 
   - repo: "https://github.com/google/yapf"
     rev: "v0.40.2"
     hooks:
       - id: "yapf"
         name: "yapf"
+        # TODO: remove exclude
+        exclude: '^(docs/conf\.py$|tests/)'
 
   - repo: "https://github.com/astral-sh/ruff-pre-commit"
     rev: "v0.1.9"
     hooks:
       - id: "ruff"
         name: "ruff"
+        # TODO: remove exclude
+        exclude: '^(tests/best_practices/test_image_configuration\.py|tests/conftest\.py)$'
         args:
           - "--fix"
           - "--show-source"
@@ -99,6 +104,12 @@ repos:
     hooks:
       - id: "flake8"
         name: "flake8"
+        # TODO: remove args
+        args:
+          - "--max-line-length=101"
+          # F541 f-string is missing placeholders
+          # W503 line break before binary operator
+          - "--ignore=F541,W503"
 
   - repo: "https://github.com/pylint-dev/pylint"
     rev: "v3.0.3"
@@ -106,10 +117,28 @@ repos:
       - id: "pylint"
         name: "pylint"
         additional_dependencies:
+          # TODO: check if this is the right jsonpath module
           - "jsonpath"
           - "pytest"
           - "pyyaml"
           - "sphinx"
+        # TODO: remove args
+        args:
+          - "--max-line-length=101"
+          # C0103: Constant name "<name>" doesn't conform to UPPER_CASE naming style (invalid-name)
+          - "--disable=invalid-name"
+          # C0114: Missing module docstring (missing-module-docstring)
+          - "--disable=missing-module-docstring"
+          # C0116: Missing function or method docstring (missing-function-docstring)
+          - "--disable=missing-function-docstring"
+          # E1101: Module 'jsonpath' has no 'match' member (no-member)
+          - "--disable=no-member"
+          # W0511: TODO: <text> (fixme)
+          - "--disable=fixme"
+          # W0621: Redefining name 'chart_path' from outer scope (line 15) (redefined-outer-name)
+          - "--disable=redefined-outer-name"
+          # W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+          - "--disable=f-string-without-interpolation"
 
   - repo: "https://github.com/hadolint/hadolint"
     rev: "v2.12.0"

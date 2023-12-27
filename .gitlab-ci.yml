@@ -12,7 +12,7 @@ include:
       - "jobs/sphinx-docs.yaml"
       - "defaults/souvap-workflow.yaml"
       - "defaults/stages.yaml"
-      - "jobs/lint-pre-commit.yaml"
+      - "jobs/lint-pre-commit-legacy.yaml"
       - "jobs/lint-commit-messages.yaml"
       - "jobs/container-build.yaml"
       - "jobs/semantic-release-env.yaml"
@@ -37,7 +37,11 @@ container-security-scan:
   variables:
     IMAGE_NAME: *IMAGE_NAME
 
-lint-pre-commit:
+lint-pre-commit-full:
+  before_script:
+    - "helm repo add bitnami https://charts.bitnami.com/bitnami"
+
+lint-pre-commit-legacy:
   before_script:
     - "helm repo add bitnami https://charts.bitnami.com/bitnami"
 
