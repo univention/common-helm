@@ -3,76 +3,76 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 
-exclude: '^.*\.patch$'
+exclude: "^.*\\.patch$"
 
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
-  hooks:
-  # "Check for added large files"
-  - id: check-added-large-files
-  # "Check for merge conflicts"
-  - id: check-merge-conflict
-  # "Check Yaml"
-  - id: check-yaml
-    args:
-      # Allow custom tags like Gitlab's "!reference" tag.
-      - --unsafe
-    exclude: ^helm/.+/templates/
-  # "Fix python encoding pragma"
-  # - id: fix-encoding-pragma
-  # "Trim Trailing Whitespace"
-  - id: trailing-whitespace
-  - id: "end-of-file-fixer"
-    exclude: "^helm/.+/README.md$"
-
-
-# "Commit messages"
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v2.4.0
-  hooks:
-    - id: conventional-pre-commit
-      stages: [commit-msg]
-
-# "Ruff Python linter"
-- repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: 'v0.1.6'
-  hooks:
-    - id: ruff
-    - id: ruff
-      alias: "ruff-fix"
-      stages: [ manual ]
-      args: ["--fix"]
-
-# "Black Python formatter"
--   repo: https://github.com/psf/black
-    rev: 23.7.0
+  - repo: "https://github.com/pre-commit/pre-commit-hooks"
+    rev: "v4.4.0"
     hooks:
-    -   id: black
+      # "Check for added large files"
+      - id: "check-added-large-files"
+      # "Check for merge conflicts"
+      - id: "check-merge-conflict"
+      # "Check Yaml"
+      - id: "check-yaml"
+        args:
+          # Allow custom tags like Gitlab's "!reference" tag.
+          - "--unsafe"
+        exclude: "^helm/.+/templates/"
+      # "Fix python encoding pragma"
+      # - id: "fix-encoding-pragma"
+      # "Trim Trailing Whitespace"
+      - id: "trailing-whitespace"
+      - id: "end-of-file-fixer"
+        exclude: "^helm/.+/README.md$"
 
-# "docker-compose.yaml linter"
-- repo: https://gitlab.com/univention/pre-commit-hooks/docker-compose-check
-  rev: 7702a8801a158b8595569dd29e2dd655d8a08310
-  hooks:
-  - id: docker-compose-check
 
-# "Dockerfile linter"
-- repo: https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit
-  rev: v2.0.0
-  hooks:
-  - id: hadolint-system
+  # "Commit messages"
+  - repo: "https://github.com/compilerla/conventional-pre-commit"
+    rev: "v2.4.0"
+    hooks:
+      - id: "conventional-pre-commit"
+        stages: ["commit-msg"]
 
-# "Helm chart linter"
-- repo: https://github.com/gruntwork-io/pre-commit
-  rev: v0.1.22
-  hooks:
-  - id: helmlint
+  # "Ruff Python linter"
+  - repo: "https://github.com/charliermarsh/ruff-pre-commit"
+    rev: "v0.1.6"
+    hooks:
+      - id: "ruff"
+      - id: "ruff"
+        alias: "ruff-fix"
+        stages: ["manual"]
+        args: ["--fix"]
 
-- repo: https://github.com/norwoodj/helm-docs
-  rev: v1.11.0
-  hooks:
-    - id: helm-docs
-      args:
-        - --chart-search-root=helm
-        - --template-files=README.md.gotmpl
+  # "Black Python formatter"
+  - repo: "https://github.com/psf/black"
+    rev: "23.7.0"
+    hooks:
+      - id: "black"
+
+  # "docker-compose.yaml linter"
+  - repo: "https://gitlab.com/univention/pre-commit-hooks/docker-compose-check"
+    rev: "7702a8801a158b8595569dd29e2dd655d8a08310"
+    hooks:
+      - id: "docker-compose-check"
+
+  # "Dockerfile linter"
+  - repo: "https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit"
+    rev: "v2.0.0"
+    hooks:
+      - id: "hadolint-system"
+
+  # "Helm chart linter"
+  - repo: "https://github.com/gruntwork-io/pre-commit"
+    rev: "v0.1.22"
+    hooks:
+      - id: "helmlint"
+
+  - repo: "https://github.com/norwoodj/helm-docs"
+    rev: "v1.11.0"
+    hooks:
+      - id: "helm-docs"
+        args:
+          - "--chart-search-root=helm"
+          - "--template-files=README.md.gotmpl"
 ...
