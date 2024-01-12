@@ -1,3 +1,11 @@
+# Disclaimer - Work in progress
+
+The repository you are looking into is work in progress.
+
+It contains proof of concept and preview builds in development created in context of the [openDesk](https://gitlab.opencode.de/bmi/souveraener_arbeitsplatz/info) project.
+
+The repository's content provides you with first insights into the containerized cloud IAM from Univention, derived from the UCS appliance.
+
 # Common Helm Support - EXPERIMENTAL
 
 This repository contains common Helm chart utilities which we saw being repeated
@@ -15,12 +23,9 @@ Once we have a conclusion within our team we will decide if we keep this
 repository and remove the experimental status or if we opt for a different
 approach.
 
-
 ## Contact
 
 - Team SouvAP Dev
-
-  - <johannes.bornhold.extern@univention.de>
 
 
 ## Structure
