@@ -1,4 +1,8 @@
 ---
+
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+# SPDX-License-Identifier: AGPL-3.0-only
+
 apiVersion: v2
 name: common
 description: Common utilities and fragments for Helm charts
@@ -12,3 +16,5 @@ dependencies:
   - name: "common"
     repository: "https://charts.bitnami.com/bitnami"
     version: "^2.2.2"
+
+...

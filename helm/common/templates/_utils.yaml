@@ -1,3 +1,8 @@
+---
+
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+# SPDX-License-Identifier: AGPL-3.0-only
+
 {{- /*
 common.utils.merge will merge two YAML templates and output the result.
 
@@ -20,3 +25,5 @@ The parameter dict is passed into the templates which shall be merged.
 {{- /* Internal helper used to make overrides optional */}}
 {{- define "common.utils._empty" }}
 {{- end }}
+
+...

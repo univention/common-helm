@@ -1,4 +1,8 @@
 ---
+
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+# SPDX-License-Identifier: AGPL-3.0-only
+
 apiVersion: v2
 name: test-deployment
 description: Test chart for the deployment template
@@ -13,3 +17,5 @@ dependencies:
     #
     # repository: "file://../common"
     version: "*"
+
+...
