@@ -52,7 +52,7 @@ class Helm:
         """
         Get the manifests matching given criteria
         """
-        docs = manifests
+        docs = [doc for doc in manifests if doc]
         if predicate:
             docs = [doc for doc in docs if predicate(doc)]
         if api_version:
