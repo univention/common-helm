@@ -29,10 +29,17 @@ def pytest_report_header(config):
 
 
 @pytest.fixture
-def helm(request):
+def helm_values(request):
+    """
+    Return a list of values files to add to helm calls.
+    """
+    return request.config.option.values
+
+
+@pytest.fixture
+def helm(request, helm_values):
     """
     Return a :class:`Helm` instance to help with `helm` interaction.
     """
     helm_path = request.config.option.helm_path
-    values = request.config.option.values
-    return Helm(helm_path, values)
+    return Helm(helm_path, helm_values)
