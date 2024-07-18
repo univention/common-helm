@@ -93,7 +93,7 @@
         },
         "pytest-helm": {
             "git": "https://git.knut.univention.de/univention/customers/dataport/upx/tooling/pytest_helm.git",
-            "ref": "14c7125027386ec5b26a1fdca3feac04c4bc5e56"
+            "ref": "e775b9afcfa545320ac1bcc840928ca51d0c2828"
         },
         "python-jsonpath": {
             "hashes": [
