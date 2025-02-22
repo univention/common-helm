@@ -1,0 +1,21 @@
+---
+
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+# SPDX-License-Identifier: AGPL-3.0-only
+
+apiVersion: v2
+name: test-nubus-common
+description: Test chart for nubus-common
+home: https://git.knut.univention.de/univention/customers/dataport/upx/common-helm
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: "nubus-common"
+    # Intentionally left out "repository", the idea is to use a symlink in
+    # "./charts/" so that one has the correct state linked always.
+    #
+    # repository: "file://../nubus-common"
+    version: "*"
+
+...

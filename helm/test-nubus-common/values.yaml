@@ -1,0 +1,11 @@
+---
+
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+# SPDX-License-Identifier: AGPL-3.0-only
+
+# This set of values is the minimal set needed to make the deployment template
+# work.
+#
+# Adding values for a test case should be done by means of the testing
+# infrastructure. Essentially it should lead to usage of the parameters
+# "--values" or "--set" in the call to the "helm" utility.
