@@ -1,2 +1,2 @@
-/helm/common/charts/*.tgz
+/helm/*/charts/*.tgz
 **/__pycache__/
