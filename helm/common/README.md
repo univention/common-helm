@@ -1,4 +1,14 @@
+# Deprecated
+
+Consider using `nubus-common` instead and move needed functionality over if
+anything is needed.
+
+The main reason for dropping this chart is the shared prefix `common` which made
+it difficult to understand things.
+
 # common
+
+> **:exclamation: This Helm Chart is deprecated!**
 
 Common utilities and fragments for Helm charts
 
@@ -15,4 +25,17 @@ This chart bundles commonly used functionality to be used in our Helm charts.
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | common | ^2.2.2 |
+
+## Values
+
+<table>
+	<thead>
+		<th>Key</th>
+		<th>Type</th>
+		<th>Default</th>
+		<th>Description</th>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
 
