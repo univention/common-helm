@@ -50,6 +50,7 @@ test-common-unit:
   script:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dep build helm/common
+    - helm dep build helm/nubus-common
     - pytest
 
 ...
