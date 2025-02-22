@@ -6,26 +6,33 @@ It contains proof of concept and preview builds in development created in contex
 
 The repository's content provides you with first insights into the containerized cloud IAM from Univention, derived from the UCS appliance.
 
-# Common Helm Support - EXPERIMENTAL
+# Common Helm Support
 
 This repository contains common Helm chart utilities which we saw being repeated
-across our various Helm charts.
+across our various Helm charts:
 
-## Status
+- `nubus-common` is a library chart which provides shared utilities which are
+  used across most charts for Nubus.
 
-Please consider this repository experimental and don't depend on it.
+- `tests` and the `testrunner` image provide tooling to verify common aspects of
+  chart behavior.
 
-We've seen in the team SouvAP Dev repeating fragments and patterns in our Helm
-charts and explore if a collection of common baseline charts can help us to
-reduce our efforts to maintain those.
+## History
 
-Once we have a conclusion within our team we will decide if we keep this
-repository and remove the experimental status or if we opt for a different
+The first iteration used a chart called `common` which did provide templates to
+render manifest. Using the same prefix as the `common` chart out of the bitnami
+repository. This approach did lead into a difficult to understand setup.
+
+## Status - EXPERIMENTAL
+
+Consider this as experimental and please do not (yet) depend on `nnubus-common`
+outside of the Nubus charts until we did gain more confidence about the
 approach.
+
 
 ## Contact
 
-- Team SouvAP Dev
+- Team Nubus Dev
 
 
 ## Structure
