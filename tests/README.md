@@ -1,7 +1,8 @@
 # Unittests
 
-This folder contains a set of unit tests which cover the behavior of the chart
-`common`.
+This folder contains a set of unit tests which cover the behavior of the charts.
+
+Chart specific tests are placed in a subfolder which reflects the chart's name.
 
 
 ## Requirements
@@ -17,6 +18,10 @@ docker compose run -it --rm test
 # Have a shell
 docker compose run -it --rm test bash
 ```
+
+Look into the file `docker-compose.yaml` to get an idea of the `pytest` command
+and arguments to use.
+
 
 ## Hacking on this
 
