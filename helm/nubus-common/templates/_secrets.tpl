@@ -19,7 +19,7 @@
  */}}
 
 {{- define "nubus-common.secrets.name" -}}
-{{- $name := printf "%s-%s" (include "common.names.fullname" .context) .defaultNameSuffix | trunc 63 | trimSuffix "-" }}
+{{- $name := printf "%s-%s" (include "common.names.fullname" .context) (default "" .defaultNameSuffix) | trunc 63 | trimSuffix "-" }}
 
 {{- if (.existingSecret).name -}}
 {{- $name = tpl .existingSecret.name .context -}}
