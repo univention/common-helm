@@ -17,16 +17,3 @@ usage patterns of the "nubus-common" chart's deployment template.
 |------------|------|---------|
 |  | nubus-common | * |
 
-## Values
-
-<table>
-	<thead>
-		<th>Key</th>
-		<th>Type</th>
-		<th>Default</th>
-		<th>Description</th>
-	</thead>
-	<tbody>
-	</tbody>
-</table>
-
