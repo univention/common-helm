@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+
+---
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.fullname" . | quote }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/component: test-component
+  {{- if .Values.additionalAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+
+  # NOTE: The template is incomplete. It only contains the needed elements for
+  # the test cases.
+  template:
+    spec:
+      containers:
+        - name: "main"
+          volumeMounts:
+            - name: secret-client
+              mountPath: /var/secrets/client_api_password
+              subPath: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.client.auth.existingSecret "key" "password") | quote }}
+      volumes:
+        - name: secret-client
+          secret:
+            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.client.auth.existingSecret "defaultNameSuffix" "client" "context" .) | quote }}

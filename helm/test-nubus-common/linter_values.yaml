@@ -7,6 +7,8 @@
 # Run it like this: "helm lint -f values.yaml -f linter_values.yaml".
 
 client:
+  connection:
+    url: "http://stub-linter-url.test"
   auth:
     username: "stub-linter-username"
     password: "stub-linter-password"

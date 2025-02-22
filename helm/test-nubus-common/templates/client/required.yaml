@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+
+{{- $_ := required "The client API connection has to be configured, client.connection.url." (coalesce .Values.client.connection.url .Values.global.client.connection.url) }}
+{{- $_ = required "A client password has to be supplied, see parameter client.auth." (coalesce .Values.client.auth.password (.Values.client.auth.existingSecret).name) }}
+{{- $_ = required "A client username has to be supplied, see parameter client.auth." .Values.client.auth.username }}
