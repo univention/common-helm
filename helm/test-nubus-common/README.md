@@ -1,6 +1,6 @@
-# test-deployment
+# test-nubus-common
 
-Test chart for the deployment template
+Test chart for nubus-common
 
 - **Version**: 0.1.0
 - **Type**: application
@@ -9,13 +9,13 @@ Test chart for the deployment template
 ## Introduction
 
 This is a Test chart. The intended use is to verify and document the intended
-usage patterns of the "common" chart's deployment template.
+usage patterns of the "nubus-common" chart's deployment template.
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | common | * |
+|  | nubus-common | * |
 
 ## Values
 
@@ -27,51 +27,6 @@ usage patterns of the "common" chart's deployment template.
 		<th>Description</th>
 	</thead>
 	<tbody>
-		<tr>
-			<td>global.imageRegistry</td>
-			<td>string</td>
-			<td><pre lang="json">
-"gitregistry.knut.univention.de"
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>image.repository</td>
-			<td>string</td>
-			<td><pre lang="json">
-"stub-image-repository"
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>probes.liveness</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>probes.readiness</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>service</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td></td>
-		</tr>
 	</tbody>
 </table>
 
