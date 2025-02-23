@@ -1,10 +1,11 @@
-# TODO: Move this module into installable package
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from contextlib import nullcontext as does_not_raise
 from collections.abc import Mapping
 
 import pytest
-from yaml import safe_load, safe_dump
+from yaml import safe_load
 
 from utils import findone
 
@@ -30,7 +31,13 @@ class UdmClient:
 
     prefix_mapping: PrefixMapping = {}
 
-    path_udm_api_url: str = "data.UDM_API_URL"
+    default_username = "stub-values-username"
+    path_udm_api_url = "data.UDM_API_URL"
+    path_udm_api_username = "data.UDM_API_USERNAME"
+    path_volume_secret_udm = "spec.template.spec.volumes[?@.name=='secret-udm']"
+    path_main_container = "spec.template.spec.containers[?@.name=='main']"
+    sub_path_udm_volume_mount = "volumeMounts[?@.name=='secret-client']"
+    secret_name = "release-name-test-nubus-common-udm"
 
     def load_and_map(self, values_yaml: str):
         values = safe_load(values_yaml)
@@ -38,7 +45,6 @@ class UdmClient:
         return values
 
     def test_connection_url_is_required(self, helm, chart_path):
-        # TODO: Ensure that "client.connection.url" is removed from linter values
         values = self.load_and_map(
             """
             udm:
@@ -101,8 +107,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert config_map["data"]["CLIENT_API_URL"] == "local_stub"
-
+        assert findone(config_map, self.path_udm_api_url) == "local_stub"
 
     def test_auth_plain_values_generate_secret(self, helm, chart_path):
         values = self.load_and_map(
@@ -115,10 +120,9 @@ class UdmClient:
                 password: "stub-password"
         """)
         result = helm.helm_template(chart_path, values)
-        secret = helm.get_resource(result, kind="Secret", name="release-name-test-nubus-common-client")
+        secret = helm.get_resource(result, kind="Secret", name=self.secret_name)
 
         assert findone(secret, "stringData.password") == "stub-password"
-
 
     def test_auth_plain_values_provide_username_via_config_map(self, helm, chart_path):
         values = self.load_and_map(
@@ -132,8 +136,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, "data.CLIENT_API_USERNAME") == "stub-username"
-
+        assert findone(config_map, self.path_udm_api_username) == "stub-username"
 
     def test_auth_plain_values_username_is_templated(self, helm, chart_path):
         values = self.load_and_map(
@@ -149,8 +152,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, "data.CLIENT_API_USERNAME") == "stub-value"
-
+        assert findone(config_map, self.path_udm_api_username) == "stub-value"
 
     def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
         values = self.load_and_map(
@@ -163,9 +165,8 @@ class UdmClient:
                 password: "{{ value }}"
         """)
         result = helm.helm_template(chart_path, values)
-        secret = helm.get_resource(result, kind="Secret", name="release-name-test-nubus-common-client")
+        secret = helm.get_resource(result, kind="Secret", name=self.secret_name)
         assert findone(secret, "stringData.password") == "{{ value }}"
-
 
     def test_auth_plain_values_password_is_required(self, helm, chart_path):
         values = self.load_and_map(
@@ -180,7 +181,6 @@ class UdmClient:
         with pytest.raises(RuntimeError):
             helm.helm_template(chart_path, values)
 
-
     def test_auth_username_is_required(self, helm, chart_path):
         values = self.load_and_map(
             """
@@ -193,9 +193,7 @@ class UdmClient:
         with pytest.raises(RuntimeError):
             helm.helm_template(chart_path, values)
 
-
     def test_auth_username_has_default(self, helm, chart_path):
-        # TODO: Ensure that "client.auth.username" is removed from linter-values before applying
         values = self.load_and_map(
             """
             udm:
@@ -206,8 +204,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, "data.CLIENT_API_USERNAME") == "stub-values-username"
-
+        assert findone(config_map, self.path_udm_api_username) == self.default_username
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, helm, chart_path):
         values = self.load_and_map(
@@ -223,7 +220,6 @@ class UdmClient:
         with pytest.raises(LookupError):
             helm.get_resource(result, kind="Secret", name="release-name-test-nubus-common-client")
 
-
     def test_auth_existing_secret_does_not_require_plain_password(self, helm, chart_path):
         values = self.load_and_map(
             """
@@ -238,7 +234,6 @@ class UdmClient:
         with does_not_raise():
             helm.helm_template(chart_path, values)
 
-
     def test_auth_existing_secret_mounts_password(self, helm, chart_path):
         values = self.load_and_map(
             """
@@ -251,9 +246,8 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        secret_udm_volume = findone(deployment, "spec.template.spec.volumes[?@.name=='secret-client']")
+        secret_udm_volume = findone(deployment, self.path_volume_secret_udm)
         assert findone(secret_udm_volume, "secret.secretName") == "stub-secret-name"
-
 
     def test_auth_existing_secret_mounts_correct_default_key(self, helm, chart_path):
         values = self.load_and_map(
@@ -267,11 +261,10 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        main_container = findone(deployment, "spec.template.spec.containers[?@.name=='main']")
-        secret_udm_volume_mount = findone(main_container, "volumeMounts[?@.name=='secret-client']")
+        main_container = findone(deployment, self.path_main_container)
+        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
-
 
     def test_auth_disabling_existing_secret_by_setting_it_to_null(self, helm, chart_path):
         values = self.load_and_map(
@@ -286,15 +279,12 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        secret_udm_volume = findone(deployment, "spec.template.spec.volumes[?@.name=='secret-client']")
-        main_container = findone(deployment, "spec.template.spec.containers[?@.name=='main']")
-        secret_udm_volume_mount = findone(main_container, "volumeMounts[?@.name=='secret-client']")
+        secret_udm_volume = findone(deployment, self.path_volume_secret_udm)
+        main_container = findone(deployment, self.path_main_container)
+        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
-        assert findone(
-            secret_udm_volume,
-            "secret.secretName") == "release-name-test-nubus-common-client"
-
+        assert findone(secret_udm_volume, "secret.secretName") == self.secret_name
 
     def test_auth_existing_secret_mounts_correct_custom_key(self, helm, chart_path):
         values = self.load_and_map(
@@ -310,11 +300,10 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        main_container = findone(deployment, "spec.template.spec.containers[?@.name=='main']")
-        secret_udm_volume_mount = findone(main_container, "volumeMounts[?@.name=='secret-client']")
+        main_container = findone(deployment, self.path_main_container)
+        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
-
 
     def test_auth_existing_secret_has_precedence(self, helm, chart_path):
         values = self.load_and_map(
@@ -332,12 +321,12 @@ class UdmClient:
         # TODO: Fix upstream, always return a list
         result = list(helm.helm_template(chart_path, values))
         with pytest.raises(LookupError):
-            helm.get_resource(result, kind="Secret", name="release-name-test-nubus-common-client")
+            helm.get_resource(result, kind="Secret", name=self.secret_name)
 
         deployment = helm.get_resource(result, kind="Deployment")
-        secret_udm_volume = findone(deployment, "spec.template.spec.volumes[?@.name=='secret-client']")
-        main_container = findone(deployment, "spec.template.spec.containers[?@.name=='main']")
-        secret_udm_volume_mount = findone(main_container, "volumeMounts[?@.name=='secret-client']")
+        secret_udm_volume = findone(deployment, self.path_volume_secret_udm)
+        main_container = findone(deployment, self.path_main_container)
+        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
         assert findone(secret_udm_volume, "secret.secretName") == "stub-secret-name"
@@ -365,8 +354,7 @@ def _pop_value(values: Mapping, source_path: list[str]) -> any:
         sub_values = values[source_path[0]]
         sub_path = source_path[1:]
         return _pop_value(sub_values, sub_path)
-    else:
-        return values[source_path[0]]
+    return values[source_path[0]]
 
 
 def _set_value(values: Mapping, target_path: list[str], value: any) -> None:
