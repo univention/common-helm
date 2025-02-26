@@ -53,3 +53,77 @@
 {{- $_ := required "Variable .key is required" .key -}}
 {{- default .key (get (.existingSecret).keyMapping .key) -}}
 {{- end -}}
+
+
+
+{{/*
+Manage a password.
+
+The interface is kept similar to the one provided by
+"common.secrets.passwords.manage". This template adds support for deriving secrets
+from a master password instead of using random values.
+
+Params:
+
+- secret - String - Required - Name of the "Secret" where the password is stored. This
+  "Secret" is used to find out if an existing value has already been set.
+
+- key - String - Optional - Name of the key in the "Secret". Defaults to "password".
+
+- providedValues - List<String> - Required - Paths to the values, e.g. "udm.auth.password".
+  The first one with a defined value will be used.
+
+- username - String - Required - The username or identity name. Used to derive the password from
+  the master password.
+
+- site - String - Optional - Value for the site. Defaults to "nubus". Only used when the
+  password is derived from a master password.
+
+- outputTemplate - String - Optional - The output template to use when deriving the password
+  from the master password. Defaults to "long".
+
+- context - Context - Required - Parent context.
+
+- length - int - Optional - Length of the password to generate. Defaults to 16. Only used
+  when no master password is supplied.
+
+Values which configure this template:
+
+- global.secrets.masterPassword - String - Optional - If this value is configured,
+  then the secret will be derived via "deriveSecret" from this master password.
+  Otherwise it will be a random value.
+
+*/}}
+
+{{- define "nubus-common.secrets.passwords.manage" }}
+{{- $passwordValue := "" }}
+{{- $username := required "Username must be provided" .username }}
+
+{{- if (.context.Values.global.secrets).masterPassword }}
+
+  {{- $providedPasswordKey := include "common.utils.getKeyFromList" (dict "keys" .providedValues "context" .context) }}
+  {{- $passwordValue = include "common.utils.getValueFromKey" (dict "key" $providedPasswordKey "context" .context) }}
+  {{- if not $passwordValue }}
+    {{- $site := default "nubus" .site }}
+    {{- $outputTemplate := default "long" .outputTemplate }}
+    {{- $masterPassword := .context.Values.global.secrets.masterPassword }}
+    {{- $passwordValue = derivePassword 1 $outputTemplate $masterPassword $username $site | sha1sum }}
+  {{- end }}
+
+{{- else }}
+
+  {{- $passwordValue = include "common.secrets.passwords.manage"
+  (dict
+    "secret" .secret
+    "key" (default "password" .key)
+    "providedValues" .providedValues
+    "context" .context
+    "length" (default 16 .length)
+    "skipB64enc" true
+    "skipQuote" true
+  ) }}
+
+{{- end }}
+
+{{- printf "%s" $passwordValue }}
+{{- end }}
