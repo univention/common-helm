@@ -129,6 +129,8 @@ repos:
           - "--disable=invalid-name"
           # C0114: Missing module docstring (missing-module-docstring)
           - "--disable=missing-module-docstring"
+          # C0115: Missing class docstring
+          - "--disable=missing-class-docstring"
           # C0116: Missing function or method docstring (missing-function-docstring)
           - "--disable=missing-function-docstring"
           # E1101: Module 'jsonpath' has no 'match' member (no-member)
