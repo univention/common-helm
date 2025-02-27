@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.8.0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.7.0...v0.8.0) (2025-02-27)
+
+
+### Features
+
+* Add nubus-common as a library chart ([dfa95b1](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/dfa95b1f5f46d4719f3059c3dc8bfa9a3da60248))
+* **common:** Flag chart as deprecated ([38b7b31](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/38b7b315d6a028cc48b0f11e191ff962f880011b))
+* **nubus-common:** Add "nubus-common.secrets.passwords.manage" ([4ed675e](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/4ed675e577864811e63f2a9d1d62dd9f7e6fc970))
+* **nubus-common:** Add nubus-common.names.fullnameWithRevision ([a2c707a](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/a2c707ab9fff5db1e4bcdc609c2dfb87793bad56))
+* **nubus-common:** Add secrets related utility templates ([c3258f7](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/c3258f7ac199faf2c75e76e190a4f24cc93dcced))
+
+
+### Bug Fixes
+
+* Ensure empty value files result in a map ([1dbf975](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/1dbf9752612845353358cd16b692e3146f34623f))
+* **nubus-common:** Correct handling of suffix in nubus-common.secrets.name ([6de20b8](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/6de20b8e56862f475f88cc48598a35f8a01a3fde))
+* **nubus-common:** Update generated readme files ([6c7aaa3](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/6c7aaa35f35aac202bf0444e204ba9e1f4cddfb0))
+
 ## [0.7.0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.6.1...v0.7.0) (2024-07-18)
 
 
