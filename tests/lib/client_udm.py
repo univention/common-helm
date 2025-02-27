@@ -10,8 +10,11 @@ from yaml import safe_load
 from utils import findone
 
 
-type JSONPath = str
-type PrefixMapping = Mapping[JSONPath, JSONPath]
+# TODO: Change once the Python version has been upgraded in the test runner to >= 3.12
+JSONPath = str
+PrefixMapping = Mapping[JSONPath, JSONPath]
+# type JSONPath = str
+# type PrefixMapping = Mapping[JSONPath, JSONPath]
 
 
 # NOTE: We want to have the values + linter_values always be passing the
