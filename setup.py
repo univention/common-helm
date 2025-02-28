@@ -21,7 +21,7 @@ setup(
     license='MIT',
     url='https://github.com/nilscan/pytest_helm',
     description='Helpers to test Helm charts',
-    long_description=read('README.rst'),
+    long_description=read('README.upstream.rst'),
     packages=find_packages(),
     py_modules=['pytest_helm'],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
