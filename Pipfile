@@ -7,6 +7,7 @@ verify_ssl = true
 pyyaml = "*"
 pytest = "*"
 pytest-helm = {file = ".", editable = true}
+pytest-mock = "*"
 
 [requires]
 
