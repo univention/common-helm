@@ -6,6 +6,7 @@ verify_ssl = true
 [packages]
 pyyaml = "*"
 pytest = "*"
+pytest-helm = {file = ".", editable = true}
 
 [requires]
 

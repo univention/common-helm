@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "300182463d812314b5edbaa1f7166ee92c896a56795e9b39fbb5626c2f8595b1"
+            "sha256": "5b64c0e861e5270533ee569c4afa4307eb6ce70128d66c0804406dc2b719f3dd"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -46,6 +46,10 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==8.3.4"
+        },
+        "pytest-helm": {
+            "editable": true,
+            "file": "."
         },
         "pyyaml": {
             "hashes": [
