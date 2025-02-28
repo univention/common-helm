@@ -5,8 +5,9 @@ import os
 
 
 class Helm:
-    def __init__(self, helm_cmd="helm", values=None):
+    def __init__(self, helm_cmd="helm", values=None, debug=False):
         self.helm_cmd = helm_cmd
+        self.debug = debug
         self.values = values or tuple()
 
     def run_command(self, *args) -> bytes:
@@ -38,8 +39,8 @@ class Helm:
         finally:
             os.remove(path)
 
-        # This should only be displayed if the test failed
-        print(output.decode())
+        if self.debug:
+            print(output.decode())
 
         return list(yaml.safe_load_all(output))
 

@@ -6,6 +6,13 @@ from .helm import Helm
 def pytest_addoption(parser):
     group = parser.getgroup("helm")
     group.addoption(
+        "--helm-debug",
+        action="store_true",
+        dest="helm_debug",
+        default=False,
+        help="Enable verbose output of the Helm checking, e.g. dump the template result.",
+    )
+    group.addoption(
         "--helm-path",
         action="store",
         dest="helm_path",
@@ -42,4 +49,5 @@ def helm(request, helm_values):
     Return a :class:`Helm` instance to help with `helm` interaction.
     """
     helm_path = request.config.option.helm_path
-    return Helm(helm_path, helm_values)
+    debug = request.config.option.helm_debug
+    return Helm(helm_path, helm_values, debug)
