@@ -3,12 +3,10 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-autopep8 = "*"
-
 [packages]
-pyyaml = "~= 5.3"
-tox = "~= 3.14"
-pytest = "~= 5.4"
+pyyaml = "*"
+pytest = "*"
 
 [requires]
+
+[dev-packages]
