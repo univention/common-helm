@@ -321,8 +321,7 @@ class UdmClient:
                   keyMapping:
                     password: "stub_password_key"
         """)
-        # TODO: Fix upstream, always return a list
-        result = list(helm.helm_template(chart_path, values))
+        result = helm.helm_template(chart_path, values)
         with pytest.raises(LookupError):
             helm.get_resource(result, kind="Secret", name=self.secret_name)
 
