@@ -3,13 +3,15 @@
 
 def test_help_message(testdir):
     result = testdir.runpytest(
-        '--help',
+        "--help",
     )
     # fnmatch_lines does an assertion internally
-    result.stdout.fnmatch_lines([
-        'helm:',
-        '*--helm-path=HELM_PATH*',
-    ])
+    result.stdout.fnmatch_lines(
+        [
+            "helm:",
+            "*--helm-path=HELM_PATH*",
+        ]
+    )
 
 
 def test_helm_path_ini_setting(testdir):
@@ -29,12 +31,14 @@ def test_helm_path_ini_setting(testdir):
             assert helm_path_ini == '/path/to/helm'
     """)
 
-    result = testdir.runpytest('-v')
+    result = testdir.runpytest("-v")
 
     # fnmatch_lines does an assertion internally
-    result.stdout.fnmatch_lines([
-        '*::test_helm_path_ini PASSED*',
-    ])
+    result.stdout.fnmatch_lines(
+        [
+            "*::test_helm_path_ini PASSED*",
+        ]
+    )
 
     # make sure that that we get a '0' exit code for the testsuite
     assert result.ret == 0

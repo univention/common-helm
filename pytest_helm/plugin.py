@@ -4,13 +4,13 @@ from .helm import Helm
 
 
 def pytest_addoption(parser):
-    group = parser.getgroup('helm')
+    group = parser.getgroup("helm")
     group.addoption(
-        '--helm-path',
-        action='store',
-        dest='helm_path',
-        default='helm',
-        help='Path to the helm binary.',
+        "--helm-path",
+        action="store",
+        dest="helm_path",
+        default="helm",
+        help="Path to the helm binary.",
     )
     group.addoption(
         "--values",
@@ -18,7 +18,7 @@ def pytest_addoption(parser):
         help="Value files to use. Can be used multiple times.",
     )
 
-    parser.addini('HELM_PATH', 'Path to the helm binary')
+    parser.addini("HELM_PATH", "Path to the helm binary")
 
 
 def pytest_report_header(config):

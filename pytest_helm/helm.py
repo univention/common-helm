@@ -26,16 +26,15 @@ class Helm:
         fd, path = tempfile.mkstemp()
         output = ""
         try:
-            with os.fdopen(fd, 'w') as tmp:
+            with os.fdopen(fd, "w") as tmp:
                 tmp.write(yaml.dump(values))
 
             values = []
             for item in self.values:
-                values.extend(('--values', item))
-            values.extend(('--values', path))
+                values.extend(("--values", item))
+            values.extend(("--values", path))
 
-            output = self.run_command(
-                self.helm_cmd, 'template', chart, *values)
+            output = self.run_command(self.helm_cmd, "template", chart, *values)
         finally:
             os.remove(path)
 
@@ -44,11 +43,9 @@ class Helm:
 
         return list(yaml.safe_load_all(output))
 
-    def get_resources(self, manifests, *,
-                      api_version=None,
-                      kind=None,
-                      name=None,
-                      predicate=None):
+    def get_resources(
+        self, manifests, *, api_version=None, kind=None, name=None, predicate=None
+    ):
         """
         Get the manifests matching given criteria
         """
@@ -56,13 +53,11 @@ class Helm:
         if predicate:
             docs = [doc for doc in docs if predicate(doc)]
         if api_version:
-            docs = [doc for doc in docs if api_version ==
-                    doc.get('apiVersion')]
+            docs = [doc for doc in docs if api_version == doc.get("apiVersion")]
         if kind:
-            docs = [doc for doc in docs if kind == doc.get('kind')]
+            docs = [doc for doc in docs if kind == doc.get("kind")]
         if name:
-            docs = [doc for doc in docs if name ==
-                    doc.get('metadata', {}).get('name')]
+            docs = [doc for doc in docs if name == doc.get("metadata", {}).get("name")]
         return docs
 
     def get_resource(self, *args, **kwargs):
@@ -74,6 +69,7 @@ class Helm:
         if len(manifests) != 1:
             raise LookupError(
                 "{} manifest found".format(
-                    'No' if len(manifests) == 0 else 'More than one'
-                ))
+                    "No" if len(manifests) == 0 else "More than one"
+                )
+            )
         return manifests[0]
