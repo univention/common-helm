@@ -9,7 +9,7 @@ class Helm:
         self.helm_cmd = helm_cmd
         self.values = values or tuple()
 
-    def run_command(self, *args):
+    def run_command(self, *args) -> bytes:
         """
         Runs a command and returns stdout
         """
@@ -42,7 +42,7 @@ class Helm:
         # This should only be displayed if the test failed
         print(output.decode())
 
-        return yaml.safe_load_all(output)
+        return list(yaml.safe_load_all(output))
 
     def get_resources(self, manifests, *,
                       api_version=None,
