@@ -19,7 +19,7 @@ class Helm:
             raise RuntimeError(f"Error running command {' '.join(args)}")
         return result.stdout
 
-    def helm_template(self, chart, values={}):
+    def helm_template(self, chart, values={}, template_file: str | None = None):
         """
         Generates helm templates from a chart
         `values` can be passed to override the default chart values
@@ -35,6 +35,9 @@ class Helm:
                 values.extend(("--values", item))
             values.extend(("--values", path))
 
+            if template_file:
+                values.extend(("--show-only", template_file))
+
             output = self.run_command(self.helm_cmd, "template", chart, *values)
         finally:
             os.remove(path)
@@ -42,7 +45,16 @@ class Helm:
         if self.debug:
             print(output.decode())
 
-        return list(yaml.safe_load_all(output))
+        result = list(yaml.safe_load_all(output))
+        return result
+
+    def helm_template_file(self, chart, values={}, template_file: str = "") -> dict:
+        assert template_file
+        result = [ i for i in self.helm_template(chart, values, template_file) if i is not None ]
+        assert len(result) <= 1
+        if len(result) == 0:
+            return {}
+        return result[0]
 
     def get_resources(
         self, manifests, *, api_version=None, kind=None, name=None, predicate=None
