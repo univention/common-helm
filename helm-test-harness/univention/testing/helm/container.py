@@ -9,7 +9,7 @@ class Container:
     manifest = ""
     name = ""
 
-    def test_udm_auth_existing_secret_mounts_password( self, helm, chart_path, key, env_var,):
+    def test_auth_existing_secret_custom_name( self, helm, chart_path, key, env_var,):
         values = resolve(
             key,
             safe_load(
@@ -48,7 +48,7 @@ class Container:
         )
         assert env["valueFrom"]["secretKeyRef"]["key"] == "password"
 
-    def test_udm_auth_existing_secret_mounts_correct_custom_key( self, helm, chart_path, key, env_var,):
+    def test_auth_existing_secret_custom_key( self, helm, chart_path, key, env_var,):
         values = resolve(
             key,
             safe_load(
@@ -69,7 +69,7 @@ class Container:
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "stub_password_key"
 
-    def test_udm_auth_existing_secret_has_precedence( self, helm, chart_path, key, env_var,):
+    def test_auth_existing_secret_has_precedence( self, helm, chart_path, key, env_var,):
         values = resolve(
             key,
             safe_load(

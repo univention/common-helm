@@ -12,7 +12,7 @@ class Secret(Labels):
     def values(self, localpart: dict) -> dict:
         return localpart
 
-    def test_udm_auth_plain_values_generate_secret(self, helm, chart_path):
+    def test_udm_plain_values_generate_secret(self, helm, chart_path):
         values = self.values(safe_load(
             """
             auth:
@@ -22,7 +22,7 @@ class Secret(Labels):
         result = helm.helm_template_file(chart_path, values, self.manifest)
         assert findone(result, "stringData.password") == "stub-password"
 
-    def test_udm_auth_plain_values_password_is_not_templated(self, helm, chart_path):
+    def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
         values = self.values(safe_load(
             """
             auth:
@@ -32,7 +32,10 @@ class Secret(Labels):
         result = helm.helm_template_file(chart_path, values, self.manifest)
         assert findone(result, "stringData.password") == "{{ value }}"
 
-    def test_udm_auth_plain_values_password_is_required(self, helm, chart_path):
+    def test_auth_plain_values_password_is_required(self, helm, chart_path):
+        """
+        Only relevant for secrets that don't have generated password support
+        """
         values = self.values(safe_load(
             """
             auth:
@@ -42,7 +45,7 @@ class Secret(Labels):
         with pytest.raises(RuntimeError):
             helm.helm_template_file(chart_path, values, self.manifest)
 
-    def test_udm_auth_existing_secret_does_not_generate_a_secret(
+    def test_auth_existing_secret_does_not_generate_a_secret(
         self,
         helm,
         chart_path,
@@ -57,7 +60,7 @@ class Secret(Labels):
         result = helm.helm_template_file(chart_path, values, self.manifest)
         assert result == {}
 
-    def test_udm_auth_existing_secret_does_not_require_plain_password(
+    def test_auth_existing_secret_does_not_require_plain_password(
         self,
         helm,
         chart_path,
@@ -73,7 +76,7 @@ class Secret(Labels):
         result = helm.helm_template_file(chart_path, values, self.manifest)
         assert result == {}
 
-    def test_udm_auth_existing_secret_has_precedence(self, helm, chart_path):
+    def test_auth_existing_secret_has_precedence(self, helm, chart_path):
         values = self.values(safe_load(
             """
             auth:
