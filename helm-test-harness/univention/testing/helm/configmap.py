@@ -1,26 +1,9 @@
 import pytest
 
 from univention.testing.helm.base import Labels
+from pytest_helm.utils import resolve
 
 class ConfigMap(Labels): ...
-
-
-# TODO: Find a better place for this
-def resolve(key_string: str, value) -> dict:
-    keys = key_string.split('.')
-    result = {}
-    current = result
-    for key in keys[:-1]:
-        current[key] = {}
-        current = current[key]
-    # Set the final key to the provided value
-    current[keys[-1]] = value
-    return result
-
-
-def test_resolve():
-    values = resolve("config.logLevel", None)
-    assert values == {"config": {"logLevel": None}}
 
 
 class RequiredEnvVariables:

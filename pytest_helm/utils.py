@@ -13,15 +13,33 @@ def findall(data, path):
 
 
 def get_containers_of_job(helm, result):
-    return _get_containers_of("Job", helm, result)
+    manifest = helm.get_resource(result, kind="Job")
+    return get_containers(manifest)
 
 
 def get_containers_of_deployment(helm, result):
-    return _get_containers_of("Deployment", helm, result)
+    manifest = helm.get_resource(result, kind="Deployment")
+    return get_containers(manifest)
 
 
-def _get_containers_of(kind, helm, result):
-    manifest = helm.get_resource(result, kind=kind)
-    init_containers = findall(manifest, "spec.template.spec.initContainers")
+def get_containers(manifest):
+    try:
+        init_containers = findall(manifest, "spec.template.spec.initContainers")
+    except AttributeError:
+        init_containers = []
     containers = findall(manifest, "spec.template.spec.containers")
     return init_containers + containers
+
+
+def resolve(key_string: str, value) -> dict:
+    keys = key_string.split('.')
+    result = {}
+    current = result
+    for key in keys[:-1]:
+        current[key] = {}
+        current = current[key]
+    # Set the final key to the provided value
+    current[keys[-1]] = value
+    return result
+
+
