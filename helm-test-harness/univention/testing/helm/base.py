@@ -6,7 +6,7 @@ from pytest_helm.utils import findone
 from yaml import safe_load
 
 
-class Labels:
+class Base:
     manifest = ""
 
     def test_add_another_label(self, helm, chart_path):
@@ -46,3 +46,14 @@ class Labels:
         labels = findone(result, "metadata.labels")
 
         assert labels["local.test/name"] == "stub-value"
+
+    def test_namespaceoverride_takes_precedence_over_release_namespace(self, helm: Helm, chart_path):
+        values = {"namespaceOverride": "stub-namespace"}
+
+        result = helm.helm_template_file(chart_path, values, self.manifest)
+        assert findone(result, "metadata.namespace")== "stub-namespace"
+
+    def test_namespace_is_release_namespace(self, helm: Helm, chart_path):
+
+        result = helm.helm_template_file(chart_path, {}, self.manifest, ["--set", "namespaceOverride=stub-namespace"])
+        assert findone(result, "metadata.namespace")== "stub-namespace"

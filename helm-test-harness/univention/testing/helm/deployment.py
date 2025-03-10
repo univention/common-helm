@@ -5,9 +5,10 @@ import pytest
 from yaml import safe_load
 
 from pytest_helm.utils import get_containers
+from univention.testing.helm.base import Base
 
 
-class Deployment:  # Labels): # TODO: Decide if we want labels on Deployments and statefulsets
+class Deployment(Base):
     manifest = ""
 
     def values(self, localpart: dict) -> dict:

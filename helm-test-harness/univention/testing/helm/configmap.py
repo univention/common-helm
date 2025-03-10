@@ -1,9 +1,9 @@
 import pytest
 
-from univention.testing.helm.base import Labels
+from univention.testing.helm.base import Base
 from pytest_helm.utils import resolve
 
-class ConfigMap(Labels): ...
+class ConfigMap(Base): ...
 
 
 class RequiredEnvVariables:

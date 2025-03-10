@@ -19,7 +19,7 @@ class Helm:
             raise RuntimeError(f"Error running command {' '.join(args)}")
         return result.stdout
 
-    def helm_template(self, chart, values={}, template_file: str | None = None):
+    def helm_template(self, chart, values={}, template_file: str | None = None, helm_args: list[str] | None = None):
         """
         Generates helm templates from a chart
         `values` can be passed to override the default chart values
@@ -30,15 +30,15 @@ class Helm:
             with os.fdopen(fd, "w") as tmp:
                 tmp.write(yaml.dump(values))
 
-            values = []
+            helm_args = helm_args or []
             for item in self.values:
-                values.extend(("--values", item))
-            values.extend(("--values", path))
+                helm_args.extend(("--values", item))
+            helm_args.extend(("--values", path))
 
             if template_file:
-                values.extend(("--show-only", template_file))
+                helm_args.extend(("--show-only", template_file))
 
-            output = self.run_command(self.helm_cmd, "template", chart, *values)
+            output = self.run_command(self.helm_cmd, "template", chart, *helm_args)
         finally:
             os.remove(path)
 
@@ -48,9 +48,9 @@ class Helm:
         result = list(yaml.safe_load_all(output))
         return result
 
-    def helm_template_file(self, chart, values={}, template_file: str = "") -> dict:
+    def helm_template_file(self, chart, values: dict, template_file: str, helm_args: list[str] | None = None) -> dict:
         assert template_file
-        result = [ i for i in self.helm_template(chart, values, template_file) if i is not None ]
+        result = [ i for i in self.helm_template(chart, values, template_file, helm_args) if i is not None ]
         assert len(result) <= 1
         if len(result) == 0:
             return {}

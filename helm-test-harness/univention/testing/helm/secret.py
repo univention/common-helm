@@ -3,12 +3,12 @@
 
 import pytest
 
-from univention.testing.helm.base import Labels
+from univention.testing.helm.base import Base
 from pytest_helm.utils import findone
 from yaml import safe_load
 
 
-class Secret(Labels):
+class Secret(Base):
     def values(self, localpart: dict) -> dict:
         return localpart
 
