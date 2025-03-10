@@ -19,6 +19,9 @@ dependencies = [
     "python-jsonpath",
 ]
 
+[project.entry-points.pytest11]
+pytest-helm = "pytest_helm.plugin"
+
 [[tool.uv.index]]
 name = "gitlab"
 publish-url = "https://git.knut.univention.de/api/v4/projects/900/packages/pypi"
