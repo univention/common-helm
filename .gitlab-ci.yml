@@ -84,8 +84,7 @@ test-common-unit:
     - 'uv build'
     - 'uv publish --index gitlab --username "gitlab-ci-token" --password $CI_JOB_TOKEN'
   variables:
-    - PACKAGE_ROOT: "./"
-...
+    PACKAGE_ROOT: "./"
 
 build-and-publish-pip:
   extends: .build-and-publish-pip-package-with-uv
