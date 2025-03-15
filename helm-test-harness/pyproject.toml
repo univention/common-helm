@@ -1,10 +1,9 @@
 [project]
-name = "pytest-helm"
+name = "helm-test-harness"
 version = "0.1.0"
-description = "pytest fixtures and helpers helpers to unittest helm charts"
+description = "A pre-configured test harness to unittest helm charts and enforce our team standards"
 authors = [
   {name = "Univention GmbH", email = "packages@univention.de"},
-  {name = "Nilscan", email = "nilscan31@gmail.com"}
 ]
 maintainers = [
   {name = "Univention GmbH", email = "packages@univention.de"},
@@ -13,14 +12,12 @@ license = {text = "MIT"}
 
 requires-python = ">=3.10"
 dependencies = [
-    "pyyaml",
-    "pytest",
-    "pytest-mock",
-    "python-jsonpath",
+    "pytest-helm",
 ]
 
-[project.entry-points.pytest11]
-pytest-helm = "pytest_helm.plugin"
+[tool.uv.sources]
+junkaptor = { path = "junkaptor" }
+pytest-helm = { index = "gitlab" }
 
 [[tool.uv.index]]
 name = "gitlab"
@@ -33,12 +30,5 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build]
 include = [
-    "pytest_helm",
+    "univention",
 ]
-
-[tool.ruff]
-target-version = "py311"
-line-length = 120
-
-extend-select = ["I"]  # activate isort
-
