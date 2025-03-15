@@ -12,16 +12,6 @@ def findall(data, path):
     return jsonpath.match(path, data).obj
 
 
-def get_containers_of_job(helm, result):
-    manifest = helm.get_resource(result, kind="Job")
-    return get_containers(manifest)
-
-
-def get_containers_of_deployment(helm, result):
-    manifest = helm.get_resource(result, kind="Deployment")
-    return get_containers(manifest)
-
-
 def get_containers(manifest):
     try:
         init_containers = findall(manifest, "spec.template.spec.initContainers")
@@ -31,15 +21,15 @@ def get_containers(manifest):
     return init_containers + containers
 
 
-def resolve(key_string: str, value) -> dict:
-    keys = key_string.split('.')
+def add_jsonpath_prefix(prefix_jsonpath: str, localpart) -> dict:
+    keys = prefix_jsonpath.split('.')
     result = {}
     current = result
     for key in keys[:-1]:
         current[key] = {}
         current = current[key]
     # Set the final key to the provided value
-    current[keys[-1]] = value
+    current[keys[-1]] = localpart
     return result
 
 

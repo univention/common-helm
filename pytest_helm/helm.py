@@ -48,14 +48,6 @@ class Helm:
         result = list(yaml.safe_load_all(output))
         return result
 
-    def helm_template_file(self, chart, values: dict, template_file: str, helm_args: list[str] | None = None) -> dict:
-        assert template_file
-        result = [ i for i in self.helm_template(chart, values, template_file, helm_args) if i is not None ]
-        assert len(result) <= 1
-        if len(result) == 0:
-            return {}
-        return result[0]
-
     def get_resources(
         self, manifests, *, api_version=None, kind=None, name=None, predicate=None
     ):
