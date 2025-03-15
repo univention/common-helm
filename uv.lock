@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pytest-helm", index = "https://git.knut.univention.de/api/v4/projects/900/packages/pypi" }]
+requires-dist = [{ name = "pytest-helm", directory = "pytest-helm" }]
 
 [[package]]
 name = "helm-testing-metapackage"
