@@ -53,4 +53,43 @@ test-common-unit:
     - helm dep build helm/nubus-common
     - pytest
 
+.build-and-publish-pip-package-with-uv:
+  # The job currently fails for reruns on the same commit.
+  # See Issue: https://github.com/astral-sh/uv/issues/7917
+  allow_failure: true
+  stage: publish
+  image: "ghcr.io/astral-sh/uv:0.6.5-python3.13-bookworm-slim@sha256:ceb82542c321b4747444bc95419c2ee2a49fc57611588cda16455b0917a50d47"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: "never"
+    - when: "on_success"
+  before_script:
+    - |
+      IFS='-' read -ra parts <<< "$RELEASE_VERSION"
+
+      version_number="${parts[0]}"
+      suffix="${parts[*]:1}"
+
+      if [ "$CI_COMMIT_BRANCH" != "$CI_DEFAULT_BRANCH" ]; then
+          modified_suffix="dev0+${suffix// /-}"
+          export PACKAGE_VERSION="$version_number.$modified_suffix.${CI_COMMIT_SHORT_SHA}"
+      else
+          export PACKAGE_VERSION="$version_number"
+      fi
+      echo building and publishing pip package in '$PACKAGE_ROOT'
+  script:
+    - cd $PACKAGE_ROOT
+    - 'sed -i "s/^version = \".*\"/version = \"$PACKAGE_VERSION\"/" pyproject.toml'
+    - 'echo updated pip package version: "$PACKAGE_VERSION"'
+    - 'uv build'
+    - 'uv publish --index gitlab --username "gitlab-ci-token" --password $CI_JOB_TOKEN'
+  variables:
+    - PACKAGE_ROOT: "./"
 ...
+
+build-and-publish-pip:
+  extends: .build-and-publish-pip-package-with-uv
+  parallel:
+    matrix:
+      - PACKAGE_ROOT: "pytest-helm"
+      - PACKAGE_ROOT: "helm-test-harness"
