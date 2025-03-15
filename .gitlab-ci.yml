@@ -18,6 +18,7 @@ include:
 container-build:
   variables:
     IMAGE_NAME: testrunner
+    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR
 
 package-helm-charts:
   variables:

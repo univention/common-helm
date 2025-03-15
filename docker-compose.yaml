@@ -6,12 +6,14 @@
 services:
 
   test:
+    working_dir: "/app/"
     build:
-      context: ./docker/testrunner/
+      context: ./
     profiles:
       - test
     volumes:
-      - ".:/app"
+      - "./helm/:/app/helm/"
+      - "./tests/:/app/tests/"
 
   # Environment to build the documentation
   docs:
