@@ -6,7 +6,7 @@ from yaml import safe_load
 
 
 class Container:
-    manifest = ""
+    template_file = ""
     name = ""
 
     def test_auth_existing_secret_custom_name( self, helm, chart_path, key, env_var,):
@@ -20,7 +20,7 @@ class Container:
             """,
             ),
         )
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         env = findone(
             deployment,
             f"spec.template.spec.containers[?@.name=='{self.name}'].env[?@.name=='{env_var}']",
@@ -38,7 +38,7 @@ class Container:
             """,
             ),
         )
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         env = findone(
             deployment,
             f"spec.template.spec.containers[?@.name=='{self.name}'].env[?@.name=='{env_var}']",
@@ -61,7 +61,7 @@ class Container:
             """,
             ),
         )
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         env = findone(
             deployment,
             f"spec.template.spec.containers[?@.name=='{self.name}'].env[?@.name=='{env_var}']",
@@ -83,7 +83,7 @@ class Container:
             """,
             ),
         )
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         env = findone(
             deployment,
             f"spec.template.spec.containers[?@.name=='{self.name}'].env[?@.name=='{env_var}']",

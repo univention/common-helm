@@ -7,7 +7,7 @@ from yaml import safe_load
 
 
 class Base:
-    manifest = ""
+    template_file = ""
 
     def test_add_another_label(self, helm, chart_path):
         values = safe_load(
@@ -16,7 +16,7 @@ class Base:
               local.test/name: "value"
         """,
         )
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         labels = findone(result, "metadata.labels")
 
         assert labels["local.test/name"] == "value"
@@ -28,7 +28,7 @@ class Base:
               app.kubernetes.io/name: "replaced value"
         """,
         )
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         labels = findone(result, "metadata.labels")
 
         assert labels["app.kubernetes.io/name"] == "replaced value"
@@ -42,7 +42,7 @@ class Base:
               local.test/name: "{{ .Values.global.test }}"
         """,
         )
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         labels = findone(result, "metadata.labels")
 
         assert labels["local.test/name"] == "stub-value"
@@ -50,10 +50,10 @@ class Base:
     def test_namespaceoverride_takes_precedence_over_release_namespace(self, helm: Helm, chart_path):
         values = {"namespaceOverride": "stub-namespace"}
 
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         assert findone(result, "metadata.namespace")== "stub-namespace"
 
     def test_namespace_is_release_namespace(self, helm: Helm, chart_path):
 
-        result = helm.helm_template_file(chart_path, {}, self.manifest, ["--set", "namespaceOverride=stub-namespace"])
+        result = helm.helm_template_file(chart_path, {}, self.template_file, ["--set", "namespaceOverride=stub-namespace"])
         assert findone(result, "metadata.namespace")== "stub-namespace"

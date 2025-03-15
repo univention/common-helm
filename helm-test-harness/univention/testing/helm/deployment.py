@@ -9,7 +9,7 @@ from univention.testing.helm.base import Base
 
 
 class Deployment(Base):
-    manifest = ""
+    template_file = ""
 
     def values(self, localpart: dict) -> dict:
         return localpart
@@ -25,7 +25,7 @@ class Deployment(Base):
             """,
             ),
         )
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         pod_spec = deployment["spec"]["template"]["spec"]
 
         with pytest.raises(KeyError):
@@ -43,7 +43,7 @@ class Deployment(Base):
             """,
             ),
         )
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         pod_security_context = deployment["spec"]["template"]["spec"]["securityContext"]
         expected_security_context = {
             "enabled": True,
@@ -66,7 +66,7 @@ class Deployment(Base):
             ),
         )
         expected_security_context = {}
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         containers = get_containers(deployment)
         self._assert_all_have_security_context(containers, expected_security_context)
 
@@ -90,7 +90,7 @@ class Deployment(Base):
             "runAsUser": 9876,
         }
 
-        deployment = helm.helm_template_file(chart_path, values, self.manifest)
+        deployment = helm.helm_template_file(chart_path, values, self.template_file)
         containers = get_containers(deployment)
         self._assert_all_have_security_context(containers, expected_security_context)
 

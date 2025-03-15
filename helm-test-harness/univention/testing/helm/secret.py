@@ -19,7 +19,7 @@ class Secret(Base):
               password: "stub-password"
         """,
         ))
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         assert findone(result, "stringData.password") == "stub-password"
 
     def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
@@ -29,7 +29,7 @@ class Secret(Base):
               password: "{{ value }}"
         """,
         ))
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         assert findone(result, "stringData.password") == "{{ value }}"
 
     def test_auth_plain_values_password_is_required(self, helm, chart_path):
@@ -43,7 +43,7 @@ class Secret(Base):
         """,
         ))
         with pytest.raises(RuntimeError):
-            helm.helm_template_file(chart_path, values, self.manifest)
+            helm.helm_template_file(chart_path, values, self.template_file)
 
     def test_auth_existing_secret_does_not_generate_a_secret(
         self,
@@ -57,7 +57,7 @@ class Secret(Base):
                 name: "stub-secret-name"
         """,
         ))
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         assert result == {}
 
     def test_auth_existing_secret_does_not_require_plain_password(
@@ -73,7 +73,7 @@ class Secret(Base):
                 name: "stub-secret-name"
         """,
         ))
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         assert result == {}
 
     def test_auth_existing_secret_has_precedence(self, helm, chart_path):
@@ -87,5 +87,5 @@ class Secret(Base):
                   password: "stub_password_key"
         """,
         ))
-        result = helm.helm_template_file(chart_path, values, self.manifest)
+        result = helm.helm_template_file(chart_path, values, self.template_file)
         assert result == {}

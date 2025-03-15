@@ -7,13 +7,13 @@ class ConfigMap(Base): ...
 
 
 class RequiredEnvVariables:
-    manifest = ""
+    template_file = ""
 
     def test_can_be_set(self, helm, chart_path, key, env_var):
         stub_value = "custom-stub-value"
         values = resolve(key, stub_value)
 
-        configmap = helm.helm_template_file(chart_path, values, self.manifest)
+        configmap = helm.helm_template_file(chart_path, values, self.template_file)
         assert configmap['data'][env_var] == stub_value
 
     @pytest.mark.parametrize("value", ["", None])
@@ -21,24 +21,24 @@ class RequiredEnvVariables:
         values = resolve(key, value)
 
         with pytest.raises(RuntimeError):
-            helm.helm_template_file(chart_path, values, self.manifest)
+            helm.helm_template_file(chart_path, values, self.template_file)
 
 
 class OptionalEnvVariables:
-    manifest = ""
+    template_file = ""
 
     def test_can_be_set(self, helm, chart_path, key, env_var):
         stub_value = "custom-stub-value"
         values = resolve(key, stub_value)
 
-        configmap = helm.helm_template_file(chart_path, values, self.manifest)
+        configmap = helm.helm_template_file(chart_path, values, self.template_file)
         assert configmap['data'][env_var] == stub_value
 
     @pytest.mark.parametrize("value", ["", None])
     def test_can_be_unset(self, helm, chart_path, key, env_var, value):
         values = resolve(key, value)
 
-        configmap = helm.helm_template_file(chart_path, values, self.manifest)
+        configmap = helm.helm_template_file(chart_path, values, self.template_file)
         with pytest.raises(KeyError):
             configmap['data'][env_var]
 
