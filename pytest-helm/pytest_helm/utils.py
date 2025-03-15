@@ -31,5 +31,3 @@ def add_jsonpath_prefix(prefix_jsonpath: str, localpart) -> dict:
     # Set the final key to the provided value
     current[keys[-1]] = localpart
     return result
-
-

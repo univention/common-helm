@@ -18,7 +18,13 @@ class ContainerEnvVarSecret(Base):
     """
     container_name = ""
 
-    def test_auth_existing_secret_custom_name( self, helm, chart_path, key, env_var,):
+    def test_auth_existing_secret_custom_name(
+        self,
+        helm,
+        chart_path,
+        key,
+        env_var,
+    ):
         values = add_jsonpath_prefix(
             key,
             safe_load(
@@ -37,7 +43,7 @@ class ContainerEnvVarSecret(Base):
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "password"
 
-    def test_auth_disabling_existing_secret( self, helm, chart_path, key, env_var):
+    def test_auth_disabling_existing_secret(self, helm, chart_path, key, env_var):
         values = add_jsonpath_prefix(
             key,
             safe_load(
@@ -57,7 +63,13 @@ class ContainerEnvVarSecret(Base):
         )
         assert env["valueFrom"]["secretKeyRef"]["key"] == "password"
 
-    def test_auth_existing_secret_custom_key( self, helm, chart_path, key, env_var,):
+    def test_auth_existing_secret_custom_key(
+        self,
+        helm,
+        chart_path,
+        key,
+        env_var,
+    ):
         values = add_jsonpath_prefix(
             key,
             safe_load(
@@ -78,7 +90,13 @@ class ContainerEnvVarSecret(Base):
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "stub_password_key"
 
-    def test_auth_existing_secret_has_precedence( self, helm, chart_path, key, env_var,):
+    def test_auth_existing_secret_has_precedence(
+        self,
+        helm,
+        chart_path,
+        key,
+        env_var,
+    ):
         values = add_jsonpath_prefix(
             key,
             safe_load(
@@ -99,4 +117,3 @@ class ContainerEnvVarSecret(Base):
         )
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "stub_password_key"
-

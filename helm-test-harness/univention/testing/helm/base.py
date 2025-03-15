@@ -22,8 +22,14 @@ class Base:
         """
         return localpart
 
-
-    def helm_template_file(self, helm: Helm, chart, values: dict, template_file: str, helm_args: list[str] | None = None) -> dict:
+    def helm_template_file(
+        self,
+        helm: Helm,
+        chart,
+        values: dict,
+        template_file: str,
+        helm_args: list[str] | None = None,
+    ) -> dict:
         """
         Templates exactly one helm template yaml file,
         enforces that this one template file renders exactly one kubernetes manifest
@@ -36,7 +42,9 @@ class Base:
         For cases where this constraint is not practical, this method can be overwritten by a subclass.
         """
         assert template_file
-        result = [ i for i in helm.helm_template(chart, values, template_file, helm_args) if i is not None ]
+        result = [
+            i for i in helm.helm_template(chart, values, template_file, helm_args) if i is not None
+        ]
         assert len(result) <= 1
         if not result:
             return {}
@@ -48,39 +56,46 @@ class Labels(Base):
     Test harness class to validate that an arbitrary kubernetes manifests
     conforms to our standards around `additionalLabels`
     """
+
     def test_add_another_label(self, helm, chart_path):
-        values = self.add_prefix(safe_load(
-            """
+        values = self.add_prefix(
+            safe_load(
+                """
             additionalLabels:
               local.test/name: "value"
         """,
-        ))
+            ),
+        )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
         labels = findone(result, "metadata.labels")
 
         assert labels["local.test/name"] == "value"
 
     def test_modify_a_common_label(self, helm, chart_path):
-        values = self.add_prefix(safe_load(
-            """
+        values = self.add_prefix(
+            safe_load(
+                """
             additionalLabels:
               app.kubernetes.io/name: "replaced value"
         """,
-        ))
+            ),
+        )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
         labels = findone(result, "metadata.labels")
 
         assert labels["app.kubernetes.io/name"] == "replaced value"
 
     def test_value_is_templated(self, helm: Helm, chart_path):
-        values = self.add_prefix(safe_load(
-            """
+        values = self.add_prefix(
+            safe_load(
+                """
             global:
               test: "stub-value"
             additionalLabels:
               local.test/name: "{{ .Values.global.test }}"
         """,
-        ))
+            ),
+        )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
         labels = findone(result, "metadata.labels")
 
@@ -89,13 +104,23 @@ class Labels(Base):
 
 class Namespace(Base):
 
-    def test_namespaceoverride_takes_precedence_over_release_namespace(self, helm: Helm, chart_path):
+    def test_namespaceoverride_takes_precedence_over_release_namespace(
+        self,
+        helm: Helm,
+        chart_path,
+    ):
         values = {"namespaceOverride": "stub-namespace"}
 
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        assert findone(result, "metadata.namespace")== "stub-namespace"
+        assert findone(result, "metadata.namespace") == "stub-namespace"
 
     def test_namespace_is_release_namespace(self, helm: Helm, chart_path):
 
-        result = self.helm_template_file(helm, chart_path, {}, self.template_file, ["--set", "namespaceOverride=stub-namespace"])
-        assert findone(result, "metadata.namespace")== "stub-namespace"
+        result = self.helm_template_file(
+            helm,
+            chart_path,
+            {},
+            self.template_file,
+            ["--set", "namespaceOverride=stub-namespace"],
+        )
+        assert findone(result, "metadata.namespace") == "stub-namespace"
