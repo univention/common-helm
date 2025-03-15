@@ -63,8 +63,8 @@ def test_mounts_configmap_ucr(helm, chart_path):
         },
     ]
     assert (
-        findone(deployment, "spec.template.spec.containers[0].volumeMounts")
-        == expected_volume_mounts
+        findone(deployment, "spec.template.spec.containers[0].volumeMounts") ==
+        expected_volume_mounts
     )
 
 

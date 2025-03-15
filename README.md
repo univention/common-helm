@@ -204,7 +204,7 @@ TODO: Update this section
 
 This repository contains a pytest plugin to help with testing Helm charts.
 
-See [`README.upstream.rst`](./README.upstream.rst) for the original README of
+See [`README.upstream.rst`](./pytest-helm/README.upstream.rst) for the original README of
 the project.
 
 

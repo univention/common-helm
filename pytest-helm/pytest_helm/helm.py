@@ -1,10 +1,12 @@
-import tempfile
-import subprocess
-import yaml
 import os
+import subprocess
+import tempfile
+
+import yaml
 
 
 class Helm:
+
     def __init__(self, helm_cmd="helm", values=None, debug=False):
         self.helm_cmd = helm_cmd
         self.debug = debug
@@ -19,7 +21,13 @@ class Helm:
             raise RuntimeError(f"Error running command {' '.join(args)}")
         return result.stdout
 
-    def helm_template(self, chart, values={}, template_file: str | None = None, helm_args: list[str] | None = None):
+    def helm_template(
+        self,
+        chart,
+        values={},
+        template_file: str | None = None,
+        helm_args: list[str] | None = None,
+    ):
         """
         Generates helm templates from a chart
         `values` can be passed to override the default chart values
@@ -48,9 +56,7 @@ class Helm:
         result = list(yaml.safe_load_all(output))
         return result
 
-    def get_resources(
-        self, manifests, *, api_version=None, kind=None, name=None, predicate=None
-    ):
+    def get_resources(self, manifests, *, api_version=None, kind=None, name=None, predicate=None):
         """
         Get the manifests matching given criteria
         """
@@ -73,8 +79,6 @@ class Helm:
         manifests = self.get_resources(*args, **kwargs)
         if len(manifests) != 1:
             raise LookupError(
-                "{} manifest found".format(
-                    "No" if len(manifests) == 0 else "More than one"
-                )
+                "{} manifest found".format("No" if len(manifests) == 0 else "More than one"),
             )
         return manifests[0]

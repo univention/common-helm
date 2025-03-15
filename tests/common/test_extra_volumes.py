@@ -41,6 +41,6 @@ def test_adds_extra_volume_mounts_to_containers(helm, chart_path):
 
     expected_volume_mounts = values["extraVolumeMounts"]
     assert (
-        findone(deployment, "spec.template.spec.containers[0].volumeMounts")
-        == expected_volume_mounts
+        findone(deployment, "spec.template.spec.containers[0].volumeMounts") ==
+        expected_volume_mounts
     )

@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2024 Univention GmbH
-# SPDX-License-Identifier: AGPL-3.0-only
-
 import jsonpath
 
 
@@ -31,5 +28,3 @@ def add_jsonpath_prefix(prefix_jsonpath: str, localpart) -> dict:
     # Set the final key to the provided value
     current[keys[-1]] = localpart
     return result
-
-

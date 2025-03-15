@@ -1,10 +1,14 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+
 import pytest
 
-from univention.testing.helm.base import Base
+from univention.testing.helm.base import Base, Labels, Namespace
 from pytest_helm.utils import add_jsonpath_prefix
 
 
-class ConfigMap(Labels, Namespace): ...
+class ConfigMap(Labels, Namespace):
+    ...
 
 
 class RequiredEnvVariables(Base):
@@ -40,4 +44,3 @@ class OptionalEnvVariables(Base):
         configmap = self.helm_template_file(helm, chart_path, values, self.template_file)
         with pytest.raises(KeyError):
             configmap['data'][env_var]
-
