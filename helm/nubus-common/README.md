@@ -16,16 +16,3 @@ This chart bundles commonly used functionality to be used in our Helm charts for
 |------------|------|---------|
 | oci://registry-1.docker.io/bitnamicharts | common | ^2.x.x |
 
-## Values
-
-<table>
-	<thead>
-		<th>Key</th>
-		<th>Type</th>
-		<th>Default</th>
-		<th>Description</th>
-	</thead>
-	<tbody>
-	</tbody>
-</table>
-

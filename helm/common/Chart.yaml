@@ -17,7 +17,7 @@ dependencies:
   # We inherit the common naming pattern and utility functions from the Bitnami
   # common chart. This one is widely adopted and a well known naming scheme.
   - name: "common"
-    repository: "https://charts.bitnami.com/bitnami"
+    repository: "oci://registry-1.docker.io/bitnamicharts"
     version: "^2.2.2"
 
 ...
