@@ -24,8 +24,8 @@ pytest-helm = "pytest_helm.plugin"
 
 [[tool.uv.index]]
 name = "gitlab"
-publish-url = "https://git.knut.univention.de/api/v4/projects/900/packages/pypi"
-url = "https://git.knut.univention.de/api/v4/projects/900/packages/pypi"
+publish-url = "https://git.knut.univention.de/api/v4/projects/829/packages/pypi"
+url = "https://git.knut.univention.de/api/v4/projects/829/packages/pypi"
 
 [build-system]
 requires = ["hatchling"]

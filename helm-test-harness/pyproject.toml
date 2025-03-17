@@ -1,7 +1,7 @@
 [project]
 name = "helm-test-harness"
 version = "0.1.0"
-description = "A pre-configured test harness to unittest helm charts and enforce our team standards"
+description = "A pre-configured test harness to unittest helm charts and encourage following our team best-practices"
 authors = [
   {name = "Univention GmbH", email = "packages@univention.de"},
 ]
@@ -21,8 +21,8 @@ pytest-helm = { path = "../pytest-helm" }
 
 [[tool.uv.index]]
 name = "gitlab"
-publish-url = "https://git.knut.univention.de/api/v4/projects/900/packages/pypi"
-url = "https://git.knut.univention.de/api/v4/projects/900/packages/pypi"
+publish-url = "https://git.knut.univention.de/api/v4/projects/829/packages/pypi"
+url = "https://git.knut.univention.de/api/v4/projects/829/packages/pypi"
 
 [build-system]
 requires = ["hatchling"]
