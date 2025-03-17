@@ -13,6 +13,11 @@ deprecated: true
 annotations:
   deprecationReason: "Use nubus-common instead and move needed functionality over into it"
 
+# Temporarily vendored inside the repository because of tls problems in the pipeline:
+# Error: could not download oci://registry-1.docker.io/bitnamicharts/common:
+# failed to do request: Head "https://registry-1.docker.io/v2/bitnamicharts/common/manifests/2.30.0":
+# tls: failed to verify certificate: x509: certificate signed by unknown authority
+
 dependencies:
   # We inherit the common naming pattern and utility functions from the Bitnami
   # common chart. This one is widely adopted and a well known naming scheme.
