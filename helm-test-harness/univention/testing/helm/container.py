@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from pytest_helm.manifests.base import Base
+from univention.testing.helm.base import Base
 from pytest_helm.utils import findone, add_jsonpath_prefix
 from yaml import safe_load
 
