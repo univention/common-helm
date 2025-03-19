@@ -1,6 +1,6 @@
 [project]
 name = "pytest-helm"
-version = "0.1.0"
+version = "0.9.1"
 description = "pytest fixtures and helpers helpers to unittest helm charts"
 authors = [
   {name = "Univention GmbH", email = "packages@univention.de"},

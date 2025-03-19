@@ -1,6 +1,6 @@
 [project]
 name = "helm-test-harness"
-version = "0.1.0"
+version = "0.9.1"
 description = "A pre-configured test harness to unittest helm charts and encourage following our team best-practices"
 authors = [
   {name = "Univention GmbH", email = "packages@univention.de"},

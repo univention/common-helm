@@ -13,7 +13,7 @@ wheels = [
 
 [[package]]
 name = "helm-test-harness"
-version = "0.1.0"
+version = "0.9.1"
 source = { editable = "helm-test-harness" }
 dependencies = [
     { name = "pytest-helm" },
@@ -81,7 +81,7 @@ wheels = [
 
 [[package]]
 name = "pytest-helm"
-version = "0.1.0"
+version = "0.9.1"
 source = { editable = "pytest-helm" }
 dependencies = [
     { name = "pytest" },
