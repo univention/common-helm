@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.9.0...v0.9.1) (2025-03-20)
+
+
+### Bug Fixes
+
+* **helm-unittest:** fix wrong import ([7718dfe](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/7718dfed7e5ed6f23f93f8c8a8499b14b2505442))
+
 ## [0.9.0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.8.0...v0.9.0) (2025-03-18)
 
 
