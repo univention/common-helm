@@ -1,5 +1,9 @@
 {{/*
-Default secret name.
+Generate the name of a Secret.
+
+The implementation follows the API from the common chart of Bitnami to some extend.
+It does intendionally only support "existingSecret.name" and has no support for
+"existingSecret" to be a string.
 
 Usage:
 
@@ -35,6 +39,11 @@ Generate the secret key.
 The generated key will take into account the configuration from the
 parameter "existingSecret". It will fall back to the value of "key"
 if there is no mapping configured for the key.
+
+The implementation follows the API from the common chart of Bitnami to some extend.
+It does allow and encouraged the usage of "null" vales or empty strings in the
+object "keyMapping" and will use the default key name if the value is "null"
+or the empty string.
 
 Usage:
 
