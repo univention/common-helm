@@ -21,7 +21,7 @@ class SecretPasswords(Labels, Namespace):
     def values(self, localpart: dict) -> dict:
         return localpart
 
-    def test_udm_plain_values_generate_secret(self, helm, chart_path):
+    def test_auth_plain_values_generate_secret(self, helm, chart_path):
         values = self.values(
             safe_load("""
             auth:
