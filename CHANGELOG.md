@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.9.1...v0.10.0) (2025-03-28)
+
+
+### Features
+
+* enable unit tests for envVarSecrets in init-containers ([ddc2f90](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/ddc2f90ad4960e73b523d50ef8b7299ef7ed34ee)), closes [univention/dev/internal/team-nubus#943](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/943)
+
 ## [0.9.1](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.9.0...v0.9.1) (2025-03-20)
 
 
