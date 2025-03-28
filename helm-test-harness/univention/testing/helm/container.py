@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
+from pytest_helm.utils import add_jsonpath_prefix, findone
 from univention.testing.helm.base import Base
-from pytest_helm.utils import findone, add_jsonpath_prefix
 from yaml import safe_load
 
 
@@ -17,6 +17,7 @@ class ContainerEnvVarSecret(Base):
     - (optional) Generated passwords
     """
     container_name = ""
+    container_is_init = False
 
     def test_auth_existing_secret_custom_name(
         self,
@@ -35,10 +36,11 @@ class ContainerEnvVarSecret(Base):
             """,
             ),
         )
+        container_type = "initContainers" if self.container_is_init else "containers"
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         env = findone(
             deployment,
-            f"spec.template.spec.containers[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
+            f"spec.template.spec.{container_type}[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
         )
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "password"
@@ -53,10 +55,11 @@ class ContainerEnvVarSecret(Base):
             """,
             ),
         )
+        container_type = "initContainers" if self.container_is_init else "containers"
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         env = findone(
             deployment,
-            f"spec.template.spec.containers[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
+            f"spec.template.spec.{container_type}[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
         )
         assert env["valueFrom"]["secretKeyRef"]["name"].startswith(
             f"release-name-{self.container_name}",
@@ -82,10 +85,11 @@ class ContainerEnvVarSecret(Base):
             """,
             ),
         )
+        container_type = "initContainers" if self.container_is_init else "containers"
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         env = findone(
             deployment,
-            f"spec.template.spec.containers[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
+            f"spec.template.spec.{container_type}[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
         )
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "stub_password_key"
@@ -110,10 +114,11 @@ class ContainerEnvVarSecret(Base):
             """,
             ),
         )
+        container_type = "initContainers" if self.container_is_init else "containers"
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         env = findone(
             deployment,
-            f"spec.template.spec.containers[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
+            f"spec.template.spec.{container_type}[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
         )
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "stub_password_key"
