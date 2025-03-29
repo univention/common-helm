@@ -10,6 +10,8 @@ from yaml import safe_load
 
 class SecretPasswords(Labels, Namespace):
     """
+    Verify a password Secret in the Client role.
+
     Test harness class to validate kubernetes secret helm templates
     focussed on password templating.
     Supporting:
