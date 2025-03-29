@@ -42,7 +42,7 @@ package-helm-charts:
       echo "Public files generated:"
       ls -l packages/public
 
-test-common-unit:
+test-chart-common:
   stage: test
   image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
   before_script:
@@ -50,7 +50,19 @@ test-common-unit:
     - helm dep build helm/nubus-common
     - helm dep build helm/common
   script:
-    - pytest
+    - pytest tests/common
+
+test-chart-nubus-common:
+  stage: test
+  image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
+  script:
+    - pytest tests/nubus-common
+
+test-pytest-helm-plugin:
+  stage: test
+  image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
+  script:
+    - pytest pytest-helm/tests
 
 .build-and-publish-pip-package-with-uv:
   # The job currently fails for reruns on the same commit.
