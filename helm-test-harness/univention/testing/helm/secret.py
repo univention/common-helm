@@ -106,3 +106,23 @@ class SecretPasswords(Labels, Namespace):
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
         assert result == {}
+
+    def test_global_secrets_keep_is_ignored(self, helm, chart_path):
+        """
+        Keeping Secrets shall not be supported in Client role.
+
+        Random values for a password will never be generated when in Client
+        role. This is why the configuration `global.secrets.keep` shall not
+        have any effect on Secrets in Client role.
+        """
+        values = safe_load(
+            """
+            global:
+              secrets:
+                keep: true
+            """,
+        )
+        result = self.helm_template_file(helm, chart_path, values, self.template_file)
+        annotations = findone(result, "metadata.annotations") or {}
+        helm_resource_policy = annotations.get("helm.sh/resource-policy")
+        assert helm_resource_policy != "keep"
