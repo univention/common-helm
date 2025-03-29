@@ -56,6 +56,16 @@ class SecretPasswords(Labels, Namespace):
         with pytest.raises(RuntimeError):
             self.helm_template_file(helm, chart_path, values, self.template_file)
 
+    def test_auth_plain_values_password_has_no_default_value(self, helm, chart_path):
+        """
+        Only relevant for secrets that don't have generated password support
+        """
+        values = {}
+        helm.values = []
+
+        with pytest.raises(RuntimeError):
+            self.helm_template_file(helm, chart_path, values, self.template_file)
+
     def test_auth_existing_secret_does_not_generate_a_secret(
         self,
         helm,
