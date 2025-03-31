@@ -20,7 +20,7 @@ ENV UV_LINK_MODE=copy \
   PYTHONUNBUFFERED=1 \
   PATH=/app/helm-test-harness/.venv/bin:$PATH
 
-COPY ./pytest-helm /app/pytest-helm
+# COPY ./pytest-helm /app/pytest-helm
 COPY ./helm-test-harness/uv.lock \
      ./helm-test-harness/pyproject.toml \
      /app/helm-test-harness/
@@ -36,7 +36,7 @@ RUN --mount=type=cache,target=/root/.cache \
 # copy source code
 COPY ./helm-test-harness/univention /app/helm-test-harness/univention
 
-# RUN uv sync --locked --no-dev --no-editable
+RUN uv sync --locked --no-dev --no-editable
 
 CMD ["pytest"]
 
