@@ -20,7 +20,7 @@ ENV UV_LINK_MODE=copy \
   PYTHONUNBUFFERED=1 \
   PATH=/app/helm-test-harness/.venv/bin:$PATH
 
-# COPY ./pytest-helm /app/pytest-helm
+COPY ./pytest-helm /app/pytest-helm
 COPY ./helm-test-harness/uv.lock \
      ./helm-test-harness/pyproject.toml \
      /app/helm-test-harness/

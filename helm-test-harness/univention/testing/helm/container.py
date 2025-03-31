@@ -45,7 +45,13 @@ class ContainerEnvVarSecret(Base):
         assert env["valueFrom"]["secretKeyRef"]["name"] == "stub-secret-name"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "password"
 
-    def test_auth_disabling_existing_secret(self, helm, chart_path, key, env_var):
+    def test_auth_disabling_existing_secret(
+        self,
+        helm,
+        chart_path,
+        key,
+        env_var,
+    ):
         values = add_jsonpath_prefix(
             key,
             safe_load(
