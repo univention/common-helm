@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.10.0...v0.11.0) (2025-03-31)
+
+
+### Features
+
+* add TLS/dhparam volume secret tests ([c14e4a0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/c14e4a0e9fecd36ad2eeb47a28ceb4bf02002598)), closes [univention/dev/internal/team-nubus#943](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/943)
+* run commit hooks from pipeline ([641328e](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/641328ec5f197eda258e0bfd95613877b3592137)), closes [univention/dev/internal/team-nubus#943](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/943)
+
 ## [0.10.0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.9.1...v0.10.0) (2025-03-28)
 
 
