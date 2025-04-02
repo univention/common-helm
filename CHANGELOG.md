@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.11.1...v0.11.2) (2025-04-02)
+
+
+### Bug Fixes
+
+* Make deployment test more robust ([cd81e6f](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/cd81e6f616c60342fa9767fe9760b7c1b63b6cfb)), closes [univention/dev/internal/team-nubus#1096](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1096)
+
 ## [0.11.1](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.11.0...v0.11.1) (2025-04-02)
 
 
