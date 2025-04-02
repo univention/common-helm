@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.1](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.11.0...v0.11.1) (2025-04-02)
+
+
+### Bug Fixes
+
+* fixup docker build on main ([9f63421](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/9f63421f2f544ff33141db9bf8919e550def698d))
+* install univention module ([55e308b](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/commit/55e308bb151cff99f756978275daeb02a81de2a0))
+
 ## [0.11.0](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.10.0...v0.11.0) (2025-03-31)
 
 
