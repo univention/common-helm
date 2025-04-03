@@ -128,7 +128,7 @@ class DeploymentTlsDhparamBase(Base):
     focusing on templating TLS or TLS dhparam secrets mounted as volumes.
     """
     volume_name = ""
-    secret_name_default = ""
+    chart_name = ""
 
     @staticmethod
     def _create_tls_mount_items(
@@ -152,7 +152,9 @@ class DeploymentTlsDhparamBase(Base):
             deployment,
             f"spec.template.spec.volumes[?@.name=='{self.volume_name}'].secret",
         )
-        assert secret["secretName"] == secret_name
+        assert secret["secretName"].startswith(
+            f"release-name-{secret_name}",
+        ), f"Secret name: {secret['secretName']} does not start with release-name-{secret_name}"
 
         vol_item = findone(
             deployment,
@@ -173,7 +175,22 @@ class DeploymentTlsDhparamBase(Base):
         existingSecret:
           name: "stub-secret-name"
         """
-        self._run_test(helm, chart_path, key, volume_item, mount_items, secret_name, values_yaml)
+        values = add_jsonpath_prefix(key, safe_load(values_yaml))
+        deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
+
+        secret = findone(
+            deployment,
+            f"spec.template.spec.volumes[?@.name=='{self.volume_name}'].secret",
+        )
+        assert secret["secretName"].startswith(
+            secret_name,
+        ), f"Secret name: {secret['secretName']} does not start with {secret_name}"
+
+        vol_item = findone(
+            deployment,
+            f"spec.template.spec.volumes[?@.name=='{self.volume_name}'].secret.items[?@.path=='{volume_item}']",
+        )
+        assert vol_item["key"] == mount_items[volume_item]
 
 
 class DeploymentTlsVolumeSecret(DeploymentTlsDhparamBase):
@@ -193,7 +210,7 @@ class DeploymentTlsVolumeSecret(DeploymentTlsDhparamBase):
         key,
         volume_item,
     ):
-        secret_name = self.secret_name_default
+        secret_name = self.chart_name
         mount_items = self._create_tls_mount_items(ca_crt="stub-custom-ca.crt")
         values_yaml = f"""
         existingSecret:
@@ -209,7 +226,7 @@ class DeploymentTlsVolumeSecret(DeploymentTlsDhparamBase):
         key,
         volume_item,
     ):
-        secret_name = self.secret_name_default
+        secret_name = self.chart_name
         mount_items = self._create_tls_mount_items(tls_crt="stub-custom-tls.crt")
         values_yaml = f"""
         existingSecret:
@@ -225,7 +242,7 @@ class DeploymentTlsVolumeSecret(DeploymentTlsDhparamBase):
         key,
         volume_item,
     ):
-        secret_name = self.secret_name_default
+        secret_name = self.chart_name
         mount_items = self._create_tls_mount_items(tls_key="stub-custom-tls.key")
         values_yaml = f"""
         existingSecret:
@@ -252,7 +269,7 @@ class DeploymentTlsDhparamVolumeSecret(DeploymentTlsDhparamBase):
         key,
         volume_item,
     ):
-        secret_name = self.secret_name_default
+        secret_name = self.chart_name
         mount_items = self._create_tls_mount_items(dhparam_pem="stub-custom-dhparam.pem")
         values_yaml = f"""
         existingSecret:
