@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.11.2...v0.12.0) (2025-04-03)
+
+
+### Features
+
+* generalized TLS secret testing ([1643958](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/16439581751a09372eb6de33a14f04b671b6f348)), closes [univention/dev/internal/team-nubus#1089](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1089)
+
 ## [0.11.2](https://git.knut.univention.de/univention/customers/dataport/upx/common-helm/compare/v0.11.1...v0.11.2) (2025-04-02)
 
 
