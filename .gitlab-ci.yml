@@ -49,7 +49,7 @@ test-common-unit:
   # See Issue: https://github.com/astral-sh/uv/issues/7917
   allow_failure: true
   stage: publish
-  image: "ghcr.io/astral-sh/uv:0.6.5-python3.13-bookworm-slim@sha256:ceb82542c321b4747444bc95419c2ee2a49fc57611588cda16455b0917a50d47"
+  image: "ghcr.io/astral-sh/uv:0.6.12-python3.13-bookworm-slim@sha256:cf543079fb28c6e31f826435041a3343da81d79df87cd0d8edf4f3e24b7affe3"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
