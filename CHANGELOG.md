@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.0...v0.12.1) (2025-04-04)
+
+
+### Bug Fixes
+
+* test-runner: add ca-certificates ([99942a5](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/99942a54aadef00e30236506fa9782879234dfb8)), closes [univention/dev/internal/team-nubus#1091](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1091)
+
 ## [0.12.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.11.2...v0.12.0) (2025-04-03)
 
 
