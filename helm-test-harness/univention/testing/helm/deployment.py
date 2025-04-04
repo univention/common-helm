@@ -1,12 +1,22 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
+from copy import deepcopy
 from pytest_helm.utils import add_jsonpath_prefix, findone, get_containers
 from univention.testing.helm.base import Base, Labels, Namespace
 from yaml import safe_load
 
 
 class Deployment(Labels, Namespace):
+    '''Compare values in actual security context dict with value in expected
+
+       The security context has some best practices like it can be enabled/disabled
+       with a central value key. There is also a central value key to specify the
+       security context for the pod and container. This test validates that those
+       common value keys are working for the template.
+    '''
+    '''Allow overriding expected values per container'''
+    expected_security_contexts = None
 
     def test_pod_security_context_can_be_disabled(self, helm, chart_path):
         values = self.add_prefix(
@@ -38,12 +48,15 @@ class Deployment(Labels, Namespace):
         )
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         pod_security_context = deployment["spec"]["template"]["spec"]["securityContext"]
-        expected_security_context = {
+        expected_default_values = {
             "fsGroup": 1000,
             "fsGroupChangePolicy": "Always",
             "sysctls": None,
         }
-        _compare_dict(pod_security_context, expected_security_context, 'pod')
+        if self.expected_security_contexts is not None and 'pod' in self.expected_security_contexts:
+            expected_default_values.update(self.expected_security_contexts['pod'])
+
+        _compare_dict(pod_security_context, expected_default_values, 'pod')
 
     def test_container_security_context_can_be_disabled(self, helm, chart_path):
         values = self.add_prefix(
@@ -57,10 +70,10 @@ class Deployment(Labels, Namespace):
             """,
             ),
         )
-        expected_security_context = {}
+        expected_default_values = {}
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         containers = get_containers(deployment)
-        _assert_all_have_security_context(containers, expected_security_context)
+        _assert_all_have_security_context(containers, expected_default_values, None)
 
     def test_container_security_context_is_applied(self, helm, chart_path):
         values = self.add_prefix(
@@ -74,7 +87,7 @@ class Deployment(Labels, Namespace):
             """,
             ),
         )
-        expected_security_context = {
+        expected_default_values = {
             "capabilities": {
                 "drop": [],
             },
@@ -83,15 +96,27 @@ class Deployment(Labels, Namespace):
 
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         containers = get_containers(deployment)
-        _assert_all_have_security_context(containers, expected_security_context)
+        _assert_all_have_security_context(
+            containers,
+            expected_default_values,
+            self.expected_security_contexts,
+        )
 
 
-def _assert_all_have_security_context(containers, expected_security_context):
+def _assert_all_have_security_context(
+    containers,
+    expected_default_values,
+    expected_security_contexts,
+):
     for container in containers:
         security_context = container.get("securityContext", {})
         name = container["name"]
 
-        _compare_dict(security_context, expected_security_context, name)
+        expected_container_values = deepcopy(expected_default_values)
+        if expected_security_contexts is not None and name in expected_security_contexts:
+            expected_container_values.update(expected_security_contexts[name])
+
+        _compare_dict(security_context, expected_container_values, name)
 
 
 def _compare_dict(actual: dict, expected: dict, container: str, invalid_keys: set = ['enabled']):
