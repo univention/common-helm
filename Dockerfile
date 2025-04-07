@@ -22,14 +22,14 @@ ENV UV_LINK_MODE=copy \
   UV_PYTHON_DOWNLOADS=never \
   UV_PYTHON=python3.11 \
   PYTHONUNBUFFERED=1 \
-  PATH=/app/helm-test-harness/.venv/bin:$PATH
+  PATH=/opt/helm-test-harness/.venv/bin:$PATH
 
-COPY ./pytest-helm /app/pytest-helm
+COPY ./pytest-helm /opt/pytest-helm
 COPY ./helm-test-harness/uv.lock \
   ./helm-test-harness/pyproject.toml \
-  /app/helm-test-harness/
+  /opt/helm-test-harness/
 
-WORKDIR /app/helm-test-harness
+WORKDIR /opt/helm-test-harness
 RUN --mount=type=cache,target=/root/.cache \
   uv sync \
   --locked \
@@ -38,13 +38,16 @@ RUN --mount=type=cache,target=/root/.cache \
   uv export -o ./requirements.txt
 
 # copy source code
-COPY ./helm-test-harness/univention /app/helm-test-harness/univention
+COPY ./helm-test-harness/univention /opt/helm-test-harness/univention
 
 RUN uv sync --locked --no-dev --no-editable
-
-CMD ["pytest"]
 
 RUN \
   .venv/bin/python3.11 -V && \
   .venv/bin/python3.11 -m site && \
   .venv/bin/python3.11 -c 'import univention.testing.helm'
+
+RUN mkdir /app
+WORKDIR /app
+
+CMD ["pytest"]
