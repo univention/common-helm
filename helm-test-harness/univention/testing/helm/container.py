@@ -17,6 +17,7 @@ class ContainerEnvVarSecret(Base):
     - (optional) Generated passwords
     """
     container_name = ""
+    chart_name = ""
     container_is_init = False
 
     def test_auth_existing_secret_custom_name(
@@ -68,8 +69,8 @@ class ContainerEnvVarSecret(Base):
             f"spec.template.spec.{container_type}[?@.name=='{self.container_name}'].env[?@.name=='{env_var}']",
         )
         assert env["valueFrom"]["secretKeyRef"]["name"].startswith(
-            f"release-name-{self.container_name}",
-        )
+            f"release-name-{self.chart_name}",
+        ), f"Secret name f{env['valueFrom']['secretKeyRef']['name']} does not start with release-name-{self.chart_name}"
         assert env["valueFrom"]["secretKeyRef"]["key"] == "password"
 
     def test_auth_existing_secret_custom_key(
