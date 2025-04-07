@@ -6,7 +6,7 @@ def findone(data, path):
 
 
 def findall(data, path):
-    return jsonpath.match(path, data).obj
+    return jsonpath.findall(path, data)
 
 
 def get_containers(manifest):
