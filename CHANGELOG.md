@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.1...v0.12.2) (2025-04-11)
+
+
+### Bug Fixes
+
+* **testrunner:** Do not use /app mountpoint for helm-test-harness ([668475c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/668475c0b189c208bdc25122a8db73b48f30e1c6)), closes [univention/dev/internal/team-nubus#1127](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1127)
+
 ## [0.12.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.0...v0.12.1) (2025-04-04)
 
 
