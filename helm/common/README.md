@@ -24,5 +24,5 @@ This chart bundles commonly used functionality to be used in our Helm charts.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://registry-1.docker.io/bitnamicharts | common | ^2.2.2 |
+| https://charts.bitnami.com/bitnami | common | ^2.2.2 |
 

@@ -15,6 +15,10 @@ include:
       - "jobs/semantic-release-env.yaml"
       - "jobs/package-and-publish-helm-charts-external.yaml"
 
+.lint-pre-commit:
+  before_script:
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+
 container-build:
   variables:
     IMAGE_NAME: testrunner
@@ -41,6 +45,10 @@ package-helm-charts:
 test-common-unit:
   stage: test
   image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
+  before_script:
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - helm dep build helm/nubus-common
+    - helm dep build helm/common
   script:
     - pytest
 
