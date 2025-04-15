@@ -1,7 +1,5 @@
 # Helm
 /helm/*/charts/*.tgz
-!helm/common/charts/common-2.30.0.tgz
-!helm/nubus-common/charts/common-2.30.0.tgz
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
