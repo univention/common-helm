@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.2...v0.12.3) (2025-04-22)
+
+
+### Bug Fixes
+
+* utils: findall: return all matches / secret name starts with chart name ([5365099](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/5365099e222ed0d8c2f50cc9ba5d4deffc94806f)), closes [univention/dev/internal/team-nubus#1091](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1091)
+
 ## [0.12.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.1...v0.12.2) (2025-04-11)
 
 
