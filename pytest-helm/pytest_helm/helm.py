@@ -24,7 +24,7 @@ class Helm:
     def helm_template(
         self,
         chart,
-        values={},
+        values=None,
         template_file: str | None = None,
         helm_args: list[str] | None = None,
     ):
@@ -32,6 +32,7 @@ class Helm:
         Generates helm templates from a chart
         `values` can be passed to override the default chart values
         """
+        values = values or {}
         fd, path = tempfile.mkstemp()
         output = ""
         try:
