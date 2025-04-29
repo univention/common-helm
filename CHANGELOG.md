@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.3...v0.13.0) (2025-04-29)
+
+
+### Features
+
+* Bump ucs-base-image version ([580c1e2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/580c1e2a7614cf21c17afb06013f2184543cf9e3)), closes [univention/dev/internal/team-nubus#1155](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1155)
+* **nubus-common:** Migrate bitnami common from docker.io to bitnami registry ([fbc57f5](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/fbc57f5d915e946b56344d05aea35e3073b344d1)), closes [univention/dev/internal/team-nubus#1131](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1131)
+
 ## [0.12.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.2...v0.12.3) (2025-04-22)
 
 
