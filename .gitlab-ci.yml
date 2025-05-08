@@ -47,7 +47,6 @@ test-chart-common:
   image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
   before_script:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - helm dep build helm/nubus-common
     - helm dep build helm/common
   script:
     - pytest tests/common
@@ -55,6 +54,9 @@ test-chart-common:
 test-chart-nubus-common:
   stage: test
   image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
+  before_script:
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - helm dep build helm/nubus-common
   script:
     - pytest tests/nubus-common
 
