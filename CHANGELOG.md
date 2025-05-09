@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.13.0...v0.14.0) (2025-05-09)
+
+
+### Features
+
+* Ensure that a secret has no password set by default ([5452615](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/5452615fbf29aa90dfa90a38c5fe6da95343dcc2))
+* Verify that secrets in Client role are never kept ([6254865](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/625486596727d579816afd98c1da842e24f54597))
+
+
+### Bug Fixes
+
+* Add missed conftest file in pytest-helm unittests ([8b631e0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/8b631e02dc6892ae64a1d6ff0a080bab0733d870))
+* Ensure that ca-certificates are present in the testrunner ([cef9385](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/cef938520ef8b714af131e89c74048742d58aeca))
+* **pytest-helm:** Avoid a mutable value as a parameter default in class "Helm" ([9a55218](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/9a55218bd6e25c2613b8ce4bdff671ef6f891457))
+* Replace "udm" in test method name with "auth" ([294a739](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/294a7390113849a171fdc8b6c1f0fde6f4f928c3))
+
 ## [0.13.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.12.3...v0.13.0) (2025-04-29)
 
 
