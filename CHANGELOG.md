@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.15.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.14.0...v0.15.0) (2025-05-11)
+
+
+### Features
+
+* move and upgrade ucs-base-image to 0.17.3-build-2025-05-11 ([07323f2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/07323f2b06db6d4b085ecdce4744fa86211fdd22))
+
+
+### Bug Fixes
+
+* move addlicense pre-commit hook ([4684fe4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/4684fe412495ed16f6f1c62f47f06674a1461b2e))
+* update common-ci to main ([3201617](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/3201617548b2bc8bef23906d7da1b1e64e90ec3e))
+
 ## [0.14.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.13.0...v0.14.0) (2025-05-09)
 
 
