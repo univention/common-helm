@@ -52,7 +52,7 @@ test-chart-common:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dep build helm/common
   script:
-    - pytest tests/common
+    - pytest -v tests/common
 
 test-chart-nubus-common:
   stage: test
@@ -61,7 +61,7 @@ test-chart-nubus-common:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dep build helm/nubus-common
   script:
-    - pytest tests/nubus-common
+    - pytest -v tests/nubus-common
 
 test-pytest-helm-plugin:
   stage: test
