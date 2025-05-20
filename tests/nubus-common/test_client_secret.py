@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from lib.client_udm import UdmClient
+from univention.testing.helm.client_udm import UdmClient
 
 
 class TestUdmClientConfiguration(UdmClient):
