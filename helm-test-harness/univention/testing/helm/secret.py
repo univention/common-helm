@@ -20,6 +20,11 @@ class SecretPasswords(Labels, Namespace):
     - Passwords via configured existingSecretsSecret
     """
 
+    secret_key = "password"
+    """
+    The key within the generated Secret under which the password value is stored.
+    """
+
     def values(self, localpart: dict) -> dict:
         return localpart
 
@@ -31,7 +36,7 @@ class SecretPasswords(Labels, Namespace):
         """),
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        assert findone(result, "stringData.password") == "stub-password"
+        assert findone(result, f"stringData.{self.secret_key}") == "stub-password"
 
     def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
         values = self.values(
@@ -41,7 +46,7 @@ class SecretPasswords(Labels, Namespace):
         """),
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        assert findone(result, "stringData.password") == "{{ value }}"
+        assert findone(result, f"stringData.{self.secret_key}") == "{{ value }}"
 
     def test_auth_plain_values_password_is_required(self, helm, chart_path):
         """
