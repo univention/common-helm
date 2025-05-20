@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.10"
 
 [[package]]
@@ -93,6 +92,9 @@ requires-dist = [
     { name = "python-jsonpath" },
     { name = "pyyaml" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pdbpp", specifier = ">=0.11.6" }]
 
 [[package]]
 name = "pytest-mock"
