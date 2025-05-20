@@ -1,6 +1,23 @@
+import warnings
+
 import jsonpath
 
 
+# TODO: Replace with "warnings.deprecated" when switching to Python 3.13
+def deprecated(message):
+
+    def decorator(func):
+
+        def inner(*args, **kwargs):
+            warnings.warn(message, DeprecationWarning)
+            return func(*args, **kwargs)
+
+        return inner
+
+    return decorator
+
+
+@deprecated("Use the attribute findone on the parsed HelmResource instead.")
 def findone(data, path):
     """
     Finds the first matching object by `path` in `data`.
@@ -12,9 +29,14 @@ def findone(data, path):
 
     Returns the first found object itself.
     """
+    return _findone(data, path)
+
+
+def _findone(data, path):
     return jsonpath.match(path, data).obj
 
 
+@deprecated("Use the attribute findall on the parsed HelmResource instead.")
 def findall(data, path):
     """
     Finds all objects by `path` in `data`.
@@ -25,15 +47,19 @@ def findall(data, path):
     Returns the found objects as a `list`. The list will be empty in case
     nothing is found.
     """
+    return _findall(data, path)
+
+
+def _findall(data, path):
     return jsonpath.findall(path, data)
 
 
 def get_containers(manifest):
     try:
-        init_containers = findone(manifest, "spec.template.spec.initContainers")
+        init_containers = manifest.findone("spec.template.spec.initContainers")
     except AttributeError:
         init_containers = []
-    containers = findone(manifest, "spec.template.spec.containers")
+    containers = manifest.findone("spec.template.spec.containers")
     return init_containers + containers
 
 

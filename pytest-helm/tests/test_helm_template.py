@@ -1,7 +1,6 @@
 from pytest_helm._yaml import HelmResource
 from pytest_helm.helm import Helm
 
-
 stub_output = b"""
 ---
 apiVersion: testing.local/v1

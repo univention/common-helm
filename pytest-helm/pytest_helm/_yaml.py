@@ -9,10 +9,10 @@ class HelmResource(dict):
     """
 
     def findone(self, path):
-        return utils.findone(self, path)
+        return utils._findone(self, path)
 
     def findall(self, path):
-        return utils.findall(self, path)
+        return utils._findall(self, path)
 
 
 def helm_resource_constructor(loader, node):
