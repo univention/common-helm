@@ -42,11 +42,10 @@ The first iteration used a chart called `common` which did provide templates to
 render manifest. Using the same prefix as the `common` chart out of the bitnami
 repository. This approach did lead into a difficult to understand setup.
 
-## Status - EXPERIMENTAL
+## Status - BETA
 
-Consider this as experimental and please do not (yet) depend on `nubus-common`
-outside of the Nubus charts until we did gain more confidence about the
-approach.
+We did gain some confidence about the usage of `nubus-common` and use it across
+our charts within the team.
 
 
 ## Contact
