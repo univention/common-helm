@@ -17,7 +17,7 @@ repository. This approach did lead into a difficult to understand setup.
 
 ## Status - EXPERIMENTAL
 
-Consider this as experimental and please do not (yet) depend on `nnubus-common`
+Consider this as experimental and please do not (yet) depend on `nubus-common`
 outside of the Nubus charts until we did gain more confidence about the
 approach.
 
