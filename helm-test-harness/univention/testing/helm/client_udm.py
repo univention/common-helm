@@ -39,7 +39,7 @@ class UdmClient:
     path_udm_api_username = "data.UDM_API_USERNAME"
     path_volume_secret_udm = "spec.template.spec.volumes[?@.name=='secret-udm']"
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
-    sub_path_udm_volume_mount = "volumeMounts[?@.name=='secret-client']"
+    sub_path_udm_volume_mount = "volumeMounts[?@.name=='secret-udm']"
     secret_name = "release-name-test-nubus-common-udm"
 
     def load_and_map(self, values_yaml: str):

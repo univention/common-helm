@@ -17,4 +17,5 @@ class TestUdmClientConfiguration(UdmClient):
     path_udm_api_url = "data.CLIENT_API_URL"
     path_udm_api_username = "data.CLIENT_API_USERNAME"
     path_volume_secret_udm = "spec.template.spec.volumes[?@.name=='secret-client']"
+    sub_path_udm_volume_mount = "volumeMounts[?@.name=='secret-client']"
     secret_name = "release-name-test-nubus-common-client"
