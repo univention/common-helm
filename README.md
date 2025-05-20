@@ -1,13 +1,40 @@
 # Common Helm Support
 
 This repository contains common Helm chart utilities which we saw being repeated
-across our various Helm charts:
+across our various Helm charts.
+
+Helm charts:
 
 - `nubus-common` is a library chart which provides shared utilities which are
   used across most charts for Nubus.
 
-- `tests` and the `testrunner` image provide tooling to verify common aspects of
-  chart behavior.
+- `common` (deprecated) was the first attempt to create a common utility Helm
+  chart. Use `nubus-common` instead.
+
+- `test-*` - Charts starting with the prefix `test-` are used to test the
+  library charts. They are not intended to be published or used outside of this
+  repository.
+
+Container images:
+
+- `testrunner` provides an environment which has `pytest`, `pytest-helm` and the
+  `helm-test-harness` installed. This image is intended to be used in CI
+  pipelines to run the Helm chart unittests.
+
+Python packages:
+
+- `helm-test-harness` is a library of template classes. These classes can be
+  used in test suites to define common expected behavior of a Helm chart.
+
+- `pytest-helm` is a fork of the `pytest-helm` project from Github which seems
+  to be unmaintained. We use this as a basis for our approach to test our Helm
+  charts.
+
+Test suites:
+
+- `tests/common` are tests related to the Helm chart `common`.
+
+- `tests/nubus-common` are tests related to the Helm chart `nubus-common`.
 
 ## History
 
