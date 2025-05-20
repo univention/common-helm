@@ -7,8 +7,6 @@ from collections.abc import Mapping
 import pytest
 from yaml import safe_load
 
-from utils import findone
-
 
 # TODO: Change once the Python version has been upgraded in the test runner to >= 3.12
 JSONPath = str
@@ -74,7 +72,7 @@ class UdmClient:
             """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, self.path_udm_api_url) == "stub_value"
+        assert config_map.findone(self.path_udm_api_url) == "stub_value"
 
     def test_connection_url_supports_global_default(self, helm, chart_path):
         values = self.load_and_map(
@@ -92,7 +90,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, self.path_udm_api_url) == "global_stub"
+        assert config_map.findone(self.path_udm_api_url) == "global_stub"
 
     def test_connection_url_local_overrides_global(self, helm, chart_path):
         values = self.load_and_map(
@@ -110,7 +108,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, self.path_udm_api_url) == "local_stub"
+        assert config_map.findone(self.path_udm_api_url) == "local_stub"
 
     def test_auth_plain_values_generate_secret(self, helm, chart_path):
         values = self.load_and_map(
@@ -125,7 +123,7 @@ class UdmClient:
         result = helm.helm_template(chart_path, values)
         secret = helm.get_resource(result, kind="Secret", name=self.secret_name)
 
-        assert findone(secret, "stringData.password") == "stub-password"
+        assert secret.findone("stringData.password") == "stub-password"
 
     def test_auth_plain_values_provide_username_via_config_map(self, helm, chart_path):
         values = self.load_and_map(
@@ -139,7 +137,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, self.path_udm_api_username) == "stub-username"
+        assert config_map.findone(self.path_udm_api_username) == "stub-username"
 
     def test_auth_plain_values_username_is_templated(self, helm, chart_path):
         values = self.load_and_map(
@@ -155,7 +153,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, self.path_udm_api_username) == "stub-value"
+        assert config_map.findone(self.path_udm_api_username) == "stub-value"
 
     def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
         values = self.load_and_map(
@@ -169,7 +167,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         secret = helm.get_resource(result, kind="Secret", name=self.secret_name)
-        assert findone(secret, "stringData.password") == "{{ value }}"
+        assert secret.findone("stringData.password") == "{{ value }}"
 
     def test_auth_plain_values_password_is_required(self, helm, chart_path):
         values = self.load_and_map(
@@ -207,7 +205,7 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
-        assert findone(config_map, self.path_udm_api_username) == self.default_username
+        assert config_map.findone(self.path_udm_api_username) == self.default_username
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, helm, chart_path):
         values = self.load_and_map(
@@ -249,8 +247,8 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        secret_udm_volume = findone(deployment, self.path_volume_secret_udm)
-        assert findone(secret_udm_volume, "secret.secretName") == "stub-secret-name"
+        secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
+        assert secret_udm_volume.findone("secret.secretName") == "stub-secret-name"
 
     def test_auth_existing_secret_mounts_correct_default_key(self, helm, chart_path):
         values = self.load_and_map(
@@ -264,8 +262,8 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        main_container = findone(deployment, self.path_main_container)
-        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
+        main_container = deployment.findone(self.path_main_container)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
 
@@ -282,12 +280,12 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        secret_udm_volume = findone(deployment, self.path_volume_secret_udm)
-        main_container = findone(deployment, self.path_main_container)
-        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
+        secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
+        main_container = deployment.findone(self.path_main_container)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
-        assert findone(secret_udm_volume, "secret.secretName") == self.secret_name
+        assert secret_udm_volume.findone("secret.secretName") == self.secret_name
 
     def test_auth_existing_secret_mounts_correct_custom_key(self, helm, chart_path):
         values = self.load_and_map(
@@ -303,8 +301,8 @@ class UdmClient:
         """)
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
-        main_container = findone(deployment, self.path_main_container)
-        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
+        main_container = deployment.findone(self.path_main_container)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
 
@@ -326,12 +324,12 @@ class UdmClient:
             helm.get_resource(result, kind="Secret", name=self.secret_name)
 
         deployment = helm.get_resource(result, kind="Deployment")
-        secret_udm_volume = findone(deployment, self.path_volume_secret_udm)
-        main_container = findone(deployment, self.path_main_container)
-        secret_udm_volume_mount = findone(main_container, self.sub_path_udm_volume_mount)
+        secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
+        main_container = deployment.findone(self.path_main_container)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
-        assert findone(secret_udm_volume, "secret.secretName") == "stub-secret-name"
+        assert secret_udm_volume.findone("secret.secretName") == "stub-secret-name"
 
 
 def apply_mapping(values: Mapping, prefix_mapping: PrefixMapping) -> None:
