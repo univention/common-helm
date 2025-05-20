@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from pytest_helm.utils import add_jsonpath_prefix, findone, get_containers
+from pytest_helm.utils import add_jsonpath_prefix, get_containers
 from univention.testing.helm.base import Base, Labels, Namespace
 from yaml import safe_load
 
@@ -148,16 +148,14 @@ class DeploymentTlsDhparamBase(Base):
         values = add_jsonpath_prefix(key, safe_load(values_yaml))
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
 
-        secret = findone(
-            deployment,
+        secret = deployment.findone(
             f"spec.template.spec.volumes[?@.name=='{self.volume_name}'].secret",
         )
         assert secret["secretName"].startswith(
             f"release-name-{secret_name}",
         ), f"Secret name: {secret['secretName']} does not start with release-name-{secret_name}"
 
-        vol_item = findone(
-            deployment,
+        vol_item = deployment.findone(
             f"spec.template.spec.volumes[?@.name=='{self.volume_name}'].secret.items[?@.path=='{volume_item}']",
         )
         assert vol_item["key"] == mount_items[volume_item]
@@ -178,16 +176,14 @@ class DeploymentTlsDhparamBase(Base):
         values = add_jsonpath_prefix(key, safe_load(values_yaml))
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
 
-        secret = findone(
-            deployment,
+        secret = deployment.findone(
             f"spec.template.spec.volumes[?@.name=='{self.volume_name}'].secret",
         )
         assert secret["secretName"].startswith(
             secret_name,
         ), f"Secret name: {secret['secretName']} does not start with {secret_name}"
 
-        vol_item = findone(
-            deployment,
+        vol_item = deployment.findone(
             f"spec.template.spec.volumes[?@.name=='{self.volume_name}'].secret.items[?@.path=='{volume_item}']",
         )
         assert vol_item["key"] == mount_items[volume_item]

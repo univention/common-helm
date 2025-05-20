@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from pytest_helm.helm import Helm
-from pytest_helm.utils import findone
 from yaml import safe_load
 
 
@@ -67,7 +66,7 @@ class Labels(Base):
             ),
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        labels = findone(result, "metadata.labels")
+        labels = result.findone("metadata.labels")
 
         assert labels["local.test/name"] == "value"
 
@@ -81,7 +80,7 @@ class Labels(Base):
             ),
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        labels = findone(result, "metadata.labels")
+        labels = result.findone("metadata.labels")
 
         assert labels["app.kubernetes.io/name"] == "replaced value"
 
@@ -97,7 +96,7 @@ class Labels(Base):
             ),
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        labels = findone(result, "metadata.labels")
+        labels = result.findone("metadata.labels")
 
         assert labels["local.test/name"] == "stub-value"
 
@@ -112,7 +111,7 @@ class Namespace(Base):
         values = {"namespaceOverride": "stub-namespace"}
 
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        assert findone(result, "metadata.namespace") == "stub-namespace"
+        assert result.findone("metadata.namespace") == "stub-namespace"
 
     def test_namespace_is_release_namespace(self, helm: Helm, chart_path):
 
@@ -123,4 +122,4 @@ class Namespace(Base):
             self.template_file,
             ["--set", "namespaceOverride=stub-namespace"],
         )
-        assert findone(result, "metadata.namespace") == "stub-namespace"
+        assert result.findone("metadata.namespace") == "stub-namespace"

@@ -4,7 +4,6 @@
 import pytest
 
 from univention.testing.helm.base import Labels, Namespace
-from pytest_helm.utils import findone
 from yaml import safe_load
 
 
@@ -36,7 +35,7 @@ class SecretPasswords(Labels, Namespace):
         """),
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        assert findone(result, f"stringData.{self.secret_key}") == "stub-password"
+        assert result.findone(f"stringData.{self.secret_key}") == "stub-password"
 
     def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
         values = self.values(
@@ -46,7 +45,7 @@ class SecretPasswords(Labels, Namespace):
         """),
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        assert findone(result, f"stringData.{self.secret_key}") == "{{ value }}"
+        assert result.findone(f"stringData.{self.secret_key}") == "{{ value }}"
 
     def test_auth_plain_values_password_is_required(self, helm, chart_path):
         """
@@ -138,6 +137,6 @@ class SecretPasswords(Labels, Namespace):
             """,
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        annotations = findone(result, "metadata.annotations") or {}
+        annotations = result.findone("metadata.annotations") or {}
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
