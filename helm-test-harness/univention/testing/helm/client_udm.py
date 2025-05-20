@@ -7,13 +7,11 @@ from collections.abc import Mapping
 import pytest
 from yaml import safe_load
 
-
 # TODO: Change once the Python version has been upgraded in the test runner to >= 3.12
 JSONPath = str
 PrefixMapping = Mapping[JSONPath, JSONPath]
 # type JSONPath = str
 # type PrefixMapping = Mapping[JSONPath, JSONPath]
-
 
 # NOTE: We want to have the values + linter_values always be passing the
 # schema validation and required checks. So in some way we have to "unset"
@@ -54,7 +52,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: "stub-password"
-            """)
+            """,
+        )
         with pytest.raises(RuntimeError):
             helm.helm_template(chart_path, values)
 
@@ -69,7 +68,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: "stub-password"
-            """)
+            """,
+        )
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
         assert config_map.findone(self.path_udm_api_url) == "stub_value"
@@ -87,7 +87,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: "stub-password"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
         assert config_map.findone(self.path_udm_api_url) == "global_stub"
@@ -105,7 +106,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: "stub-password"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
         assert config_map.findone(self.path_udm_api_url) == "local_stub"
@@ -119,7 +121,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: "stub-password"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         secret = helm.get_resource(result, kind="Secret", name=self.secret_name)
 
@@ -134,7 +137,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: "stub-password"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
         assert config_map.findone(self.path_udm_api_username) == "stub-username"
@@ -150,7 +154,8 @@ class UdmClient:
               auth:
                 username: "{{ .Values.global.test }}"
                 password: "stub-password"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
         assert config_map.findone(self.path_udm_api_username) == "stub-value"
@@ -164,7 +169,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: "{{ value }}"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         secret = helm.get_resource(result, kind="Secret", name=self.secret_name)
         assert secret.findone("stringData.password") == "{{ value }}"
@@ -178,7 +184,8 @@ class UdmClient:
               auth:
                 username: "stub-username"
                 password: null
-        """)
+        """,
+        )
         with pytest.raises(RuntimeError):
             helm.helm_template(chart_path, values)
 
@@ -190,7 +197,8 @@ class UdmClient:
                 url: "local_stub"
               auth:
                 username: null
-        """)
+        """,
+        )
         with pytest.raises(RuntimeError):
             helm.helm_template(chart_path, values)
 
@@ -202,7 +210,8 @@ class UdmClient:
                 url: "local_stub"
               auth:
                 password: "stub-password"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         config_map = helm.get_resource(result, kind="ConfigMap")
         assert config_map.findone(self.path_udm_api_username) == self.default_username
@@ -216,7 +225,8 @@ class UdmClient:
               auth:
                 existingSecret:
                   name: "stub-secret-name"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         with pytest.raises(LookupError):
             helm.get_resource(result, kind="Secret", name="release-name-test-nubus-common-client")
@@ -231,7 +241,8 @@ class UdmClient:
                 password: null
                 existingSecret:
                   name: "stub-secret-name"
-        """)
+        """,
+        )
         with does_not_raise():
             helm.helm_template(chart_path, values)
 
@@ -244,7 +255,8 @@ class UdmClient:
               auth:
                 existingSecret:
                   name: "stub-secret-name"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
         secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
@@ -259,7 +271,8 @@ class UdmClient:
               auth:
                 existingSecret:
                   name: "stub-secret-name"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
         main_container = deployment.findone(self.path_main_container)
@@ -277,7 +290,8 @@ class UdmClient:
                 username: "stub-username"
                 password: "stub-password"
                 existingSecret: null
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
         secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
@@ -298,7 +312,8 @@ class UdmClient:
                   name: "stub-secret-name"
                   keyMapping:
                     password: "stub_password_key"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         deployment = helm.get_resource(result, kind="Deployment")
         main_container = deployment.findone(self.path_main_container)
@@ -318,7 +333,8 @@ class UdmClient:
                   name: "stub-secret-name"
                   keyMapping:
                     password: "stub_password_key"
-        """)
+        """,
+        )
         result = helm.helm_template(chart_path, values)
         with pytest.raises(LookupError):
             helm.get_resource(result, kind="Secret", name=self.secret_name)
