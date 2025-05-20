@@ -11,10 +11,10 @@ def findall(data, path):
 
 def get_containers(manifest):
     try:
-        init_containers = findall(manifest, "spec.template.spec.initContainers")
+        init_containers = findone(manifest, "spec.template.spec.initContainers")
     except AttributeError:
         init_containers = []
-    containers = findall(manifest, "spec.template.spec.containers")
+    containers = findone(manifest, "spec.template.spec.containers")
     return init_containers + containers
 
 
