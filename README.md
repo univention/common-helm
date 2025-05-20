@@ -258,14 +258,8 @@ from `Pipfile.lock`:
 
 ## Changes and testing
 
-There is no automatic CI setup in place, please make sure that the tests are
-passing before pushing up a change.
+Tests are executed within the CI pipeline. Changes are only accepted if the
+pipeline is passing.
 
-If you depend on certain behavior, make sure to add a test so that it will stay
-intact over time.
-
-The `pipenv` based environment allows to run the test suite:
-
-```
-pipenv run pytest
-```
+If you depend on certain behavior, then make sure to cover this with respective
+tests.
