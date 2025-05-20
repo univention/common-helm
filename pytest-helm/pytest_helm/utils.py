@@ -2,10 +2,29 @@ import jsonpath
 
 
 def findone(data, path):
+    """
+    Finds the first matching object by `path` in `data`.
+
+    - `data`: The data to look into.
+    - `path`: A JSON Path expression.
+
+    Raises an `AttributeError` in case `path` does not find any object.
+
+    Returns the first found object itself.
+    """
     return jsonpath.match(path, data).obj
 
 
 def findall(data, path):
+    """
+    Finds all objects by `path` in `data`.
+
+    - `data`: The data to look into.
+    - `path`: A JSON Path expression.
+
+    Returns the found objects as a `list`. The list will be empty in case
+    nothing is found.
+    """
     return jsonpath.findall(path, data)
 
 
