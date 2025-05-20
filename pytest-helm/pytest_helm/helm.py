@@ -1,8 +1,12 @@
+import logging
 import os
 import subprocess
 import tempfile
 
 import yaml
+
+
+log = logging.getLogger(__name__)
 
 
 class Helm:
@@ -17,6 +21,7 @@ class Helm:
         Runs a command and returns stdout
         """
         result = subprocess.run(args, stdout=subprocess.PIPE)
+        log.debug("Running helm: %s", args)
         if result.returncode != 0:
             raise RuntimeError(f"Error running command {' '.join(args)}")
         return result.stdout
