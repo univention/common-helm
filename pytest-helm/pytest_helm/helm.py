@@ -5,6 +5,7 @@ import tempfile
 
 import yaml
 
+from ._yaml import CustomSafeDumper, CustomSafeLoader
 
 log = logging.getLogger(__name__)
 
@@ -41,8 +42,13 @@ class Helm:
         fd, path = tempfile.mkstemp()
         output = ""
         try:
+            values_yaml = yaml.dump(values, Dumper=CustomSafeDumper)
             with os.fdopen(fd, "w") as tmp:
-                tmp.write(yaml.dump(values))
+                tmp.write(values_yaml)
+
+            if self.debug:
+                print("Dumped Helm values:\n")
+                print(values_yaml)
 
             helm_args = helm_args or []
             for item in self.values:
@@ -57,9 +63,10 @@ class Helm:
             os.remove(path)
 
         if self.debug:
+            print("Helm output:\n")
             print(output.decode())
 
-        result = list(yaml.safe_load_all(output))
+        result = list(yaml.load_all(output, Loader=CustomSafeLoader))
         return result
 
     def get_resources(self, manifests, *, api_version=None, kind=None, name=None, predicate=None):

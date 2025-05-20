@@ -1,4 +1,6 @@
+from pytest_helm._yaml import HelmResource
 from pytest_helm.helm import Helm
+
 
 stub_output = b"""
 ---
@@ -43,3 +45,13 @@ def test_helm_template_dumps_output_when_enabled(mocker, capsys):
     helm.helm_template("stub-chart")
     output = capsys.readouterr()
     assert stub_output.decode() in output.out
+
+
+def test_helm_template_returns_helm_resources_for_maps(mocker):
+    mocker.patch("pytest_helm.helm.Helm.run_command", return_value=stub_output)
+    helm = Helm()
+
+    result = helm.helm_template("stub-chart")
+    resource = helm.get_resource(result, name="first")
+    assert isinstance(resource, HelmResource)
+    assert isinstance(resource["metadata"], HelmResource)
