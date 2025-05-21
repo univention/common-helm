@@ -6,6 +6,7 @@ import tempfile
 import yaml
 
 from ._yaml import CustomSafeDumper, CustomSafeLoader
+from .models import HelmTemplateResult
 
 log = logging.getLogger(__name__)
 
@@ -67,7 +68,7 @@ class Helm:
             print("Helm output:\n")
             print(output.decode())
 
-        result = list(yaml.load_all(output, Loader=CustomSafeLoader))
+        result = HelmTemplateResult(yaml.load_all(output, Loader=CustomSafeLoader))
         return result
 
     def get_resources(self, manifests, *, api_version=None, kind=None, name=None, predicate=None):

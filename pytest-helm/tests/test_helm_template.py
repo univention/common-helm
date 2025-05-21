@@ -64,3 +64,21 @@ def test_helm_template_returns_kubernetes_resource(mocker):
     resource = helm.get_resource(result, name="first")
     assert isinstance(resource, KubernetesResource)
     assert isinstance(resource["metadata"], YamlMapping)
+
+
+def test_helm_template_result_allows_to_get_resources(mocker):
+    mocker.patch("pytest_helm.helm.Helm.run_command", return_value=stub_output)
+    helm = Helm()
+
+    result = helm.helm_template("stub-chart")
+    resource = result.get_resources(kind="Stub")
+    assert len(resource) == 2
+
+
+def test_helm_template_result_allows_to_get_single_resource(mocker):
+    mocker.patch("pytest_helm.helm.Helm.run_command", return_value=stub_output)
+    helm = Helm()
+
+    result = helm.helm_template("stub-chart")
+    resource = result.get_resource(name="first")
+    assert resource
