@@ -46,7 +46,7 @@ class HelmTemplateResult(list):
 
     def get_resources(self, *, api_version=None, kind=None, name=None, predicate=None):
         """
-        Get the manifests matching given criteria
+        Get the resources matching given criteria
         """
         resources = self
         docs = [doc for doc in resources if doc]

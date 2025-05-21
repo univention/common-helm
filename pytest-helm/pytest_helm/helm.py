@@ -73,12 +73,12 @@ class Helm:
         return result
 
     @deprecated("Use the method 'HelmTemplateResult.get_resources' instead.")
-    def get_resources(self, manifests, *, api_version=None, kind=None, name=None, predicate=None):
+    def get_resources(self, resources, *, api_version=None, kind=None, name=None, predicate=None):
         """
-        Get the manifests matching given criteria
+        Get the resources matching given criteria
         """
         return HelmTemplateResult.get_resources(
-            manifests,
+            resources,
             api_version=api_version,
             kind=kind,
             name=name,
@@ -91,9 +91,9 @@ class Helm:
         Get one manifest.
         This will raise LookupError if none or more than one manifest is found
         """
-        manifests = HelmTemplateResult.get_resources(*args, **kwargs)
-        if len(manifests) != 1:
+        resources = HelmTemplateResult.get_resources(*args, **kwargs)
+        if len(resources) != 1:
             raise LookupError(
-                "{} manifest found".format("No" if len(manifests) == 0 else "More than one"),
+                "{} manifest found".format("No" if len(resources) == 0 else "More than one"),
             )
-        return manifests[0]
+        return resources[0]
