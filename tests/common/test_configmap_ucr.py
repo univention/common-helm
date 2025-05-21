@@ -6,8 +6,6 @@ import re
 
 from yaml import safe_load
 
-from utils import findone
-
 
 def test_mounts_configmap_ucr(helm, chart_path):
     """Test that charts which have `mountUcr: true` get the UCR's base*.conf file mounted."""
@@ -43,7 +41,7 @@ def test_mounts_configmap_ucr(helm, chart_path):
             "name": "config-map-ucr-forced",
         },
     ]
-    assert findone(deployment, "spec.template.spec.volumes") == expected_volumes
+    assert deployment.findone("spec.template.spec.volumes") == expected_volumes
 
     expected_volume_mounts = [
         {
@@ -63,7 +61,7 @@ def test_mounts_configmap_ucr(helm, chart_path):
         },
     ]
     assert (
-        findone(deployment, "spec.template.spec.containers[0].volumeMounts") ==
+        deployment.findone("spec.template.spec.containers[0].volumeMounts") ==
         expected_volume_mounts
     )
 
@@ -78,7 +76,7 @@ def test_mounts_no_configmap_ucr(helm, chart_path):
     result = helm.helm_template(chart_path, values)
     deployment = result.get_resource(kind="Deployment")
 
-    volume_mounts = findone(deployment, "spec.template.spec.containers[0].volumeMounts")
+    volume_mounts = deployment.findone("spec.template.spec.containers[0].volumeMounts")
     for volume_mount in volume_mounts or []:
         assert not re.match(
             r"/etc/univention/base([^/]*).conf",

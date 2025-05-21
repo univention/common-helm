@@ -4,8 +4,6 @@
 
 from yaml import safe_load
 
-from utils import findone
-
 
 def test_adds_extra_volumes_to_pod(helm, chart_path):
     values = safe_load(
@@ -21,7 +19,7 @@ def test_adds_extra_volumes_to_pod(helm, chart_path):
     deployment = result.get_resource(kind="Deployment")
 
     expected_volumes = values["extraVolumes"]
-    assert findone(deployment, "spec.template.spec.volumes") == expected_volumes
+    assert deployment.findone("spec.template.spec.volumes") == expected_volumes
 
 
 def test_adds_extra_volume_mounts_to_containers(helm, chart_path):
@@ -41,6 +39,6 @@ def test_adds_extra_volume_mounts_to_containers(helm, chart_path):
 
     expected_volume_mounts = values["extraVolumeMounts"]
     assert (
-        findone(deployment, "spec.template.spec.containers[0].volumeMounts") ==
+        deployment.findone("spec.template.spec.containers[0].volumeMounts") ==
         expected_volume_mounts
     )
