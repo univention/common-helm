@@ -1,20 +1,5 @@
-import warnings
-
+from ._warnings import deprecated
 from ._yaml import HelmResource
-
-
-# TODO: Replace with "warnings.deprecated" when switching to Python 3.13
-def deprecated(message):
-
-    def decorator(func):
-
-        def inner(*args, **kwargs):
-            warnings.warn(message, DeprecationWarning)
-            return func(*args, **kwargs)
-
-        return inner
-
-    return decorator
 
 
 @deprecated("Use the attribute findone on the parsed HelmResource instead.")
