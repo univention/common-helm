@@ -31,9 +31,26 @@ class HelmResource(dict):
         return jsonpath.findall(path, self)
 
 
+class KubernetesResource(HelmResource):
+    """
+    Represents a single Kubernetes Resource rendered by Helm.
+
+    This class allows to provide additional API methods only on the root map
+    which represents a Kubernetes resource.
+    """
+
+
 def helm_resource_constructor(loader, node):
     value = loader.construct_mapping(node)
+    if _is_kubernetes_resource(value):
+        return KubernetesResource(value)
     return HelmResource(value)
+
+
+def _is_kubernetes_resource(value):
+    # NOTE: There is no good way to find out if a given node is a root node in
+    # PyYAML. This is why we check if well-known attributes are in "value".
+    return "apiVersion" in value and "kind" in value
 
 
 def map_representer(dumper, data):

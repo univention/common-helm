@@ -1,4 +1,4 @@
-from pytest_helm._yaml import HelmResource
+from pytest_helm._yaml import HelmResource, KubernetesResource
 from pytest_helm.helm import Helm
 
 stub_output = b"""
@@ -53,4 +53,14 @@ def test_helm_template_returns_helm_resources_for_maps(mocker):
     result = helm.helm_template("stub-chart")
     resource = helm.get_resource(result, name="first")
     assert isinstance(resource, HelmResource)
+    assert isinstance(resource["metadata"], HelmResource)
+
+
+def test_helm_template_returns_kubernetes_resource(mocker):
+    mocker.patch("pytest_helm.helm.Helm.run_command", return_value=stub_output)
+    helm = Helm()
+
+    result = helm.helm_template("stub-chart")
+    resource = helm.get_resource(result, name="first")
+    assert isinstance(resource, KubernetesResource)
     assert isinstance(resource["metadata"], HelmResource)
