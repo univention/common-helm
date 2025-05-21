@@ -1,6 +1,6 @@
 import pytest
 
-from pytest_helm._yaml import HelmResource
+from pytest_helm._yaml import YamlMapping
 from pytest_helm.utils import add_jsonpath_prefix
 
 
@@ -22,13 +22,13 @@ stub_data = {
     ("a.c", None),
 ])
 def test_findone_returns_found_object(path, expected_value):
-    result = HelmResource.findone(stub_data, path)
+    result = YamlMapping.findone(stub_data, path)
     assert result == expected_value
 
 
 def test_findone_raises_in_case_of_missing_value():
     with pytest.raises(AttributeError):
-        HelmResource.findone(stub_data, "a.missing-key")
+        YamlMapping.findone(stub_data, "a.missing-key")
 
 
 @pytest.mark.parametrize(
@@ -40,10 +40,10 @@ def test_findone_raises_in_case_of_missing_value():
     ],
 )
 def test_findall_returns_all_found_objects_in_a_list(path, expected_value):
-    result = HelmResource.findall(stub_data, path)
+    result = YamlMapping.findall(stub_data, path)
     assert result == expected_value
 
 
 def test_findall_returns_empty_list_in_case_of_missing_value():
-    result = HelmResource.findall(stub_data, "a.missing-key")
+    result = YamlMapping.findall(stub_data, "a.missing-key")
     assert result == []

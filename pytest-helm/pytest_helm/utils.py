@@ -1,8 +1,8 @@
 from ._warnings import deprecated
-from ._yaml import HelmResource
+from ._yaml import YamlMapping
 
 
-@deprecated("Use the attribute findone on the parsed HelmResource instead.")
+@deprecated("Use the attribute findone on the parsed YamlMapping instead.")
 def findone(data, path):
     """
     Finds the first matching object by `path` in `data`.
@@ -14,10 +14,10 @@ def findone(data, path):
 
     Returns the first found object itself.
     """
-    return HelmResource.findone(data, path)
+    return YamlMapping.findone(data, path)
 
 
-@deprecated("Use the attribute findall on the parsed HelmResource instead.")
+@deprecated("Use the attribute findall on the parsed YamlMapping instead.")
 def findall(data, path):
     """
     Finds all objects by `path` in `data`.
@@ -28,7 +28,7 @@ def findall(data, path):
     Returns the found objects as a `list`. The list will be empty in case
     nothing is found.
     """
-    return HelmResource.findall(data, path)
+    return YamlMapping.findall(data, path)
 
 
 def get_containers(manifest):
