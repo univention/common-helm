@@ -1,6 +1,6 @@
 import warnings
 
-import jsonpath
+from ._yaml import HelmResource
 
 
 # TODO: Replace with "warnings.deprecated" when switching to Python 3.13
@@ -29,11 +29,7 @@ def findone(data, path):
 
     Returns the first found object itself.
     """
-    return _findone(data, path)
-
-
-def _findone(data, path):
-    return jsonpath.match(path, data).obj
+    return HelmResource.findone(data, path)
 
 
 @deprecated("Use the attribute findall on the parsed HelmResource instead.")
@@ -47,11 +43,7 @@ def findall(data, path):
     Returns the found objects as a `list`. The list will be empty in case
     nothing is found.
     """
-    return _findall(data, path)
-
-
-def _findall(data, path):
-    return jsonpath.findall(path, data)
+    return HelmResource.findall(data, path)
 
 
 def get_containers(manifest):

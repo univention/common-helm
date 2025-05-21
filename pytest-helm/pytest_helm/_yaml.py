@@ -1,6 +1,5 @@
+import jsonpath
 from yaml import SafeDumper, SafeLoader
-
-from . import utils
 
 
 class HelmResource(dict):
@@ -9,10 +8,27 @@ class HelmResource(dict):
     """
 
     def findone(self, path):
-        return utils._findone(self, path)
+        """
+        Finds the first matching object by `path`.
+
+        - `path`: A JSON Path expression.
+
+        Raises an `AttributeError` in case `path` does not find any object.
+
+        Returns the first found object itself.
+        """
+        return jsonpath.match(path, self).obj
 
     def findall(self, path):
-        return utils._findall(self, path)
+        """
+        Finds all objects by `path`.
+
+        - `path`: A JSON Path expression.
+
+        Returns the found objects as a `list`. The list will be empty in case
+        nothing is found.
+        """
+        return jsonpath.findall(path, self)
 
 
 def helm_resource_constructor(loader, node):
