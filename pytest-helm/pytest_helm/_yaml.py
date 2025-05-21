@@ -9,6 +9,8 @@ from yaml import SafeDumper, SafeLoader
 
 from .models import KubernetesResource, YamlMapping
 
+GENERIC_MAPPING_TAG = "tag:yaml.org,2002:map"
+
 
 def map_constructor(loader, node):
     value = loader.construct_mapping(node)
@@ -24,7 +26,7 @@ def _is_kubernetes_resource(value):
 
 
 def map_representer(dumper, data):
-    return dumper.represent_mapping("tag:yaml.org,2002:map", data)
+    return dumper.represent_mapping(GENERIC_MAPPING_TAG, data)
 
 
 class CustomSafeLoader(SafeLoader):
@@ -46,5 +48,5 @@ class CustomSafeDumper(SafeDumper):
     """
 
 
-CustomSafeLoader.add_constructor("tag:yaml.org,2002:map", map_constructor)
+CustomSafeLoader.add_constructor(GENERIC_MAPPING_TAG, map_constructor)
 CustomSafeDumper.add_representer(YamlMapping, map_representer)
