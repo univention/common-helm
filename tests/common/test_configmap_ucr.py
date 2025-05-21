@@ -21,7 +21,7 @@ def test_mounts_configmap_ucr(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_volumes = [
         {
@@ -76,7 +76,7 @@ def test_mounts_no_configmap_ucr(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     volume_mounts = findone(deployment, "spec.template.spec.containers[0].volumeMounts")
     for volume_mount in volume_mounts or []:

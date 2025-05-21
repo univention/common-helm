@@ -18,7 +18,7 @@ def test_adds_extra_volumes_to_pod(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_volumes = values["extraVolumes"]
     assert findone(deployment, "spec.template.spec.volumes") == expected_volumes
@@ -37,7 +37,7 @@ def test_adds_extra_volume_mounts_to_containers(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_volume_mounts = values["extraVolumeMounts"]
     assert (

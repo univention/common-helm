@@ -19,7 +19,7 @@ def test_global_registry_is_used_as_default(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_registry = "stub-global-registry"
     image = findone(deployment, "spec.template.spec.containers[0].image")
@@ -37,7 +37,7 @@ def test_image_registry_overrides_global_default_registry(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_registry = "stub-registry"
     image = findone(deployment, "spec.template.spec.containers[0].image")
@@ -54,7 +54,7 @@ def test_global_registry_is_using_knut_registry_per_default(helm, chart_path):
     """
     values = {}
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_registry = "gitregistry.knut.univention.de"
     image = findone(deployment, "spec.template.spec.containers[0].image")
@@ -71,7 +71,7 @@ def test_image_pull_secrets_can_be_provided(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_secrets = ["stub-secret-a", "stub-secret-b"]
     image_pull_secrets = findone(deployment, "spec.template.spec.imagePullSecrets")
@@ -86,7 +86,7 @@ def test_image_repository_can_be_configured(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_repository = "stub-fragment/stub-image"
     image = findone(deployment, "spec.template.spec.containers[0].image")
@@ -108,7 +108,7 @@ def test_image_tag_can_be_configured(image_tag, helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     expected_tag = image_tag
     image = findone(deployment, "spec.template.spec.containers[0].image")
@@ -123,7 +123,7 @@ def test_image_digest_without_tag_can_be_configured(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     image = findone(deployment, "spec.template.spec.containers[0].image")
     assert f"@sha256:stub-digest" in image
@@ -138,7 +138,7 @@ def test_image_digest_and_tag_can_be_configured(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     image = findone(deployment, "spec.template.spec.containers[0].image")
     assert ":stub-tag@sha256:stub-digest" in image
@@ -155,7 +155,7 @@ def test_all_image_values_are_configured(helm, chart_path):
     """,
     )
     result = helm.helm_template(chart_path, values)
-    deployment = helm.get_resource(result, kind="Deployment")
+    deployment = result.get_resource(kind="Deployment")
 
     image = findone(deployment, "spec.template.spec.containers[0].image")
     assert (
