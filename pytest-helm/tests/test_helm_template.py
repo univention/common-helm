@@ -21,8 +21,8 @@ def test_get_resource_can_be_used_multiple_times_on_the_same_result(mocker):
     helm = Helm()
 
     result = helm.helm_template("stub-chart")
-    first_resource = helm.get_resources(result, name="first")
-    second_resource = helm.get_resources(result, name="second")
+    first_resource = result.get_resources(name="first")
+    second_resource = result.get_resources(name="second")
 
     assert first_resource
     assert second_resource
@@ -51,7 +51,7 @@ def test_helm_template_returns_yaml_mappings_for_maps(mocker):
     helm = Helm()
 
     result = helm.helm_template("stub-chart")
-    resource = helm.get_resource(result, name="first")
+    resource = result.get_resource(name="first")
     assert isinstance(resource, YamlMapping)
     assert isinstance(resource["metadata"], YamlMapping)
 
@@ -61,7 +61,7 @@ def test_helm_template_returns_kubernetes_resource(mocker):
     helm = Helm()
 
     result = helm.helm_template("stub-chart")
-    resource = helm.get_resource(result, name="first")
+    resource = result.get_resource(name="first")
     assert isinstance(resource, KubernetesResource)
     assert isinstance(resource["metadata"], YamlMapping)
 

@@ -5,6 +5,7 @@ import tempfile
 
 import yaml
 
+from ._warnings import deprecated
 from ._yaml import CustomSafeDumper, CustomSafeLoader
 from .models import HelmTemplateResult
 
@@ -71,27 +72,26 @@ class Helm:
         result = HelmTemplateResult(yaml.load_all(output, Loader=CustomSafeLoader))
         return result
 
+    @deprecated("Use the method 'HelmTemplateResult.get_resources' instead.")
     def get_resources(self, manifests, *, api_version=None, kind=None, name=None, predicate=None):
         """
         Get the manifests matching given criteria
         """
-        docs = [doc for doc in manifests if doc]
-        if predicate:
-            docs = [doc for doc in docs if predicate(doc)]
-        if api_version:
-            docs = [doc for doc in docs if api_version == doc.get("apiVersion")]
-        if kind:
-            docs = [doc for doc in docs if kind == doc.get("kind")]
-        if name:
-            docs = [doc for doc in docs if name == doc.get("metadata", {}).get("name")]
-        return docs
+        return HelmTemplateResult.get_resources(
+            manifests,
+            api_version=api_version,
+            kind=kind,
+            name=name,
+            predicate=predicate,
+        )
 
+    @deprecated("Use the method 'HelmTemplateResult.get_resource' instead.")
     def get_resource(self, *args, **kwargs):
         """
         Get one manifest.
         This will raise LookupError if none or more than one manifest is found
         """
-        manifests = self.get_resources(*args, **kwargs)
+        manifests = HelmTemplateResult.get_resources(*args, **kwargs)
         if len(manifests) != 1:
             raise LookupError(
                 "{} manifest found".format("No" if len(manifests) == 0 else "More than one"),
