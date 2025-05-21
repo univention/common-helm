@@ -35,8 +35,9 @@ class Helm:
         helm_args: list[str] | None = None,
     ):
         """
-        Generates helm templates from a chart
-        `values` can be passed to override the default chart values
+        Generates helm templates from a chart.
+
+        `values` can be passed to override the default chart values.
         """
         values = values or {}
         fd, path = tempfile.mkstemp()
