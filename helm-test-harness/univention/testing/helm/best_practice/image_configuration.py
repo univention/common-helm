@@ -16,7 +16,7 @@ class ImageConfiguration:
     Which resource kinds to verify.
     """
 
-    def test_global_registry_is_used_as_default(self, helm, chart_path):
+    def test_global_registry_is_used_as_default(self, helm, chart_path, subtests):
         values = safe_load(
             """
             global:
@@ -26,9 +26,10 @@ class ImageConfiguration:
         result = helm.helm_template(chart_path, values)
         expected_registry = "stub-global-registry"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
-            _assert_all_images_use_registry(containers, expected_registry)
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                _assert_all_images_use_registry(containers, expected_registry)
 
-    def test_image_registry_overrides_global_default_registry(self, helm, chart_path):
+    def test_image_registry_overrides_global_default_registry(self, helm, chart_path, subtests):
         values = safe_load(
             """
             global:
@@ -41,9 +42,10 @@ class ImageConfiguration:
         result = helm.helm_template(chart_path, values)
         expected_registry = "stub-registry"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
-            _assert_all_images_use_registry(containers, expected_registry)
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                _assert_all_images_use_registry(containers, expected_registry)
 
-    def test_global_pull_policy_is_used(self, helm, chart_path):
+    def test_global_pull_policy_is_used(self, helm, chart_path, subtests):
         values = safe_load(
             """
             global:
@@ -53,9 +55,10 @@ class ImageConfiguration:
         result = helm.helm_template(chart_path, values)
         expected_pull_policy = "stub-global-pull-policy"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
-            _assert_all_images_use_pull_policy(containers, expected_pull_policy)
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                _assert_all_images_use_pull_policy(containers, expected_pull_policy)
 
-    def test_image_pull_policy_overrides_global_value(self, helm, chart_path):
+    def test_image_pull_policy_overrides_global_value(self, helm, chart_path, subtests):
         values = safe_load(
             """
             global:
@@ -68,9 +71,10 @@ class ImageConfiguration:
         result = helm.helm_template(chart_path, values)
         expected_pull_policy = "stub-pull-policy"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
-            _assert_all_images_use_pull_policy(containers, expected_pull_policy)
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                _assert_all_images_use_pull_policy(containers, expected_pull_policy)
 
-    def test_image_pull_secrets_can_be_provided(self, helm, chart_path):
+    def test_image_pull_secrets_can_be_provided(self, helm, chart_path, subtests):
         values = safe_load(
             """
             global:
@@ -89,10 +93,11 @@ class ImageConfiguration:
             },
         ]
         for containers, resource in self._generate_containers_of_resource_kinds(result):
-            image_pull_secrets = resource.findone("spec.template.spec.imagePullSecrets")
-            assert image_pull_secrets == expected_secrets
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                image_pull_secrets = resource.findone("spec.template.spec.imagePullSecrets")
+                assert image_pull_secrets == expected_secrets
 
-    def test_image_repository_can_be_configured(self, helm, chart_path):
+    def test_image_repository_can_be_configured(self, helm, chart_path, subtests):
         values = safe_load(
             """
             image:
@@ -103,7 +108,8 @@ class ImageConfiguration:
 
         expected_repository = "stub-fragment/stub-image"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
-            _assert_all_images_contain(containers, expected_repository)
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                _assert_all_images_contain(containers, expected_repository)
 
     @pytest.mark.parametrize(
         "image_tag",
@@ -112,7 +118,7 @@ class ImageConfiguration:
             "stub_tag@sha256:with-stub-digest-in-tag",
         ],
     )
-    def test_image_tag_can_be_configured(self, image_tag, helm, chart_path):
+    def test_image_tag_can_be_configured(self, image_tag, helm, chart_path, subtests):
         values = safe_load(
             f"""
             image:
@@ -123,9 +129,10 @@ class ImageConfiguration:
 
         expected_tag = image_tag
         for containers, resource in self._generate_containers_of_resource_kinds(result):
-            _assert_all_images_contain(containers, expected_tag)
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                _assert_all_images_contain(containers, expected_tag)
 
-    def test_all_image_values_are_configured(self, helm, chart_path):
+    def test_all_image_values_are_configured(self, helm, chart_path, subtests):
         values = safe_load(
             """
             image:
@@ -144,7 +151,12 @@ class ImageConfiguration:
             for container in containers:
                 name = container["name"]
                 image = container["image"]
-                assert expected_image == image, f'Wrong image in container "{name}"'
+                with subtests.test(
+                    kind=resource["kind"],
+                    name=resource["metadata"]["name"],
+                    container=name,
+                ):
+                    assert expected_image == image, f'Wrong image in container "{name}"'
 
     def _generate_containers_of_resource_kinds(self, result):
         for kind in self.kinds:
