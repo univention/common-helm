@@ -111,3 +111,24 @@ class Helm:
 
         result.check_returncode()
         return result
+
+
+class HelmChart:
+    """
+    Represents one Helm chart under test.
+
+    Its main feature is to add knowledge about the chart's path around the
+    fixture `Helm`.
+    """
+
+    def __init__(self, chart_path: str, helm: Helm):
+        self.chart_path = chart_path
+        self._helm = helm
+
+    def helm_template(self, *args, **kwargs):
+        """
+        Templates the chart based on `Helm.helm_template`.
+
+        See `Helm.helm_template` regarding the supported arguments.
+        """
+        return self._helm.helm_template(self.chart_path, *args, **kwargs)
