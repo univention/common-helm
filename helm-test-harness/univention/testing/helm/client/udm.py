@@ -3,6 +3,7 @@
 
 from contextlib import nullcontext as does_not_raise
 from collections.abc import Mapping
+import subprocess
 
 import pytest
 from yaml import safe_load
@@ -54,7 +55,7 @@ class UdmClient:
                 password: "stub-password"
             """,
         )
-        with pytest.raises(RuntimeError):
+        with pytest.raises(subprocess.CalledProcessError):
             helm.helm_template(chart_path, values)
 
     def test_connection_url_is_templated(self, helm, chart_path):
@@ -186,7 +187,7 @@ class UdmClient:
                 password: null
         """,
         )
-        with pytest.raises(RuntimeError):
+        with pytest.raises(subprocess.CalledProcessError):
             helm.helm_template(chart_path, values)
 
     def test_auth_username_is_required(self, helm, chart_path):
@@ -199,7 +200,7 @@ class UdmClient:
                 username: null
         """,
         )
-        with pytest.raises(RuntimeError):
+        with pytest.raises(subprocess.CalledProcessError):
             helm.helm_template(chart_path, values)
 
     def test_auth_username_has_default(self, helm, chart_path):

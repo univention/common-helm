@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
+import subprocess
+
 import pytest
 
 from univention.testing.helm.base import Base, Labels, Namespace
@@ -24,7 +26,7 @@ class RequiredEnvVariables(Base):
     def test_cant_be_unset(self, helm, chart_path, key, env_var, value):
         values = add_jsonpath_prefix(key, value)
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(subprocess.CalledProcessError):
             self.helm_template_file(helm, chart_path, values, self.template_file)
 
 

@@ -3,6 +3,7 @@
 
 from contextlib import nullcontext as does_not_raise
 from collections.abc import Mapping
+import subprocess
 
 import pytest
 from yaml import safe_load
@@ -79,7 +80,7 @@ class ObjectStorage:
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         assert secret.findone("stringData.secretAccessKey") == "{{ value }}"
 
-    def test_auth_plain_values_secret_key_is_required(self, helm, chart_path):
+    def test_auth_plain_values_secret_key_is_required(self, helm, chart_path, capsys):
         values = self.load_and_map(
             """
             objectStorage:
@@ -90,7 +91,7 @@ class ObjectStorage:
                 secretAccessKey: null
         """,
         )
-        with pytest.raises(RuntimeError):
+        with pytest.raises(subprocess.CalledProcessError):
             helm.helm_template(chart_path, values)
 
     def test_auth_plain_values_access_key_is_required(self, helm, chart_path):
@@ -104,7 +105,7 @@ class ObjectStorage:
                 secretAccessKey: "stub-secret-key"
         """,
         )
-        with pytest.raises(RuntimeError):
+        with pytest.raises(subprocess.CalledProcessError):
             helm.helm_template(chart_path, values)
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, helm, chart_path):
