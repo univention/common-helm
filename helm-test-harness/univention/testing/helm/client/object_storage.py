@@ -44,8 +44,8 @@ class ObjectStorage:
         )
         result = helm.helm_template(chart_path, values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.accessKey") == "stub-access-key"
-        assert secret.findone("stringData.secretKey") == "stub-secret-key"
+        assert secret.findone("stringData.accessKeyId") == "stub-access-key"
+        assert secret.findone("stringData.secretAccessKey") == "stub-secret-key"
 
     def test_auth_plain_values_access_key_id_is_templated(self, helm, chart_path):
         values = self.load_and_map(
@@ -62,7 +62,7 @@ class ObjectStorage:
         )
         result = helm.helm_template(chart_path, values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.accessKey") == "stub-value"
+        assert secret.findone("stringData.accessKeyId") == "stub-value"
 
     def test_auth_plain_values_secret_key_is_not_templated(self, helm, chart_path):
         values = self.load_and_map(
@@ -77,7 +77,7 @@ class ObjectStorage:
         )
         result = helm.helm_template(chart_path, values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.secretKey") == "{{ value }}"
+        assert secret.findone("stringData.secretAccessKey") == "{{ value }}"
 
     def test_auth_plain_values_secret_key_is_required(self, helm, chart_path):
         values = self.load_and_map(
@@ -167,8 +167,8 @@ class ObjectStorage:
                 existingSecret:
                   name: "stub-secret-name"
                   keyMapping:
-                    accessKey: "stub_access_key_key"
-                    secretKey: "stub_secret_key_key"
+                    accessKeyId: "stub_access_key_id_key"
+                    secretAccessKey: "stub_secret_access_key_key"
         """,
         )
         result = helm.helm_template(chart_path, values)
@@ -176,10 +176,12 @@ class ObjectStorage:
         main_container = deployment.findone(self.path_main_container)
 
         access_key_id = main_container.findone(f"env[?@name=='{self.env_access_key_id}']")
-        assert access_key_id.findone("valueFrom.secretKeyRef.key") == "stub_access_key_key"
+        assert access_key_id.findone("valueFrom.secretKeyRef.key") == "stub_access_key_id_key"
 
         secret_access_key = main_container.findone(f"env[?@name=='{self.env_secret_access_key}']")
-        assert secret_access_key.findone("valueFrom.secretKeyRef.key") == "stub_secret_key_key"
+        assert secret_access_key.findone(
+            "valueFrom.secretKeyRef.key",
+        ) == "stub_secret_access_key_key"
 
     def test_auth_existing_secret_has_precedence(self, helm, chart_path):
         values = self.load_and_map(
@@ -191,8 +193,8 @@ class ObjectStorage:
                 existingSecret:
                   name: "stub-secret-name"
                   keyMapping:
-                    accessKey: "stub_access_key_key"
-                    secretKey: "stub_secret_key_key"
+                    accessKeyId: "stub_access_key_id_key"
+                    secretAccessKey: "stub_secret_access_key_key"
         """,
         )
         result = helm.helm_template(chart_path, values)
