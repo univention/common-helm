@@ -30,6 +30,10 @@ class Helm:
         Generates helm templates from a chart.
 
         `values` can be passed to override the default chart values.
+
+        The returned value is an instance of `HelmTemplateResult`. It provides
+        a useful API to inspect the generated YAML data and also to access the
+        output of the call to Helm.
         """
         values = values or {}
         fd, path = tempfile.mkstemp()
