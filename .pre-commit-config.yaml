@@ -73,8 +73,6 @@ repos:
     hooks:
       - id: "ruff"
         name: "ruff"
-        # TODO: remove exclude
-        exclude: '^(tests/best_practices/test_image_configuration\.py|tests/conftest\.py)$'
         args:
           - "--fix"
           - "--show-source"
