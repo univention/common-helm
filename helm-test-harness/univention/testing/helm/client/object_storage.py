@@ -18,6 +18,10 @@ PrefixMapping = Mapping[JSONPath, JSONPath]
 class ObjectStorage:
     """
     Client configuration for an S3 based object storage.
+
+    We decided to have the access key id inside the generated `Secret` even
+    though it is comparable to a username. The rationale is that people tend to
+    prefer keeping the access key id also private.
     """
 
     prefix_mapping: PrefixMapping = {}
@@ -140,7 +144,7 @@ class ObjectStorage:
         with does_not_raise():
             helm.helm_template(chart_path, values)
 
-    def test_auth_existing_secret_env_password(self, helm, chart_path):
+    def test_auth_existing_secret_used_to_populate_environment_variables(self, helm, chart_path):
         values = self.load_and_map(
             """
             objectStorage:
