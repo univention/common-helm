@@ -1,33 +1,33 @@
-import textwrap
+from subprocess import CompletedProcess
 
 import pytest
 
 from pytest_helm._yaml import KubernetesResource, YamlMapping
 from pytest_helm.helm import Helm
 
+stub_stdout = """
+---
+apiVersion: testing.local/v1
+kind: Stub
+metadata:
+  name: first
 
-class StubCompletedProcess:
+---
+apiVersion: testing.local/v1
+kind: Stub
+metadata:
+  name: second
+"""
 
-    stdout = textwrap.dedent("""
-        ---
-        apiVersion: testing.local/v1
-        kind: Stub
-        metadata:
-          name: first
 
-        ---
-        apiVersion: testing.local/v1
-        kind: Stub
-        metadata:
-          name: second
-        """)
-
-    stderr = ""
+@pytest.fixture
+def run_result():
+    return CompletedProcess(["helm", "template", "stub-chart"], 0, stdout=stub_stdout, stderr="")
 
 
 @pytest.fixture(autouse=True)
-def mock_run_command(mocker):
-    mocker.patch("pytest_helm.helm._run_command", return_value=StubCompletedProcess())
+def mock_run_command(mocker, run_result):
+    mocker.patch("pytest_helm.helm._run_command", return_value=run_result)
 
 
 def test_get_resource_can_be_used_multiple_times_on_the_same_result(mocker):
@@ -46,7 +46,7 @@ def test_helm_template_does_not_dump_output(mocker, capsys):
 
     helm.helm_template("stub-chart")
     output = capsys.readouterr()
-    assert StubCompletedProcess.stdout not in output.out
+    assert stub_stdout not in output.out
 
 
 def test_helm_template_dumps_output_when_enabled(mocker, capsys):
@@ -54,7 +54,7 @@ def test_helm_template_dumps_output_when_enabled(mocker, capsys):
 
     helm.helm_template("stub-chart")
     output = capsys.readouterr()
-    assert StubCompletedProcess.stdout in output.out
+    assert stub_stdout in output.out
 
 
 def test_helm_template_returns_yaml_mappings_for_maps(mocker):
