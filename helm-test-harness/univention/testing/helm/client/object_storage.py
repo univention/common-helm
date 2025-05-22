@@ -47,6 +47,23 @@ class ObjectStorage:
         assert secret.findone("stringData.accessKey") == "stub-access-key"
         assert secret.findone("stringData.secretKey") == "stub-secret-key"
 
+    def test_auth_plain_values_access_key_id_is_templated(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            global:
+              test: "stub-value"
+            objectStorage:
+              endpoint: "local_stub"
+              bucketName: "local_stub"
+              auth:
+                accessKeyId: "{{ .Values.global.test }}"
+                secretAccessKey: "stub-password"
+        """,
+        )
+        result = helm.helm_template(chart_path, values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        assert secret.findone("stringData.accessKey") == "stub-value"
+
     def test_auth_plain_values_secret_key_is_not_templated(self, helm, chart_path):
         values = self.load_and_map(
             """
@@ -54,13 +71,12 @@ class ObjectStorage:
               endpoint: "local_stub"
               bucketName: "local_stub"
               auth:
-                accessKeyId: "{{ value }}"
+                accessKeyId: "stub-access-key-id"
                 secretAccessKey: "{{ value }}"
         """,
         )
         result = helm.helm_template(chart_path, values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.accessKey") == "{{ value }}"
         assert secret.findone("stringData.secretKey") == "{{ value }}"
 
     def test_auth_plain_values_secret_key_is_required(self, helm, chart_path):
