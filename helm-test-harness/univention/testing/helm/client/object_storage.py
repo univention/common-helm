@@ -2,20 +2,14 @@
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from contextlib import nullcontext as does_not_raise
-from collections.abc import Mapping
 import subprocess
 
 import pytest
-from yaml import safe_load
 
-# TODO: Change once the Python version has been upgraded in the test runner to >= 3.12
-JSONPath = str
-PrefixMapping = Mapping[JSONPath, JSONPath]
-# type JSONPath = str
-# type PrefixMapping = Mapping[JSONPath, JSONPath]
+from .base import ClientTestBase
 
 
-class ObjectStorage:
+class ObjectStorage(ClientTestBase):
     """
     Client configuration for an S3 based object storage.
 
@@ -24,17 +18,10 @@ class ObjectStorage:
     prefer keeping the access key id also private.
     """
 
-    prefix_mapping: PrefixMapping = {}
-
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
     env_access_key_id = "OBJECT_STORAGE_ACCESS_KEY_ID"
     env_secret_access_key = "OBJECT_STORAGE_SECRET_ACCESS_KEY"
     secret_name = "release-name-test-nubus-common-object-storage"
-
-    def load_and_map(self, values_yaml: str):
-        values = safe_load(values_yaml)
-        apply_mapping(values, self.prefix_mapping)
-        return values
 
     def test_auth_plain_values_generate_secret(self, helm, chart_path):
         values = self.load_and_map(
@@ -216,37 +203,3 @@ class ObjectStorage:
 
         secret_access_key = main_container.findone(f"env[?@name=='{self.env_secret_access_key}']")
         assert secret_access_key.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
-
-
-def apply_mapping(values: Mapping, prefix_mapping: PrefixMapping) -> None:
-    for target, source in prefix_mapping.items():
-        _move(values, target, source)
-
-
-def _move(values: Mapping, target: JSONPath, source: JSONPath) -> None:
-    target_path = target.split(".")
-    source_path = source.split(".")
-    try:
-        value = _pop_value(values, source_path)
-    except KeyError:
-        # Source does not exist, there is nothing to map.
-        pass
-    else:
-        _set_value(values, target_path, value)
-
-
-def _pop_value(values: Mapping, source_path: list[str]) -> any:
-    if len(source_path) >= 2:
-        sub_values = values[source_path[0]]
-        sub_path = source_path[1:]
-        return _pop_value(sub_values, sub_path)
-    return values[source_path[0]]
-
-
-def _set_value(values: Mapping, target_path: list[str], value: any) -> None:
-    if len(target_path) >= 2:
-        sub_values = values.setdefault(target_path[0], {})
-        sub_path = target_path[1:]
-        _set_value(sub_values, sub_path, value)
-    else:
-        values[target_path[0]] = value

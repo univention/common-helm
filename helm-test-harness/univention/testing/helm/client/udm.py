@@ -2,17 +2,12 @@
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from contextlib import nullcontext as does_not_raise
-from collections.abc import Mapping
 import subprocess
 
 import pytest
-from yaml import safe_load
 
-# TODO: Change once the Python version has been upgraded in the test runner to >= 3.12
-JSONPath = str
-PrefixMapping = Mapping[JSONPath, JSONPath]
-# type JSONPath = str
-# type PrefixMapping = Mapping[JSONPath, JSONPath]
+from .base import ClientTestBase
+
 
 # NOTE: We want to have the values + linter_values always be passing the
 # schema validation and required checks. So in some way we have to "unset"
@@ -21,15 +16,13 @@ PrefixMapping = Mapping[JSONPath, JSONPath]
 # item under test.
 
 
-class UdmClient:
+class UdmClient(ClientTestBase):
     """
     UDM Rest API Client configuration
 
     Checks of the expected behavior around the configuration of the UDM Rest
     API client.
     """
-
-    prefix_mapping: PrefixMapping = {}
 
     default_username = "stub-values-username"
     path_udm_api_url = "data.UDM_API_URL"
@@ -38,11 +31,6 @@ class UdmClient:
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
     sub_path_udm_volume_mount = "volumeMounts[?@.name=='secret-udm']"
     secret_name = "release-name-test-nubus-common-udm"
-
-    def load_and_map(self, values_yaml: str):
-        values = safe_load(values_yaml)
-        apply_mapping(values, self.prefix_mapping)
-        return values
 
     def test_connection_url_is_required(self, helm, chart_path):
         values = self.load_and_map(
@@ -351,37 +339,3 @@ class UdmClient:
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
         assert secret_udm_volume.findone("secret.secretName") == "stub-secret-name"
-
-
-def apply_mapping(values: Mapping, prefix_mapping: PrefixMapping) -> None:
-    for target, source in prefix_mapping.items():
-        _move(values, target, source)
-
-
-def _move(values: Mapping, target: JSONPath, source: JSONPath) -> None:
-    target_path = target.split(".")
-    source_path = source.split(".")
-    try:
-        value = _pop_value(values, source_path)
-    except KeyError:
-        # Source does not exist, there is nothing to map.
-        pass
-    else:
-        _set_value(values, target_path, value)
-
-
-def _pop_value(values: Mapping, source_path: list[str]) -> any:
-    if len(source_path) >= 2:
-        sub_values = values[source_path[0]]
-        sub_path = source_path[1:]
-        return _pop_value(sub_values, sub_path)
-    return values[source_path[0]]
-
-
-def _set_value(values: Mapping, target_path: list[str], value: any) -> None:
-    if len(target_path) >= 2:
-        sub_values = values.setdefault(target_path[0], {})
-        sub_path = target_path[1:]
-        _set_value(sub_values, sub_path, value)
-    else:
-        values[target_path[0]] = value
