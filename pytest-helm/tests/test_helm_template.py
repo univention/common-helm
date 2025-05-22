@@ -27,7 +27,7 @@ def run_result():
 
 @pytest.fixture(autouse=True)
 def mock_run_command(mocker, run_result):
-    mocker.patch("pytest_helm.helm._run_command", return_value=run_result)
+    mocker.patch("pytest_helm.helm.Helm._run_command", return_value=run_result)
 
 
 def test_get_resource_can_be_used_multiple_times_on_the_same_result(mocker):
@@ -52,9 +52,8 @@ def test_helm_template_does_not_dump_output(mocker, capsys):
 def test_helm_template_dumps_output_when_enabled(mocker, capsys):
     helm = Helm(debug=True)
 
-    helm.helm_template("stub-chart")
-    output = capsys.readouterr()
-    assert stub_stdout in output.out
+    result = helm.helm_template("stub-chart")
+    assert stub_stdout in result.stdout
 
 
 def test_helm_template_returns_yaml_mappings_for_maps(mocker):

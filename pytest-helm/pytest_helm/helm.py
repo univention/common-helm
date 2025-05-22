@@ -37,7 +37,6 @@ class Helm:
         """
         values = values or {}
         fd, path = tempfile.mkstemp()
-        output = ""
         try:
             values_yaml = yaml.dump(values, Dumper=CustomSafeDumper)
             with os.fdopen(fd, "w") as tmp:
@@ -55,17 +54,12 @@ class Helm:
             if template_file:
                 helm_args.extend(("--show-only", template_file))
 
-            run_result = _run_command(self.helm_cmd, "template", chart, *helm_args)
-            output = run_result.stdout
+            run_result = self._run_command(self.helm_cmd, "template", chart, *helm_args)
         finally:
             os.remove(path)
 
-        if self.debug:
-            print("Helm output:\n")
-            print(output)
-
-        result = HelmTemplateResult(yaml.load_all(output, Loader=CustomSafeLoader))
-        result.stdout = output
+        result = HelmTemplateResult(yaml.load_all(run_result.stdout, Loader=CustomSafeLoader))
+        result.stdout = run_result.stdout
         result.stderr = run_result.stderr
         return result
 
@@ -96,16 +90,24 @@ class Helm:
         return resources[0]
 
 
-def _run_command(*args) -> subprocess.CompletedProcess:
-    """
-    Utility to run a command and capture its output.
+    def _run_command(self, *args) -> subprocess.CompletedProcess:
+        """
+        Utility to run a command and capture its output.
 
-    Runs a command via `subprocess.run` and returns the `CompletedProcess`
-    instance.
+        Runs a command via `subprocess.run` and returns the `CompletedProcess`
+        instance.
 
-    Will raise `subprocess.CalledProcessError` in case of a non-zero exit
-    status.
-    """
-    log.debug("Running helm: %s", args)
-    result = subprocess.run(args, capture_output=True, check=True, text=True)
-    return result
+        Will raise `subprocess.CalledProcessError` in case of a non-zero exit
+        status.
+        """
+        log.debug("Running helm: %s", args)
+        result = subprocess.run(args, capture_output=True, text=True)
+
+        if self.debug:
+            print("Helm output:\n")
+            print(result.stdout)
+            print("Helm output stderr:\n")
+            print(result.stderr)
+
+        result.check_returncode()
+        return result
