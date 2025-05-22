@@ -91,8 +91,9 @@ class ObjectStorage:
                 secretAccessKey: null
         """,
         )
-        with pytest.raises(subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError) as error:
             helm.helm_template(chart_path, values)
+        assert "Object Storage credentials have to be supplied" in error.value.stderr
 
     def test_auth_plain_values_access_key_is_required(self, helm, chart_path):
         values = self.load_and_map(
@@ -105,8 +106,9 @@ class ObjectStorage:
                 secretAccessKey: "stub-secret-key"
         """,
         )
-        with pytest.raises(subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError) as error:
             helm.helm_template(chart_path, values)
+        assert "Object Storage credentials have to be supplied" in error.value.stderr
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, helm, chart_path):
         values = self.load_and_map(
