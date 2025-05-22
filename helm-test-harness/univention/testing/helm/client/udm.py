@@ -55,8 +55,9 @@ class UdmClient:
                 password: "stub-password"
             """,
         )
-        with pytest.raises(subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError) as error:
             helm.helm_template(chart_path, values)
+        assert "connection has to be configured" in error.value.stderr
 
     def test_connection_url_is_templated(self, helm, chart_path):
         values = self.load_and_map(
@@ -187,8 +188,9 @@ class UdmClient:
                 password: null
         """,
         )
-        with pytest.raises(subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError) as error:
             helm.helm_template(chart_path, values)
+        assert "password has to be supplied" in error.value.stderr
 
     def test_auth_username_is_required(self, helm, chart_path):
         values = self.load_and_map(
@@ -198,10 +200,12 @@ class UdmClient:
                 url: "local_stub"
               auth:
                 username: null
+                password: "stub-password"
         """,
         )
-        with pytest.raises(subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError) as error:
             helm.helm_template(chart_path, values)
+        assert "username has to be supplied" in error.value.stderr
 
     def test_auth_username_has_default(self, helm, chart_path):
         values = self.load_and_map(
