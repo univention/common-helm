@@ -44,6 +44,16 @@ class HelmTemplateResult(list):
     The list of resources rendered by Helm via `Helm.helm_template`.
     """
 
+    stdout: str = ""
+    """
+    Output of the call to "helm template".
+    """
+
+    stderr: str = ""
+    """
+    Error output of the call to "helm template".
+    """
+
     def get_resources(self, *, api_version=None, kind=None, name=None, predicate=None):
         """
         Get the resources matching given criteria

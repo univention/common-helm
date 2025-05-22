@@ -19,16 +19,6 @@ class Helm:
         self.debug = debug
         self.values = values or tuple()
 
-    def run_command(self, *args) -> bytes:
-        """
-        Runs a command and returns stdout
-        """
-        result = subprocess.run(args, stdout=subprocess.PIPE)
-        log.debug("Running helm: %s", args)
-        if result.returncode != 0:
-            raise RuntimeError(f"Error running command {' '.join(args)}")
-        return result.stdout
-
     def helm_template(
         self,
         chart,
@@ -61,15 +51,18 @@ class Helm:
             if template_file:
                 helm_args.extend(("--show-only", template_file))
 
-            output = self.run_command(self.helm_cmd, "template", chart, *helm_args)
+            run_result = _run_command(self.helm_cmd, "template", chart, *helm_args)
+            output = run_result.stdout
         finally:
             os.remove(path)
 
         if self.debug:
             print("Helm output:\n")
-            print(output.decode())
+            print(output)
 
         result = HelmTemplateResult(yaml.load_all(output, Loader=CustomSafeLoader))
+        result.stdout = output
+        result.stderr = run_result.stderr
         return result
 
     @deprecated("Use the method 'HelmTemplateResult.get_resources' instead.")
@@ -97,3 +90,18 @@ class Helm:
                 "{} manifest found".format("No" if len(resources) == 0 else "More than one"),
             )
         return resources[0]
+
+
+def _run_command(*args) -> subprocess.CompletedProcess:
+    """
+    Utility to run a command and capture its output.
+
+    Runs a command via `subprocess.run` and returns the `CompletedProcess`
+    instance.
+
+    Will raise `subprocess.CalledProcessError` in case of a non-zero exit
+    status.
+    """
+    log.debug("Running helm: %s", args)
+    result = subprocess.run(args, capture_output=True, check=True, text=True)
+    return result
