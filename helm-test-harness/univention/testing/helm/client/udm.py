@@ -222,7 +222,7 @@ class UdmClient(ClientTestBase):
         )
         result = helm.helm_template(chart_path, values)
         with pytest.raises(LookupError):
-            result.get_resource(kind="Secret", name="release-name-test-nubus-common-client")
+            result.get_resource(kind="Secret", name=self.secret_name)
 
     def test_auth_existing_secret_does_not_require_plain_password(self, helm, chart_path):
         values = self.load_and_map(
