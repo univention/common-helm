@@ -64,7 +64,8 @@ class Helm:
         finally:
             os.remove(path)
 
-        result = HelmTemplateResult(yaml.load_all(run_result.stdout, Loader=CustomSafeLoader))
+        result = HelmTemplateResult(
+            doc for doc in yaml.load_all(run_result.stdout, Loader=CustomSafeLoader) if doc)
         result.stdout = run_result.stdout
         result.stderr = run_result.stderr
         return result
