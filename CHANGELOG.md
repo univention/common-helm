@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.17.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.16.0...v0.17.0) (2025-05-23)
+
+
+### Features
+
+* **helm-test-harness:** Add checks for central navigation in the owner role ([f86c3af](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/f86c3af0f280cc27e1527f3822ccb5a587521c56))
+* **helm-test-harness:** Add client focused tests for object storage configuration ([3852e0e](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/3852e0e2cb1f7762125bcd78a50213054076991d))
+* **helm-test-harness:** Add image configuration tests from portal ([4ec103f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/4ec103f959fa1f3d05d97cf6733dcd56e78acdbe))
+* **helm-test-harness:** Add pytest-subtests ([399a908](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/399a90859aa3f3f91da84723c5ef4c68299002c1))
+* **helm-test-harness:** Add tests for the central navigation client ([2a2abba](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/2a2abbadca3a4f2080295c82d12b508c3837cab3))
+* **helm-test-harness:** Assert on the error message in object storage client ([d0b7e4f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/d0b7e4f0d28d9566b444ac8b080e7ccd59b0f9f3))
+* **helm-test-harness:** Assert on the error message in udm client ([a593bc3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/a593bc3667a1ff8b15585cb4ef9c9e55285a2826))
+* **helm-test-harness:** Use subtests in image configuration tests ([83eb8df](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/83eb8dfa00065026714fcf14706932c571f97141))
+* **helm-test-harness:** Verify "global.secrets.keep" in client based tests ([4c7c528](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/4c7c528ac4bec7fbd1efce51fa935c582a94da3d))
+* **pytest-helm:** Add fixture "chart" based on "HelmChart" class ([861fa4a](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/861fa4a540846ab0e6e793d05b0ad2ee859b7b7e))
+* **pytest-helm:** Add parameter "default" to "YamlMapping.findone" ([bb9c399](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/bb9c39928d3f317ced3d429110977188f8f64b5b))
+* **pytest-helm:** Dump Helm's output also if the call failed ([9fd9f4d](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/9fd9f4dbe350fff6fa96760fa37045e11564b4b2))
+* **pytest-helm:** Provide both stdout and stderr on the HelmTemplateResult ([23aecbc](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/23aecbc8bb5008f7de4b4b0c24ab70fec2a9c2c9))
+
+
+### Bug Fixes
+
+* **helm-test-harness:** Adapt to catch subprocess.CalledProcessError in helm_template calls ([331a3fd](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/331a3fdbb7ac46abbd3e953a3eaca2eabd775113))
+* **helm-test-harness:** Consistent naming around object storage configuration ([1f578f4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/1f578f430cfb27ac3976f3493a5407e0f121e6a4))
+* **helm-test-harness:** Remove the source value in "apply_mapping" ([29c79f8](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/29c79f8911ee2a24098e8bb9991607241a30c0ed))
+* **helm-test-harness:** The "accessKeyId" for S3 compatible configuration should be templated ([53ffc8d](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/53ffc8ddbdfb153117a98a6374c1e6507169175f))
+* **helm-test-harness:** Use "self.secret_name" to lookup the generated secret ([bedefc3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/bedefc36b30c670bc02a20f7bca80c44f7d19ca0))
+
 ## [0.16.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.15.0...v0.16.0) (2025-05-23)
 
 
