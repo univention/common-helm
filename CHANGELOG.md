@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.16.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.15.0...v0.16.0) (2025-05-23)
+
+
+### Features
+
+* **helm-test-harness:** Add attribute "secret_key" into the test template class ([cc2c36b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/cc2c36b56748d92a4ab03447a5069b9be7561216))
+* **pytest-helm:** Add KubernetesResource to represent the top level mapping ([9d431d4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/9d431d404521625f823d4d31898b665d5e88d038))
+* **pytest-helm:** Add new class HelmTemplateResult ([6159776](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/61597761a7179625e4c3dc3db0fa84d86b895d60))
+* **pytest-helm:** Deprecate "Helm.get_resources" and "Helm.get_resource" ([185f1cc](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/185f1ccc8a6ffb30483f9a2a9c4e3884f9dbfb21))
+* **pytest-helm:** Document API of "findone" and "findall" including tests ([1976bb6](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/1976bb63f251abeabea34517a111b4c3c0eb7010))
+* **pytest-helm:** Flag "utils.findone" and "utils.findall" as deprecated ([9d2e3a8](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/9d2e3a8c796ba968154a46ae3e06a4154b52d2c0))
+* **pytest-helm:** Log helm command on debug level ([ba7b7df](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/ba7b7dfaa1781f6c8ab4955ac2ade8114f001fe6))
+* **pytest-helm:** Parse YAML maps into custom class ([e32f33c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/e32f33cb795263ee7feacc22490738ada55b7fde))
+
+
+### Bug Fixes
+
+* **helm-test-harness:** Change default volume name to "secret-udm" in UDM related checks ([5bf8793](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/5bf8793638edc57ecffe10eb24aa57afcdaf9bfd))
+* **helm-test-harness:** Use HelmResource.findone instead of utils.findone ([70fac57](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/70fac579354a46b170153d0320f6e579302cd557))
+* **pytest-helm:** Use "findone" in "get_containers" ([96ea2f3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/96ea2f3c1ebe37974fdcd3dbdcee7f693b450f23))
+
 ## [0.15.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.14.0...v0.15.0) (2025-05-11)
 
 
