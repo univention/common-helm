@@ -80,7 +80,7 @@ def _pop_value(values: Mapping, source_path: list[str]) -> any:
         sub_values = values[source_path[0]]
         sub_path = source_path[1:]
         return _pop_value(sub_values, sub_path)
-    return values[source_path[0]]
+    return values.pop(source_path[0])
 
 
 def _set_value(values: Mapping, target_path: list[str], value: any) -> None:
