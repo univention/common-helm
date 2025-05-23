@@ -26,6 +26,7 @@ class Helm:
         template_file: str | None = None,
         helm_args: list[str] | None = None,
         release_name: str = "",
+        skip_tests: bool = True,
     ):
         """
         Generates helm templates from a chart.
@@ -60,7 +61,13 @@ class Helm:
             if template_file:
                 args.extend(("--show-only", template_file))
 
-            run_result = self._run_command(*args, *helm_args or [])
+            if skip_tests:
+                args.append("--skip-tests")
+
+            if helm_args:
+                args.extend(helm_args)
+
+            run_result = self._run_command(*args)
         finally:
             os.remove(path)
 
