@@ -6,7 +6,7 @@ import subprocess
 
 import pytest
 
-from .base import ClientTestBase
+from .base import BaseTest
 
 
 # NOTE: We want to have the values + linter_values always be passing the
@@ -16,7 +16,7 @@ from .base import ClientTestBase
 # item under test.
 
 
-class UdmClient(ClientTestBase):
+class UdmClient(BaseTest):
     """
     UDM Rest API Client configuration
 

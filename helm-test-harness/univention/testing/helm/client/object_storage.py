@@ -6,10 +6,10 @@ import subprocess
 
 import pytest
 
-from .base import ClientTestBase
+from .base import BaseTest
 
 
-class ObjectStorage(ClientTestBase):
+class ObjectStorage(BaseTest):
     """
     Client configuration for an S3 based object storage.
 

@@ -12,7 +12,7 @@ PrefixMapping = Mapping[JSONPath, JSONPath]
 # type PrefixMapping = Mapping[JSONPath, JSONPath]
 
 
-class ClientTestBase:
+class BaseTest:
     """
     Base class for client configuration focused tests.
 

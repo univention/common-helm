@@ -6,10 +6,10 @@ import subprocess
 
 import pytest
 
-from .base import ClientTestBase
+from .base import BaseTest
 
 
-class CentralNavigationClient(ClientTestBase):
+class CentralNavigationClient(BaseTest):
     """
     Client part of the Central Navigation API of the portal server.
     """
