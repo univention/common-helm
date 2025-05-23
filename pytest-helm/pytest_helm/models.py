@@ -1,22 +1,30 @@
 import jsonpath
 
+UNSET = object()
+
 
 class YamlMapping(dict):
     """
     Represents a YAML map and provides the utility API for testing.
     """
 
-    def findone(self, path):
+    def findone(self, path, default=UNSET):
         """
         Finds the first matching object by `path`.
 
         - `path`: A JSON Path expression.
+        - `default`: Optional. Will be returned if provided and the key is missing.
 
         Raises an `AttributeError` in case `path` does not find any object.
 
         Returns the first found object itself.
         """
-        return jsonpath.match(path, self).obj
+        try:
+            return jsonpath.match(path, self).obj
+        except AttributeError:
+            if default is not UNSET:
+                return default
+            raise
 
     def findall(self, path):
         """
