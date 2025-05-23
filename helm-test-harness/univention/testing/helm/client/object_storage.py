@@ -203,3 +203,23 @@ class ObjectStorage(ClientTestBase):
 
         secret_access_key = main_container.findone(f"env[?@name=='{self.env_secret_access_key}']")
         assert secret_access_key.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
+
+    def test_global_secrets_keep_is_ignored(self, chart):
+        """
+        Keeping Secrets shall not be supported in Client role.
+
+        Random values for a password will never be generated when in Client
+        role. This is why the configuration `global.secrets.keep` shall not
+        have any effect on Secrets in Client role.
+        """
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                keep: true
+            """)
+        result = chart.helm_template(values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        annotations = secret.findone("metadata.annotations", default={})
+        helm_resource_policy = annotations.get("helm.sh/resource-policy")
+        assert helm_resource_policy != "keep"

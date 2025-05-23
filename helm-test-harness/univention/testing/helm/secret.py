@@ -139,6 +139,6 @@ class SecretPasswords(Labels, Namespace):
             """,
         )
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
-        annotations = result.findone("metadata.annotations") or {}
+        annotations = result.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
