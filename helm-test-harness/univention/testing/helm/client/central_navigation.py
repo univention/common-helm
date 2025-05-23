@@ -14,6 +14,15 @@ class CentralNavigationClient(ClientTestBase):
     Client part of the Central Navigation API of the portal server.
     """
 
+    is_secret_owner = False
+    """
+    Flag to indicate if the Helm chart under test owns the secret.
+
+    Different behavior is expected if the secret is owned by the chart. The
+    main aspect is that a random or derived value is generated automatically if
+    the chart is the owner of the secret.
+    """
+
     secret_name = "release-name-test-nubus-common-central-navigation"
 
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
@@ -59,6 +68,8 @@ class CentralNavigationClient(ClientTestBase):
         assert secret.findone(self.path_shared_secret) == "{{ value }}"
 
     def test_auth_plain_values_shared_secret_is_required(self, chart):
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             centralNavigation:
@@ -195,3 +206,40 @@ class CentralNavigationClient(ClientTestBase):
         annotations = secret.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
+
+
+class CentralNavigationOwner(CentralNavigationClient):
+
+    is_secret_owner = True
+
+    def test_auth_shared_secret_has_random_value(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            centralNavigation:
+              auth:
+                sharedSecret: null
+            """)
+        result = chart.helm_template(values, template_file="templates/secret-central-navigation.yaml")
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        secret_value = secret.findone(self.path_shared_secret)
+        assert secret_value
+
+    def test_auth_shared_secret_is_derived_from_master_password(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                masterPassword: "stub-master-password"
+
+            centralNavigation:
+              auth:
+                sharedSecret: null
+            """)
+        result = chart.helm_template(values, template_file="templates/secret-central-navigation.yaml")
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        secret_value = secret.findone(self.path_shared_secret)
+        assert secret_value == "86075010802d028f417ff11774c136829be3c0a0"
