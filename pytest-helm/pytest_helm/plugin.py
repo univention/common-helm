@@ -38,14 +38,24 @@ def pytest_report_header(config):
 
 
 @pytest.fixture
-def helm_values(request):
+def helm_default_values():
+    """
+    Override this fixture to provide a list of default values.
+
+    This fixture has to return a list of file paths.
+    """
+    return []
+
+
+@pytest.fixture
+def helm_values(request, helm_default_values):
     """
     Return a list of values files to add to helm calls.
 
-    Override this fixture in your tests if you want certain default values to
-    be included always.
+    Override the fixture `helm_default_values` to provide a default for your
+    test suite.
     """
-    return request.config.option.values
+    return request.config.option.values or helm_default_values
 
 
 @pytest.fixture
