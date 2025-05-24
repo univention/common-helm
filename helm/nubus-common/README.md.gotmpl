@@ -17,4 +17,6 @@ This chart bundles commonly used functionality to be used in our Helm charts for
 
 {{ template "chart.requirementsSection" . }}
 
+{{ if .Values }}
 {{ template "chart.valuesSectionHtml" . }}
+{{ end }}
