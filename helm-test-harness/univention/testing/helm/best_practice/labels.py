@@ -7,6 +7,9 @@ from yaml import safe_load
 class Labels:
     """
     Checks the common labels behavior expected for all chart resources.
+
+    This is based on the suggestion from the best practices chart of openDesk:
+    https://gitlab.opencode.de/bmi/opendesk/components/platform-development/charts/opendesk-best-practises
     """
 
     def test_additional_labels_add_another_label(self, chart, subtests):
