@@ -153,7 +153,28 @@ class ObjectStorage(BaseTest):
         secret_access_key = main_container.findone(f"env[?@name=='{self.env_secret_access_key}']")
         assert secret_access_key.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
 
-    def test_auth_existing_secret_mounts_correct_custom_key(self, helm, chart_path):
+    def test_auth_existing_secret_uses_correct_default_key(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            objectStorage:
+              auth:
+                existingSecret:
+                  name: "stub-secret-name"
+        """,
+        )
+        result = helm.helm_template(chart_path, values)
+        deployment = result.get_resource(kind="Deployment")
+        main_container = deployment.findone(self.path_main_container)
+
+        access_key_id = main_container.findone(f"env[?@name=='{self.env_access_key_id}']")
+        assert access_key_id.findone("valueFrom.secretKeyRef.key") == "access_key_id"
+
+        secret_access_key = main_container.findone(f"env[?@name=='{self.env_secret_access_key}']")
+        assert secret_access_key.findone(
+            "valueFrom.secretKeyRef.key",
+        ) == "secret_access_key"
+
+    def test_auth_existing_secret_uses_correct_custom_key(self, helm, chart_path):
         values = self.load_and_map(
             """
             objectStorage:
