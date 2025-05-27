@@ -18,6 +18,7 @@ class PostgresqlClient(BaseTest):
     """
 
     default_username = "stub-values-username"
+    default_port = "5432"
     secret_name = "release-name-test-nubus-common-postgresql"
     secret_default_key = "password"
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
@@ -25,76 +26,136 @@ class PostgresqlClient(BaseTest):
     path_postgresql_url = "data.DATABASE_URL"
     sub_path_env_db_password = "env[?@name=='DB_PASSWORD']"
 
-    # TODO: Connection related tests
-    # def test_connection_url_is_required(self, helm, chart_path):
-    #     values = self.load_and_map(
-    #         """
-    #         postgresql:
-    #           connection:
-    #             url: null
-    #           auth:
-    #             username: "stub-username"
-    #             password: "stub-password"
-    #         """,
-    #     )
-    #     with pytest.raises(subprocess.CalledProcessError) as error:
-    #         helm.helm_template(chart_path, values)
-    #     assert "connection has to be configured" in error.value.stderr
+    def test_connection_host_is_required(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            postgresql:
+              connection:
+                host: null
+              auth:
+                password: "stub-password"
+            """)
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            helm.helm_template(chart_path, values)
+        assert "connection has to be configured" in error.value.stderr
 
-    # def test_connection_url_is_templated(self, helm, chart_path):
-    #     values = self.load_and_map(
-    #         """
-    #         global:
-    #           test: "stub_value"
-    #         postgresql:
-    #           connection:
-    #             url: "{{ .Values.global.test }}"
-    #           auth:
-    #             username: "stub-username"
-    #             password: "stub-password"
-    #         """,
-    #     )
-    #     result = helm.helm_template(chart_path, values)
-    #     config_map = result.get_resource(kind="ConfigMap")
-    #     assert config_map.findone(self.path_postgresql_url) == "stub_value"
+    def test_connection_host_is_templated(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            global:
+              test: "stub_value"
+            postgresql:
+              connection:
+                host: "{{ .Values.global.test }}"
+              auth:
+                password: "stub-password"
+            """)
+        result = helm.helm_template(chart_path, values)
+        config_map = result.get_resource(kind="ConfigMap")
+        postgresql_url = config_map.findone(self.path_postgresql_url)
+        assert "stub_value" in postgresql_url
 
-    # def test_connection_url_supports_global_default(self, helm, chart_path):
-    #     values = self.load_and_map(
-    #         """
-    #         global:
-    #           postgresql:
-    #             connection:
-    #               url: "global_stub"
-    #         postgresql:
-    #           connection:
-    #             url: null
-    #           auth:
-    #             username: "stub-username"
-    #             password: "stub-password"
-    #     """,
-    #     )
-    #     result = helm.helm_template(chart_path, values)
-    #     config_map = result.get_resource(kind="ConfigMap")
-    #     assert config_map.findone(self.path_postgresql_url) == "global_stub"
+    def test_connection_host_supports_global_default(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            global:
+              postgresql:
+                connection:
+                  host: "global_stub"
+            postgresql:
+              connection:
+                host: null
+              auth:
+                password: "stub-password"
+        """)
+        result = helm.helm_template(chart_path, values)
+        config_map = result.get_resource(kind="ConfigMap")
+        postgresql_url = config_map.findone(self.path_postgresql_url)
+        assert "global_stub" in postgresql_url
 
-    # def test_connection_url_local_overrides_global(self, helm, chart_path):
-    #     values = self.load_and_map(
-    #         """
-    #         global:
-    #           postgresql:
-    #             connection:
-    #               url: "global_stub"
-    #         postgresql:
-    #           connection:
-    #             url: "local_stub"
-    #           auth:
-    #             username: "stub-username"
-    #             password: "stub-password"
-    #     """,
-    #     )
-    #     result = helm.helm_template(chart_path, values)
-    #     config_map = result.get_resource(kind="ConfigMap")
-    #     assert config_map.findone(self.path_postgresql_url) == "local_stub"
+    def test_connection_host_local_overrides_global(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            global:
+              postgresql:
+                connection:
+                  host: "global_stub"
+            postgresql:
+              connection:
+                host: "local_stub"
+              auth:
+                password: "stub-password"
+        """)
+        result = helm.helm_template(chart_path, values)
+        config_map = result.get_resource(kind="ConfigMap")
+        postgresql_url = config_map.findone(self.path_postgresql_url)
+        assert "local_stub" in postgresql_url
+
+    def test_connection_port_has_default(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            postgresql:
+              connection:
+                port: null
+              auth:
+                password: "stub-password"
+            """)
+        result = helm.helm_template(chart_path, values)
+        config_map = result.get_resource(kind="ConfigMap")
+        postgresql_url = config_map.findone(self.path_postgresql_url)
+        assert self.default_port in postgresql_url
+
+    def test_connection_port_is_templated(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            global:
+              test: "stub_value"
+            postgresql:
+              connection:
+                port: "{{ .Values.global.test }}"
+              auth:
+                password: "stub-password"
+            """)
+        result = helm.helm_template(chart_path, values)
+        config_map = result.get_resource(kind="ConfigMap")
+        postgresql_url = config_map.findone(self.path_postgresql_url)
+        assert "stub_value" in postgresql_url
+
+    def test_connection_port_supports_global_default(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            global:
+              postgresql:
+                connection:
+                  port: "global_stub"
+            postgresql:
+              connection:
+                port: null
+              auth:
+                password: "stub-password"
+        """)
+        result = helm.helm_template(chart_path, values)
+        config_map = result.get_resource(kind="ConfigMap")
+        postgresql_url = config_map.findone(self.path_postgresql_url)
+        assert "global_stub" in postgresql_url
+
+    def test_connection_port_local_overrides_global(self, helm, chart_path):
+        values = self.load_and_map(
+            """
+            global:
+              postgresql:
+                connection:
+                  port: "global_stub"
+            postgresql:
+              connection:
+                port: "local_stub"
+              auth:
+                password: "stub-password"
+        """)
+        result = helm.helm_template(chart_path, values)
+        config_map = result.get_resource(kind="ConfigMap")
+        postgresql_url = config_map.findone(self.path_postgresql_url)
+        assert "local_stub" in postgresql_url
 
     def test_auth_plain_values_generate_secret(self, helm, chart_path):
         values = self.load_and_map(
