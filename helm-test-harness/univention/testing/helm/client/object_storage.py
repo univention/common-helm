@@ -35,8 +35,8 @@ class ObjectStorage(BaseTest):
             """)
         result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.accessKeyId") == "stub-access-key"
-        assert secret.findone("stringData.secretAccessKey") == "stub-secret-key"
+        assert secret.findone("stringData.access_key_id") == "stub-access-key"
+        assert secret.findone("stringData.secret_access_key") == "stub-secret-key"
 
     def test_auth_plain_values_access_key_id_is_templated(self, chart):
         values = self.load_and_map(
@@ -52,7 +52,7 @@ class ObjectStorage(BaseTest):
             """)
         result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.accessKeyId") == "stub-value"
+        assert secret.findone("stringData.access_key_id") == "stub-value"
 
     def test_auth_plain_values_secret_key_is_not_templated(self, chart):
         values = self.load_and_map(
@@ -66,7 +66,7 @@ class ObjectStorage(BaseTest):
             """)
         result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.secretAccessKey") == "{{ value }}"
+        assert secret.findone("stringData.secret_access_key") == "{{ value }}"
 
     def test_auth_plain_values_secret_key_is_required(self, chart, capsys):
         values = self.load_and_map(
@@ -82,7 +82,7 @@ class ObjectStorage(BaseTest):
             chart.helm_template(values)
         assert "Object Storage credentials have to be supplied" in error.value.stderr
 
-    def test_auth_plain_values_access_key_is_required(self, chart):
+    def test_auth_plain_values_access_key_id_is_required(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
