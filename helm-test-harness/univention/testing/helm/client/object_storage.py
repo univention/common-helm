@@ -23,7 +23,7 @@ class ObjectStorage(BaseTest):
     env_secret_access_key = "OBJECT_STORAGE_SECRET_ACCESS_KEY"
     secret_name = "release-name-test-nubus-common-object-storage"
 
-    def test_auth_plain_values_generate_secret(self, helm, chart_path):
+    def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -32,14 +32,13 @@ class ObjectStorage(BaseTest):
               auth:
                 accessKeyId: "stub-access-key"
                 secretAccessKey: "stub-secret-key"
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         assert secret.findone("stringData.accessKeyId") == "stub-access-key"
         assert secret.findone("stringData.secretAccessKey") == "stub-secret-key"
 
-    def test_auth_plain_values_access_key_id_is_templated(self, helm, chart_path):
+    def test_auth_plain_values_access_key_id_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -50,13 +49,12 @@ class ObjectStorage(BaseTest):
               auth:
                 accessKeyId: "{{ .Values.global.test }}"
                 secretAccessKey: "stub-password"
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         assert secret.findone("stringData.accessKeyId") == "stub-value"
 
-    def test_auth_plain_values_secret_key_is_not_templated(self, helm, chart_path):
+    def test_auth_plain_values_secret_key_is_not_templated(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -65,13 +63,12 @@ class ObjectStorage(BaseTest):
               auth:
                 accessKeyId: "stub-access-key-id"
                 secretAccessKey: "{{ value }}"
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         assert secret.findone("stringData.secretAccessKey") == "{{ value }}"
 
-    def test_auth_plain_values_secret_key_is_required(self, helm, chart_path, capsys):
+    def test_auth_plain_values_secret_key_is_required(self, chart, capsys):
         values = self.load_and_map(
             """
             objectStorage:
@@ -80,13 +77,12 @@ class ObjectStorage(BaseTest):
               auth:
                 accessKeyId: "stub-access-key"
                 secretAccessKey: null
-        """,
-        )
+            """)
         with pytest.raises(subprocess.CalledProcessError) as error:
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
         assert "Object Storage credentials have to be supplied" in error.value.stderr
 
-    def test_auth_plain_values_access_key_is_required(self, helm, chart_path):
+    def test_auth_plain_values_access_key_is_required(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -95,13 +91,12 @@ class ObjectStorage(BaseTest):
               auth:
                 accessKeyId: null
                 secretAccessKey: "stub-secret-key"
-        """,
-        )
+            """)
         with pytest.raises(subprocess.CalledProcessError) as error:
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
         assert "Object Storage credentials have to be supplied" in error.value.stderr
 
-    def test_auth_existing_secret_does_not_generate_a_secret(self, helm, chart_path):
+    def test_auth_existing_secret_does_not_generate_a_secret(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -110,13 +105,12 @@ class ObjectStorage(BaseTest):
               auth:
                 existingSecret:
                   name: "stub-secret-name"
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-    def test_auth_existing_secret_does_not_require_plain_password(self, helm, chart_path):
+    def test_auth_existing_secret_does_not_require_plain_password(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -126,12 +120,11 @@ class ObjectStorage(BaseTest):
                 secretAccessKey: null
                 existingSecret:
                   name: "stub-secret-name"
-        """,
-        )
+            """)
         with does_not_raise():
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
 
-    def test_auth_existing_secret_used_to_populate_environment_variables(self, helm, chart_path):
+    def test_auth_existing_secret_used_to_populate_environment_variables(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -141,9 +134,8 @@ class ObjectStorage(BaseTest):
                 existingSecret:
                   name: "stub-secret-name"
 
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         deployment = result.get_resource(kind="Deployment")
         main_container = deployment.findone(self.path_main_container)
 
@@ -153,16 +145,15 @@ class ObjectStorage(BaseTest):
         secret_access_key = main_container.findone(f"env[?@name=='{self.env_secret_access_key}']")
         assert secret_access_key.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
 
-    def test_auth_existing_secret_uses_correct_default_key(self, helm, chart_path):
+    def test_auth_existing_secret_uses_correct_default_key(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
               auth:
                 existingSecret:
                   name: "stub-secret-name"
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         deployment = result.get_resource(kind="Deployment")
         main_container = deployment.findone(self.path_main_container)
 
@@ -174,7 +165,7 @@ class ObjectStorage(BaseTest):
             "valueFrom.secretKeyRef.key",
         ) == "secret_access_key"
 
-    def test_auth_existing_secret_uses_correct_custom_key(self, helm, chart_path):
+    def test_auth_existing_secret_uses_correct_custom_key(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -184,9 +175,8 @@ class ObjectStorage(BaseTest):
                   keyMapping:
                     access_key_id: "stub_access_key_id_key"
                     secret_access_key: "stub_secret_access_key_key"
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         deployment = result.get_resource(kind="Deployment")
         main_container = deployment.findone(self.path_main_container)
 
@@ -198,7 +188,7 @@ class ObjectStorage(BaseTest):
             "valueFrom.secretKeyRef.key",
         ) == "stub_secret_access_key_key"
 
-    def test_auth_existing_secret_has_precedence(self, helm, chart_path):
+    def test_auth_existing_secret_has_precedence(self, chart):
         values = self.load_and_map(
             """
             objectStorage:
@@ -210,9 +200,8 @@ class ObjectStorage(BaseTest):
                   keyMapping:
                     accessKeyId: "stub_access_key_id_key"
                     secretAccessKey: "stub_secret_access_key_key"
-        """,
-        )
-        result = helm.helm_template(chart_path, values)
+            """)
+        result = chart.helm_template(values)
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
