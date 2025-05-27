@@ -182,8 +182,8 @@ class ObjectStorage(BaseTest):
                 existingSecret:
                   name: "stub-secret-name"
                   keyMapping:
-                    accessKeyId: "stub_access_key_id_key"
-                    secretAccessKey: "stub_secret_access_key_key"
+                    access_key_id: "stub_access_key_id_key"
+                    secret_access_key: "stub_secret_access_key_key"
         """,
         )
         result = helm.helm_template(chart_path, values)
