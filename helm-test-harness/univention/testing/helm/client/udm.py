@@ -24,13 +24,17 @@ class UdmClient(BaseTest):
     API client.
     """
 
+    config_map_name = None
+    secret_name = "release-name-test-nubus-common-udm"
+    workload_resource_kind = "Deployment"
+
     default_username = "stub-values-username"
+
     path_udm_api_url = "data.UDM_API_URL"
     path_udm_api_username = "data.UDM_API_USERNAME"
     path_volume_secret_udm = "spec.template.spec.volumes[?@.name=='secret-udm']"
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
     sub_path_udm_volume_mount = "volumeMounts[?@.name=='secret-udm']"
-    secret_name = "release-name-test-nubus-common-udm"
 
     def test_connection_url_is_required(self, chart):
         values = self.load_and_map(
@@ -38,9 +42,6 @@ class UdmClient(BaseTest):
             udm:
               connection:
                 url: null
-              auth:
-                username: "stub-username"
-                password: "stub-password"
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
@@ -54,12 +55,9 @@ class UdmClient(BaseTest):
             udm:
               connection:
                 url: "{{ .Values.global.test }}"
-              auth:
-                username: "stub-username"
-                password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap")
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         assert config_map.findone(self.path_udm_api_url) == "stub_value"
 
     def test_connection_url_supports_global_default(self, chart):
@@ -72,12 +70,9 @@ class UdmClient(BaseTest):
             udm:
               connection:
                 url: null
-              auth:
-                username: "stub-username"
-                password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap")
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         assert config_map.findone(self.path_udm_api_url) == "global_stub"
 
     def test_connection_url_local_overrides_global(self, chart):
@@ -90,20 +85,15 @@ class UdmClient(BaseTest):
             udm:
               connection:
                 url: "local_stub"
-              auth:
-                username: "stub-username"
-                password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap")
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         assert config_map.findone(self.path_udm_api_url) == "local_stub"
 
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 username: "stub-username"
                 password: "stub-password"
@@ -117,14 +107,12 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 username: "stub-username"
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap")
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         assert config_map.findone(self.path_udm_api_username) == "stub-username"
 
     def test_auth_plain_values_username_is_templated(self, chart):
@@ -133,22 +121,18 @@ class UdmClient(BaseTest):
             global:
               test: "stub-value"
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 username: "{{ .Values.global.test }}"
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap")
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         assert config_map.findone(self.path_udm_api_username) == "stub-value"
 
     def test_auth_plain_values_password_is_not_templated(self, chart):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 username: "stub-username"
                 password: "{{ value }}"
@@ -161,8 +145,6 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 username: "stub-username"
                 password: null
@@ -175,8 +157,6 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 username: null
                 password: "stub-password"
@@ -189,21 +169,17 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap")
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         assert config_map.findone(self.path_udm_api_username) == self.default_username
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, chart):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 existingSecret:
                   name: "stub-secret-name"
@@ -216,8 +192,6 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 password: null
                 existingSecret:
@@ -230,30 +204,26 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 existingSecret:
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="Deployment")
-        secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        secret_udm_volume = workload_resource.findone(self.path_volume_secret_udm)
         assert secret_udm_volume.findone("secret.secretName") == "stub-secret-name"
 
     def test_auth_existing_secret_mounts_correct_default_key(self, chart):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 existingSecret:
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="Deployment")
-        main_container = deployment.findone(self.path_main_container)
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        main_container = workload_resource.findone(self.path_main_container)
         secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
@@ -262,17 +232,15 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 username: "stub-username"
                 password: "stub-password"
                 existingSecret: null
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="Deployment")
-        secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
-        main_container = deployment.findone(self.path_main_container)
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        secret_udm_volume = workload_resource.findone(self.path_volume_secret_udm)
+        main_container = workload_resource.findone(self.path_main_container)
         secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
@@ -282,8 +250,6 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "local_stub"
               auth:
                 existingSecret:
                   name: "stub-secret-name"
@@ -291,8 +257,8 @@ class UdmClient(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="Deployment")
-        main_container = deployment.findone(self.path_main_container)
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        main_container = workload_resource.findone(self.path_main_container)
         secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
@@ -301,8 +267,6 @@ class UdmClient(BaseTest):
         values = self.load_and_map(
             """
             udm:
-              connection:
-                url: "stub-url"
               auth:
                 password: stub-plain-password
                 existingSecret:
@@ -314,9 +278,9 @@ class UdmClient(BaseTest):
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        deployment = result.get_resource(kind="Deployment")
-        secret_udm_volume = deployment.findone(self.path_volume_secret_udm)
-        main_container = deployment.findone(self.path_main_container)
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        secret_udm_volume = workload_resource.findone(self.path_volume_secret_udm)
+        main_container = workload_resource.findone(self.path_main_container)
         secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
@@ -337,8 +301,6 @@ class UdmClient(BaseTest):
                 keep: true
 
             udm:
-              connection:
-                url: "stub-url"
               auth:
                 password: "stub-password"
             """)
