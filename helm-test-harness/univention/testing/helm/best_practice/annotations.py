@@ -21,7 +21,7 @@ class Annotations:
         result = chart.helm_template(values)
         for resource in result:
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
-                annotations = resource.findone("metadata.annotations")
+                annotations = resource.findone("metadata.annotations", default={})
                 assert annotations["local.test/name"] == "value"
 
     def test_additional_annotations_value_is_templated(self, chart, subtests):
