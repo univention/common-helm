@@ -94,7 +94,7 @@ class ImageConfiguration:
         ]
         for containers, resource in self._generate_containers_of_resource_kinds(result):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
-                image_pull_secrets = resource.findone("spec.template.spec.imagePullSecrets")
+                image_pull_secrets = resource.findone("spec.template.spec.imagePullSecrets", default=[])
                 assert image_pull_secrets == expected_secrets
 
     def test_image_repository_can_be_configured(self, helm, chart_path, subtests):
