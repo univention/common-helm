@@ -19,12 +19,12 @@ class YamlMapping(dict):
 
         Returns the first found object itself.
         """
-        try:
-            return jsonpath.match(path, self).obj
-        except AttributeError:
+        found = jsonpath.match(path, self)
+        if not found:
             if default is not UNSET:
                 return default
-            raise
+            raise KeyError(path)
+        return found.obj
 
     def findall(self, path):
         """

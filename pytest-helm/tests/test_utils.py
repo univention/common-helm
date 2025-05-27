@@ -27,7 +27,7 @@ def test_findone_returns_found_object(path, expected_value):
 
 
 def test_findone_raises_in_case_of_missing_value():
-    with pytest.raises(AttributeError):
+    with pytest.raises(KeyError):
         YamlMapping.findone(stub_data, "a.missing-key")
 
 
