@@ -10,5 +10,4 @@ client:
   connection:
     url: "http://stub-linter-url.test"
   auth:
-    username: "stub-linter-username"
     password: "stub-linter-password"
