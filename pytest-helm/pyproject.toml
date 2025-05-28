@@ -17,6 +17,7 @@ dependencies = [
     "pytest",
     "pytest-mock",
     "python-jsonpath",
+    "ruamel-yaml>=0.18.11",
 ]
 
 [project.entry-points.pytest11]
