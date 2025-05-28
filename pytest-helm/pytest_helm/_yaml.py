@@ -50,3 +50,4 @@ class CustomSafeDumper(SafeDumper):
 
 CustomSafeLoader.add_constructor(GENERIC_MAPPING_TAG, map_constructor)
 CustomSafeDumper.add_representer(YamlMapping, map_representer)
+CustomSafeDumper.add_representer(KubernetesResource, map_representer)

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import pytest
+import yaml
 
+from ._yaml import CustomSafeDumper
 from .helm import Helm, HelmChart
 
 
@@ -58,6 +60,9 @@ def helm_values(request, helm_default_values):
     return request.config.option.values or helm_default_values
 
 
+helm_template_results_key = pytest.StashKey[list]()
+
+
 @pytest.fixture
 def helm(request, helm_values):
     """
@@ -65,7 +70,9 @@ def helm(request, helm_values):
     """
     helm_path = request.config.option.helm_path
     debug = request.config.option.helm_debug
-    return Helm(helm_path, helm_values, debug)
+    fixture =  Helm(helm_path, helm_values, debug)
+    request.node.stash[helm_template_results_key] = fixture._helm_template_results
+    yield fixture
 
 
 @pytest.fixture
@@ -105,3 +112,27 @@ def chart(helm, chart_path):
     if not chart_path:
         raise RuntimeError('The fixture "chart_path" has to provide a value to use this fixture.')
     return HelmChart(chart_path, helm)
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_makereport(item, call):
+    report = yield
+    if call.when == "call":
+        helm_template_results = item.stash.get(helm_template_results_key, [])
+        content = []
+        for helm_template_result in helm_template_results:
+            for resource in helm_template_result._accessed_resources:
+                content.append(_resource_header(resource))
+                content.append("\n---")
+                content.append(yaml.dump(resource, Dumper=CustomSafeDumper))
+        if content:
+            report.sections.append(("Accessed Helm Resources", "\n".join(content)))
+    return report
+
+
+def _resource_header(resource):
+    return (
+        f'Kubernetes resource: '
+        f'kind={resource.findone("kind", default="<kind missing>")}, '
+        f'name={resource.findone("metadata.name", default="<metadata.name missing>")}'
+    )
