@@ -14,10 +14,16 @@ log = logging.getLogger(__name__)
 
 class Helm:
 
+    _helm_template_results: list[HelmTemplateResult]
+    """
+    Used for reporting, tracks the generated template results.
+    """
+
     def __init__(self, helm_cmd="helm", values=None, debug=False):
         self.helm_cmd = helm_cmd
         self.debug = debug
         self.values = values or tuple()
+        self._helm_template_results = []
 
     def helm_template(
         self,
@@ -75,6 +81,7 @@ class Helm:
             doc for doc in yaml.load_all(run_result.stdout, Loader=CustomSafeLoader) if doc)
         result.stdout = run_result.stdout
         result.stderr = run_result.stderr
+        self._helm_template_results.append(result)
         return result
 
     @deprecated("Use the method 'HelmTemplateResult.get_resources' instead.")

@@ -62,6 +62,15 @@ class HelmTemplateResult(list):
     Error output of the call to "helm template".
     """
 
+    _accessed_resources: list[KubernetesResource]
+    """
+    Internally used to generate a report of accessed resources.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._accessed_resources = []
+
     def get_resources(self, *, api_version=None, kind=None, name=None, predicate=None):
         """
         Get the resources matching given criteria
@@ -76,6 +85,7 @@ class HelmTemplateResult(list):
             docs = [doc for doc in docs if kind == doc.get("kind")]
         if name:
             docs = [doc for doc in docs if name == doc.get("metadata", {}).get("name")]
+        self._accessed_resources.extend(docs)
         return docs
 
     def get_resource(self, *args, **kwargs):
