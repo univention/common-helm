@@ -31,12 +31,14 @@ def findall(data, path):
     return YamlMapping.findall(data, path)
 
 
-def get_containers(manifest):
-    try:
-        init_containers = manifest.findone("spec.template.spec.initContainers")
-    except (AttributeError, IndexError):
-        init_containers = []
-    containers = manifest.findone("spec.template.spec.containers")
+def get_containers(resource: YamlMapping) -> list:
+    """
+    Return all containers of a Workload Resource.
+
+    Includes both init containers and regular containers.
+    """
+    init_containers = resource.findone("spec.template.spec.initContainers", default=[])
+    containers = resource.findone("spec.template.spec.containers")
     return init_containers + containers
 
 
