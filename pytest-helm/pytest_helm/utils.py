@@ -1,5 +1,5 @@
 from ._warnings import deprecated
-from ._yaml import YamlMapping
+from ._yaml import CustomYAML, YamlMapping
 
 
 @deprecated("Use the attribute findone on the parsed YamlMapping instead.")
@@ -29,6 +29,13 @@ def findall(data, path):
     nothing is found.
     """
     return YamlMapping.findall(data, path)
+
+
+def load_yaml(source: str):
+    """
+    Utility function to conveniently load YAML sources.
+    """
+    return CustomYAML().load(source)
 
 
 def get_containers(resource: YamlMapping) -> list:
