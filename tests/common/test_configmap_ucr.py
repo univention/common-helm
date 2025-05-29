@@ -4,12 +4,12 @@
 
 import re
 
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 def test_mounts_configmap_ucr(helm, chart_path):
     """Test that charts which have `mountUcr: true` get the UCR's base*.conf file mounted."""
-    values = safe_load(
+    values = load_yaml(
         """
       mountUcr: true
       global:
@@ -68,7 +68,7 @@ def test_mounts_configmap_ucr(helm, chart_path):
 
 def test_mounts_no_configmap_ucr(helm, chart_path):
     """Test that charts which have `mountUcr: false` do not get the UCR's base*.conf file mounted."""
-    values = safe_load(
+    values = load_yaml(
         """
       mountUcr: false
     """,
