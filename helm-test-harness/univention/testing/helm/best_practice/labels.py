@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 class Labels:
@@ -13,7 +13,7 @@ class Labels:
     """
 
     def test_additional_labels_add_another_label(self, chart, subtests):
-        values = safe_load(
+        values = load_yaml(
             """
             additionalLabels:
               local.test/name: "value"
@@ -25,7 +25,7 @@ class Labels:
                 assert labels["local.test/name"] == "value"
 
     def test_additional_labels_modify_a_common_label(self, chart, subtests):
-        values = safe_load(
+        values = load_yaml(
             """
             additionalLabels:
               app.kubernetes.io/name: "replaced value"
@@ -37,7 +37,7 @@ class Labels:
                 assert labels["app.kubernetes.io/name"] == "replaced value"
 
     def test_additional_labels_value_is_templated(self, chart, subtests):
-        values = safe_load(
+        values = load_yaml(
             """
             global:
               test: "stub-value"

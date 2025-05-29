@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 class Annotations:
@@ -13,7 +13,7 @@ class Annotations:
     """
 
     def test_additional_annotations_add_another_annotation(self, chart, subtests):
-        values = safe_load(
+        values = load_yaml(
             """
             additionalAnnotations:
               local.test/name: "value"
@@ -25,7 +25,7 @@ class Annotations:
                 assert annotations["local.test/name"] == "value"
 
     def test_additional_annotations_value_is_templated(self, chart, subtests):
-        values = safe_load(
+        values = load_yaml(
             """
             global:
               test: "stub-value"

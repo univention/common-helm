@@ -3,14 +3,14 @@
 
 from pytest_helm.utils import add_jsonpath_prefix, get_containers
 from univention.testing.helm.base import Base, Labels, Namespace
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 class Deployment(Labels, Namespace):
 
     def test_pod_security_context_can_be_disabled(self, helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             podSecurityContext:
               enabled: false
@@ -26,7 +26,7 @@ class Deployment(Labels, Namespace):
 
     def test_pod_security_context_is_applied(self, helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             podSecurityContext:
               enabled: true
@@ -47,7 +47,7 @@ class Deployment(Labels, Namespace):
 
     def test_container_security_context_can_be_disabled(self, helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             containerSecurityContext:
               enabled: false
@@ -64,7 +64,7 @@ class Deployment(Labels, Namespace):
 
     def test_container_security_context_is_applied(self, helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             containerSecurityContext:
               enabled: true
@@ -86,7 +86,7 @@ class Deployment(Labels, Namespace):
         _assert_all_have_security_context(containers, expected_security_context)
 
     def test_has_configuable_service_account(self, helm, chart_path):
-        values = safe_load(
+        values = load_yaml(
             """
         serviceAccount:
             create: true
@@ -156,7 +156,7 @@ class DeploymentTlsDhparamBase(Base):
         }
 
     def _run_test(self, helm, chart_path, key, volume_item, mount_items, secret_name, values_yaml):
-        values = add_jsonpath_prefix(key, safe_load(values_yaml))
+        values = add_jsonpath_prefix(key, load_yaml(values_yaml))
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
 
         secret = deployment.findone(
@@ -184,7 +184,7 @@ class DeploymentTlsDhparamBase(Base):
         existingSecret:
           name: "stub-secret-name"
         """
-        values = add_jsonpath_prefix(key, safe_load(values_yaml))
+        values = add_jsonpath_prefix(key, load_yaml(values_yaml))
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
 
         secret = deployment.findone(

@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from pytest_helm.helm import Helm
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 class Base:
@@ -58,7 +58,7 @@ class Labels(Base):
 
     def test_add_another_label(self, helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             additionalLabels:
               local.test/name: "value"
@@ -72,7 +72,7 @@ class Labels(Base):
 
     def test_modify_a_common_label(self, helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             additionalLabels:
               app.kubernetes.io/name: "replaced value"
@@ -86,7 +86,7 @@ class Labels(Base):
 
     def test_label_value_is_templated(self, helm: Helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             global:
               test: "stub-value"
@@ -109,7 +109,7 @@ class Annotations(Base):
 
     def test_add_another_annotation(self, helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             additionalAnnotations:
               local.test/annotation: "stub-value"
@@ -123,7 +123,7 @@ class Annotations(Base):
 
     def test_annotation_value_is_templated(self, helm: Helm, chart_path):
         values = self.add_prefix(
-            safe_load(
+            load_yaml(
                 """
             global:
               test: "global-stub-value"

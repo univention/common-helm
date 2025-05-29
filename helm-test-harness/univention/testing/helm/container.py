@@ -3,7 +3,7 @@
 
 from pytest_helm.utils import add_jsonpath_prefix
 from univention.testing.helm.base import Base
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 class ContainerEnvVarSecret(Base):
@@ -29,7 +29,7 @@ class ContainerEnvVarSecret(Base):
     ):
         values = add_jsonpath_prefix(
             key,
-            safe_load(
+            load_yaml(
                 """
                 auth:
                   existingSecret:
@@ -54,7 +54,7 @@ class ContainerEnvVarSecret(Base):
     ):
         values = add_jsonpath_prefix(
             key,
-            safe_load(
+            load_yaml(
                 """
                 auth:
                   existingSecret: null
@@ -80,7 +80,7 @@ class ContainerEnvVarSecret(Base):
     ):
         values = add_jsonpath_prefix(
             key,
-            safe_load(
+            load_yaml(
                 """
                 auth:
                   existingSecret:
@@ -107,7 +107,7 @@ class ContainerEnvVarSecret(Base):
     ):
         values = add_jsonpath_prefix(
             key,
-            safe_load(
+            load_yaml(
                 """
                 auth:
                   password: stub-plain-password

@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from collections.abc import Mapping
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 # TODO: Change once the Python version has been upgraded in the test runner to >= 3.12
@@ -53,7 +53,7 @@ class BaseTest:
                     """)
                 # ...
         '''
-        values = safe_load(values_yaml)
+        values = load_yaml(values_yaml)
         apply_mapping(values, self.prefix_mapping)
         return values
 

@@ -6,7 +6,7 @@ import subprocess
 import pytest
 
 from univention.testing.helm.base import Annotations, Labels, Namespace
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 class SecretPasswords(Annotations, Labels, Namespace):
@@ -31,7 +31,7 @@ class SecretPasswords(Annotations, Labels, Namespace):
 
     def test_auth_plain_values_generate_secret(self, helm, chart_path):
         values = self.values(
-            safe_load("""
+            load_yaml("""
             auth:
               password: "stub-password"
         """),
@@ -41,7 +41,7 @@ class SecretPasswords(Annotations, Labels, Namespace):
 
     def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
         values = self.values(
-            safe_load("""
+            load_yaml("""
             auth:
               password: "{{ value }}"
         """),
@@ -54,7 +54,7 @@ class SecretPasswords(Annotations, Labels, Namespace):
         Only relevant for secrets that don't have generated password support
         """
         values = self.values(
-            safe_load("""
+            load_yaml("""
             auth:
               password: null
         """),
@@ -78,7 +78,7 @@ class SecretPasswords(Annotations, Labels, Namespace):
         chart_path,
     ):
         values = self.values(
-            safe_load(
+            load_yaml(
                 """
             auth:
               existingSecret:
@@ -95,7 +95,7 @@ class SecretPasswords(Annotations, Labels, Namespace):
         chart_path,
     ):
         values = self.values(
-            safe_load(
+            load_yaml(
                 """
             auth:
               password: null
@@ -109,7 +109,7 @@ class SecretPasswords(Annotations, Labels, Namespace):
 
     def test_auth_existing_secret_has_precedence(self, helm, chart_path):
         values = self.values(
-            safe_load(
+            load_yaml(
                 """
             auth:
               password: stub-plain-password
@@ -131,7 +131,7 @@ class SecretPasswords(Annotations, Labels, Namespace):
         role. This is why the configuration `global.secrets.keep` shall not
         have any effect on Secrets in Client role.
         """
-        values = safe_load(
+        values = load_yaml(
             """
             global:
               secrets:
