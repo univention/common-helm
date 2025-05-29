@@ -73,7 +73,7 @@ def helm(request, helm_values):
     debug = request.config.option.helm_debug
     fixture =  Helm(helm_path, helm_values, debug)
     request.node.stash[helm_fixture_key] = fixture
-    yield fixture
+    return fixture
 
 
 @pytest.fixture
