@@ -2,11 +2,10 @@ import logging
 import os
 import subprocess
 import tempfile
-
-import yaml
+from pathlib import Path
 
 from ._warnings import deprecated
-from ._yaml import CustomSafeDumper, CustomSafeLoader
+from ._yaml import CustomYAML
 from .models import HelmTemplateResult
 
 log = logging.getLogger(__name__)
@@ -43,16 +42,17 @@ class Helm:
         a useful API to inspect the generated YAML data and also to access the
         output of the call to Helm.
         """
+        myyaml = CustomYAML(typ="rt")
+
         values = values or {}
         fd, path = tempfile.mkstemp()
         try:
-            values_yaml = yaml.dump(values, Dumper=CustomSafeDumper)
             with os.fdopen(fd, "w") as tmp:
-                tmp.write(values_yaml)
+                myyaml.dump(values, tmp)
 
             if self.debug:
                 print("Dumped Helm values:\n")
-                print(values_yaml)
+                print(Path(path).read_text())
 
             args = [self.helm_cmd, "template"]
 
@@ -77,8 +77,8 @@ class Helm:
         finally:
             os.remove(path)
 
-        result = HelmTemplateResult(
-            doc for doc in yaml.load_all(run_result.stdout, Loader=CustomSafeLoader) if doc)
+        docs = myyaml.load_all(run_result.stdout)
+        result = HelmTemplateResult(doc for doc in docs if doc)
         result.stdout = run_result.stdout
         result.stderr = run_result.stderr
         self._helm_template_results.append(result)
