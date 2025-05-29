@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import pytest
-import yaml
+import io
 
-from ._yaml import CustomSafeDumper
+import pytest
+
+from ._yaml import CustomYAML
 from .helm import Helm, HelmChart
 
 
@@ -124,7 +125,11 @@ def pytest_runtest_makereport(item, call):
             for resource in helm_template_result._accessed_resources:
                 content.append(_resource_header(resource))
                 content.append("\n---")
-                content.append(yaml.dump(resource, Dumper=CustomSafeDumper))
+
+                out_stream = io.StringIO()
+                with CustomYAML(output=out_stream) as myyaml:
+                    myyaml.dump(resource)
+                content.append(out_stream.getvalue())
         if content:
             report.sections.append(("Accessed Helm Resources", "\n".join(content)))
     return report

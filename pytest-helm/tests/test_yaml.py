@@ -1,10 +1,10 @@
 import textwrap
 from io import StringIO
 
-from pytest_helm._yaml import CustomYAML
-from pytest_helm.models import YamlMapping, KubernetesResource
 from ruamel.yaml import YAML
 
+from pytest_helm._yaml import CustomYAML
+from pytest_helm.models import KubernetesResource, YamlMapping
 
 stub_stdout = """
 ---
