@@ -62,6 +62,7 @@ def helm_values(request, helm_default_values):
 
 
 helm_template_results_key = pytest.StashKey[list]()
+helm_template_call_results_key = pytest.StashKey[list]()
 
 
 @pytest.fixture
@@ -73,6 +74,7 @@ def helm(request, helm_values):
     debug = request.config.option.helm_debug
     fixture =  Helm(helm_path, helm_values, debug)
     request.node.stash[helm_template_results_key] = fixture._helm_template_results
+    request.node.stash[helm_template_call_results_key] = fixture._helm_template_call_results
     yield fixture
 
 
@@ -131,7 +133,22 @@ def pytest_runtest_makereport(item, call):
                     myyaml.dump(resource)
                 content.append(out_stream.getvalue())
         if content:
-            report.sections.append(("Accessed Helm Resources", "\n".join(content)))
+            report.sections.append(("Accessed Resources", "\n".join(content)))
+
+        output = []
+        helm_template_call_results = item.stash.get(helm_template_call_results_key, [])
+        for call_result in helm_template_call_results:
+            if call_result.returncode != 0:
+                output.append("Call:\n")
+                output.append(" ".join(str(i) for i in call_result.args))
+                if call_result.stdout:
+                    output.append("\nStdout:\n")
+                    output.append(call_result.stdout)
+                if call_result.stderr:
+                    output.append("\nStderr:\n")
+                    output.append(call_result.stderr)
+        if output:
+            report.sections.append(("Failed helm template calls", "\n".join(output)))
     return report
 
 
