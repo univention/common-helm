@@ -41,13 +41,12 @@ class Base:
         For cases where this constraint is not practical, this method can be overwritten by a subclass.
         """
         assert template_file
-        result = [
-            i for i in helm.helm_template(chart, values, template_file, helm_args) if i is not None
-        ]
-        assert len(result) <= 1
-        if not result:
+        result = helm.helm_template(chart, values, template_file, helm_args)
+        try:
+            resource = result.get_resource()
+            return resource
+        except LookupError:
             return {}
-        return result[0]
 
 
 class Labels(Base):
