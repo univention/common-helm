@@ -1,6 +1,4 @@
-import yaml
-
-from pytest_helm._yaml import CustomSafeLoader
+from pytest_helm._yaml import CustomYAML
 from pytest_helm.models import HelmTemplateResult
 
 stub_helm_output = """
@@ -17,7 +15,8 @@ metadata:
 
 
 def test_records_resource_access():
-    data = yaml.load_all(stub_helm_output, Loader=CustomSafeLoader)
+    myyaml = CustomYAML()
+    data = myyaml.load_all(stub_helm_output)
     result = HelmTemplateResult(data)
     deployment = result.get_resource(kind="Deployment")
 

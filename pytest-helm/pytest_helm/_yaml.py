@@ -1,27 +1,37 @@
 """
-Internal module which hooks up PyYAML and ruamel.yaml so that the models are used.
+Internal module which hooks up ruamel.yaml so that the models are used.
 
-The extension mechanism is in both implementations based on a class based
-attribute, so that this module does create subclasses to avoid interference
-with usage of the YAML libraries in other places.
-
-Use `CustomSafeLoader` and `CustomSafeDumper` to parse or render YAML with the
-custom models.
+The extension mechanism is based on a class based attribute, so that this
+module does create subclasses to avoid interference with usage of the YAML
+library in other places.
 """
 
 import ruamel.yaml
-from yaml import SafeDumper, SafeLoader
 
 from .models import KubernetesResource, YamlMapping
 
 GENERIC_MAPPING_TAG = "tag:yaml.org,2002:map"
 
 
-def pyyaml_map_constructor(loader, node):
-    value = loader.construct_mapping(node)
-    if _is_kubernetes_resource(node):
-        return KubernetesResource(value)
-    return YamlMapping(value)
+class CustomYAML(ruamel.yaml.YAML):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.Constructor = CustomRoundTripConstructor
+        self.Representer = CustomRoundTripRepresenter
+
+
+class CustomRoundTripConstructor(ruamel.yaml.RoundTripConstructor):
+    """
+    A custom subclass to keep the class attributes separate.
+    """
+
+
+class CustomRoundTripRepresenter(ruamel.yaml.RoundTripRepresenter):
+    """
+    A custom subclass to keep the class attributes separate.
+    """
 
 
 def map_constructor(constructor, node):
@@ -44,57 +54,8 @@ def _is_kubernetes_resource(node):
     return keys.issuperset({"apiVersion", "kind"})
 
 
-
 def map_representer(dumper, data):
     return dumper.represent_mapping(GENERIC_MAPPING_TAG, data)
-
-
-class CustomSafeLoader(SafeLoader):
-    """
-    A custom loader class.
-
-    It has its own registry of constructors. This ensures that the parsing of
-    YAML `maps` into `YamlMappings` interferes with the regular `SafeLoader`.
-    """
-
-
-class CustomSafeDumper(SafeDumper):
-    """
-    A custom dumper class.
-
-    It has its own registry of representers. This ensures that the
-    representation of `YamlMapping` as a YAML `map` does not interfere with
-    the regular `SafeDumper`.
-    """
-
-
-CustomSafeLoader.add_constructor(GENERIC_MAPPING_TAG, pyyaml_map_constructor)
-CustomSafeDumper.add_representer(YamlMapping, map_representer)
-CustomSafeDumper.add_representer(KubernetesResource, map_representer)
-
-
-# Ruamel integration
-
-
-class CustomYAML(ruamel.yaml.YAML):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.Constructor = CustomRoundTripConstructor
-        self.Representer = CustomRoundTripRepresenter
-
-
-class CustomRoundTripConstructor(ruamel.yaml.RoundTripConstructor):
-    """
-    A custom subclass to keep the class attributes separate.
-    """
-
-
-class CustomRoundTripRepresenter(ruamel.yaml.RoundTripRepresenter):
-    """
-    A custom subclass to keep the class attributes separate.
-    """
 
 
 CustomRoundTripConstructor.add_constructor(GENERIC_MAPPING_TAG, map_constructor)
