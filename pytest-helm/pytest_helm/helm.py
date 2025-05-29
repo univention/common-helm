@@ -18,11 +18,17 @@ class Helm:
     Used for reporting, tracks the generated template results.
     """
 
+    _helm_template_call_results: list[subprocess.CompletedProcess]
+    """
+    Used for reporting, tracks the subprocess call results
+    """
+
     def __init__(self, helm_cmd="helm", values=None, debug=False):
         self.helm_cmd = helm_cmd
         self.debug = debug
         self.values = values or tuple()
         self._helm_template_results = []
+        self._helm_template_call_results = []
 
     def helm_template(
         self,
@@ -123,6 +129,8 @@ class Helm:
         """
         log.debug("Running helm: %s", args)
         result = subprocess.run(args, capture_output=True, text=True)
+
+        self._helm_template_call_results.append(result)
 
         if self.debug:
             print("Helm output:\n")
