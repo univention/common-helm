@@ -28,7 +28,7 @@ class Ldap(BaseTest):
 
     sub_path_ldap_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
 
-    def test_connection_host_is_required(self, helm, chart_path):
+    def test_connection_host_is_required(self, chart):
         values = self.load_and_map(
             """
             ldap:
@@ -36,10 +36,10 @@ class Ldap(BaseTest):
                 host: null
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
         assert "connection has to be configured" in error.value.stderr
 
-    def test_connection_host_is_templated(self, helm, chart_path):
+    def test_connection_host_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -48,12 +48,12 @@ class Ldap(BaseTest):
               connection:
                 host: "{{ .Values.global.test }}"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         ldap_host = config_map.findone(self.path_ldap_host)
         assert "stub_value" in ldap_host
 
-    def test_connection_host_supports_global_default(self, helm, chart_path):
+    def test_connection_host_supports_global_default(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -64,12 +64,12 @@ class Ldap(BaseTest):
               connection:
                 host: null
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         ldap_host = config_map.findone(self.path_ldap_host)
         assert "global_stub" in ldap_host
 
-    def test_connection_host_local_overrides_global(self, helm, chart_path):
+    def test_connection_host_local_overrides_global(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -80,24 +80,24 @@ class Ldap(BaseTest):
               connection:
                 host: "local_stub"
         """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         ldap_host = config_map.findone(self.path_ldap_host)
         assert "local_stub" in ldap_host
 
-    def test_connection_port_has_default(self, helm, chart_path):
+    def test_connection_port_has_default(self, chart):
         values = self.load_and_map(
             """
             ldap:
               connection:
                 port: null
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         ldap_port = config_map.findone(self.path_ldap_port)
         assert self.default_port == ldap_port
 
-    def test_connection_port_is_templated(self, helm, chart_path):
+    def test_connection_port_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -106,12 +106,12 @@ class Ldap(BaseTest):
               connection:
                 port: "{{ .Values.global.test }}"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         ldap_port = config_map.findone(self.path_ldap_port)
         assert "stub_value" == ldap_port
 
-    def test_connection_port_supports_global_default(self, helm, chart_path):
+    def test_connection_port_supports_global_default(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -122,12 +122,12 @@ class Ldap(BaseTest):
               connection:
                 port: null
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         ldap_port = config_map.findone(self.path_ldap_port)
         assert "global_stub" == ldap_port
 
-    def test_connection_port_local_overrides_global(self, helm, chart_path):
+    def test_connection_port_local_overrides_global(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -138,7 +138,7 @@ class Ldap(BaseTest):
               connection:
                 port: "local_stub"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         ldap_port = config_map.findone(self.path_ldap_port)
         assert "local_stub" == ldap_port
