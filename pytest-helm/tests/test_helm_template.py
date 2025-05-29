@@ -7,13 +7,13 @@ from pytest_helm.helm import Helm
 
 stub_stdout = """
 ---
-apiVersion: testing.local/v1
+apiVersion: stub.test/v1
 kind: Stub
 metadata:
   name: first
 
 ---
-apiVersion: testing.local/v1
+apiVersion: stub.test/v1
 kind: Stub
 metadata:
   name: second
