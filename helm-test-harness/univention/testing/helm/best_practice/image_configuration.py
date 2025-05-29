@@ -21,8 +21,7 @@ class ImageConfiguration:
             """
             global:
               imageRegistry: "stub-global-registry"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         expected_registry = "stub-global-registry"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
@@ -37,8 +36,7 @@ class ImageConfiguration:
 
             image:
               registry: "stub-registry"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         expected_registry = "stub-registry"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
@@ -50,8 +48,7 @@ class ImageConfiguration:
             """
             global:
               imagePullPolicy: "stub-global-pull-policy"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         expected_pull_policy = "stub-global-pull-policy"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
@@ -66,8 +63,7 @@ class ImageConfiguration:
 
             image:
               imagePullPolicy: "stub-pull-policy"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         expected_pull_policy = "stub-pull-policy"
         for containers, resource in self._generate_containers_of_resource_kinds(result):
@@ -81,8 +77,7 @@ class ImageConfiguration:
               imagePullSecrets:
                 - "stub-secret-a"
                 - "stub-secret-b"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         expected_secrets = [
             {
@@ -102,8 +97,7 @@ class ImageConfiguration:
             """
             image:
               repository: "stub-fragment/stub-image"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
 
         expected_repository = "stub-fragment/stub-image"
@@ -123,8 +117,7 @@ class ImageConfiguration:
             f"""
             image:
               tag: "{image_tag}"
-            """,
-        )
+                """)
         result = chart.helm_template(values)
 
         expected_tag = image_tag
@@ -139,8 +132,7 @@ class ImageConfiguration:
               registry: "stub-registry.example"
               repository: "stub-fragment/stub-repository"
               tag: "stub-tag@sha256:stub-digest"
-            """,
-        )
+                """)
         result = chart.helm_template(values)
 
         expected_image = (
