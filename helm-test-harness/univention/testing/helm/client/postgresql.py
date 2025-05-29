@@ -30,7 +30,7 @@ class PostgresqlClient(BaseTest):
     sub_path_database_url = "env[?@name=='DATABASE_URL'].value"
     sub_path_env_db_password = "env[?@name=='DB_PASSWORD']"
 
-    def test_connection_host_is_required(self, helm, chart_path):
+    def test_connection_host_is_required(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -40,10 +40,10 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
         assert "connection has to be configured" in error.value.stderr
 
-    def test_connection_host_is_templated(self, helm, chart_path):
+    def test_connection_host_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -54,11 +54,11 @@ class PostgresqlClient(BaseTest):
               auth:
                 password: "stub-password"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "stub_value" in database_url
 
-    def test_connection_host_supports_global_default(self, helm, chart_path):
+    def test_connection_host_supports_global_default(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -71,11 +71,11 @@ class PostgresqlClient(BaseTest):
               auth:
                 password: "stub-password"
         """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "global_stub" in database_url
 
-    def test_connection_host_local_overrides_global(self, helm, chart_path):
+    def test_connection_host_local_overrides_global(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -88,11 +88,11 @@ class PostgresqlClient(BaseTest):
               auth:
                 password: "stub-password"
         """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "local_stub" in database_url
 
-    def test_connection_port_has_default(self, helm, chart_path):
+    def test_connection_port_has_default(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -101,11 +101,11 @@ class PostgresqlClient(BaseTest):
               auth:
                 password: "stub-password"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert self.default_port in database_url
 
-    def test_connection_port_is_templated(self, helm, chart_path):
+    def test_connection_port_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -116,11 +116,11 @@ class PostgresqlClient(BaseTest):
               auth:
                 password: "stub-password"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "stub_value" in database_url
 
-    def test_connection_port_supports_global_default(self, helm, chart_path):
+    def test_connection_port_supports_global_default(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -133,11 +133,11 @@ class PostgresqlClient(BaseTest):
               auth:
                 password: "stub-password"
         """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "global_stub" in database_url
 
-    def test_connection_port_local_overrides_global(self, helm, chart_path):
+    def test_connection_port_local_overrides_global(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -150,11 +150,11 @@ class PostgresqlClient(BaseTest):
               auth:
                 password: "stub-password"
         """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "local_stub" in database_url
 
-    def test_auth_plain_values_generate_secret(self, helm, chart_path):
+    def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -164,12 +164,12 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
 
         assert secret.findone("stringData.password") == "stub-password"
 
-    def test_auth_plain_values_provide_username_in_database_url_via_config_map(self, helm, chart_path):
+    def test_auth_plain_values_provide_username_in_database_url_via_config_map(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -179,11 +179,11 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "stub-username" in database_url
 
-    def test_auth_plain_values_username_is_templated(self, helm, chart_path):
+    def test_auth_plain_values_username_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -195,11 +195,11 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "stub-value" in database_url
 
-    def test_auth_plain_values_password_is_not_templated(self, helm, chart_path):
+    def test_auth_plain_values_password_is_not_templated(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -209,11 +209,11 @@ class PostgresqlClient(BaseTest):
                 password: "{{ value }}"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         assert secret.findone("stringData.password") == "{{ value }}"
 
-    def test_auth_plain_values_password_is_required(self, helm, chart_path):
+    def test_auth_plain_values_password_is_required(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -224,10 +224,10 @@ class PostgresqlClient(BaseTest):
         """,
         )
         with pytest.raises(subprocess.CalledProcessError) as error:
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
         assert "password has to be supplied" in error.value.stderr
 
-    def test_auth_username_is_required(self, helm, chart_path):
+    def test_auth_username_is_required(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -238,10 +238,10 @@ class PostgresqlClient(BaseTest):
         """,
         )
         with pytest.raises(subprocess.CalledProcessError) as error:
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
         assert "username has to be supplied" in error.value.stderr
 
-    def test_auth_username_has_default(self, helm, chart_path):
+    def test_auth_username_has_default(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -249,11 +249,11 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert self.default_username in database_url
 
-    def test_auth_database_is_required(self, helm, chart_path):
+    def test_auth_database_is_required(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -264,10 +264,10 @@ class PostgresqlClient(BaseTest):
         """,
         )
         with pytest.raises(subprocess.CalledProcessError) as error:
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
         assert "database has to be supplied" in error.value.stderr
 
-    def test_auth_database_has_default(self, helm, chart_path):
+    def test_auth_database_has_default(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -275,11 +275,11 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert self.default_database in database_url
 
-    def test_auth_database_is_templated(self, helm, chart_path):
+    def test_auth_database_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
@@ -291,11 +291,11 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         database_url = self._get_database_url(result)
         assert "stub-value" in database_url
 
-    def test_auth_existing_secret_does_not_generate_a_secret(self, helm, chart_path):
+    def test_auth_existing_secret_does_not_generate_a_secret(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -306,11 +306,11 @@ class PostgresqlClient(BaseTest):
                   name: "stub-secret-name"
         """,
         )
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-    def test_auth_existing_secret_does_not_require_plain_password(self, helm, chart_path):
+    def test_auth_existing_secret_does_not_require_plain_password(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -321,9 +321,9 @@ class PostgresqlClient(BaseTest):
         """,
         )
         with does_not_raise():
-            helm.helm_template(chart_path, values)
+            chart.helm_template(values)
 
-    def test_auth_existing_secret_used_to_populate_environment_variables(self, helm, chart_path):
+    def test_auth_existing_secret_used_to_populate_environment_variables(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -331,14 +331,14 @@ class PostgresqlClient(BaseTest):
                 existingSecret:
                   name: "stub-secret-name"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         deployment = result.get_resource(kind=self.workload_resource_kind)
         main_container = deployment.findone(self.path_main_container)
 
         password = main_container.findone(self.sub_path_env_db_password)
         assert password.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
 
-    def test_auth_existing_secret_uses_correct_default_key(self, helm, chart_path):
+    def test_auth_existing_secret_uses_correct_default_key(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -346,14 +346,14 @@ class PostgresqlClient(BaseTest):
                 existingSecret:
                   name: "stub-secret-name"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         deployment = result.get_resource(kind=self.workload_resource_kind)
         main_container = deployment.findone(self.path_main_container)
 
         password = main_container.findone(self.sub_path_env_db_password)
         assert password.findone("valueFrom.secretKeyRef.key") == self.secret_default_key
 
-    def test_auth_existing_secret_uses_correct_custom_key(self, helm, chart_path):
+    def test_auth_existing_secret_uses_correct_custom_key(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -363,14 +363,14 @@ class PostgresqlClient(BaseTest):
                   keyMapping:
                     password: "stub_password_key"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         deployment = result.get_resource(kind=self.workload_resource_kind)
         main_container = deployment.findone(self.path_main_container)
 
         password = main_container.findone(self.sub_path_env_db_password)
         assert password.findone("valueFrom.secretKeyRef.key") == "stub_password_key"
 
-    def test_auth_plain_values_uses_correct_secret(self, helm, chart_path):
+    def test_auth_plain_values_uses_correct_secret(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -380,14 +380,14 @@ class PostgresqlClient(BaseTest):
                 password: "stub-password"
                 existingSecret: null
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         deployment = result.get_resource(kind=self.workload_resource_kind)
         main_container = deployment.findone(self.path_main_container)
         password = main_container.findone(self.sub_path_env_db_password)
         expected_value = {"name": self.secret_name, "key": self.secret_default_key}
         assert password.findone("valueFrom.secretKeyRef") == expected_value
 
-    def test_auth_existing_secret_has_precedence(self, helm, chart_path):
+    def test_auth_existing_secret_has_precedence(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -398,7 +398,7 @@ class PostgresqlClient(BaseTest):
                   keyMapping:
                     password: "stub_password_key"
             """)
-        result = helm.helm_template(chart_path, values)
+        result = chart.helm_template(values)
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
