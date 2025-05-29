@@ -1,5 +1,5 @@
 from pytest_helm._yaml import CustomYAML
-from pytest_helm.utils import add_jsonpath_prefix, get_containers
+from pytest_helm.utils import add_jsonpath_prefix, get_containers, load_yaml
 
 
 def test_add_jsonpath_prefix():
@@ -31,3 +31,11 @@ def test_get_containers_returns_init_containers_and_containers():
         """)
     result = get_containers(resource)
     assert result == ["stub-init-container", "stub-container"]
+
+
+def test_load_yaml():
+    data = load_yaml(
+        """
+        key: value
+        """)
+    assert data == {"key": "value"}
