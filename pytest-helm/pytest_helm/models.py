@@ -1,11 +1,14 @@
 import jsonpath
+from ruamel.yaml import CommentedMap
 
 UNSET = object()
 
 
-class YamlMapping(dict):
+class YamlMapping(CommentedMap):
     """
     Represents a YAML map and provides the utility API for testing.
+
+    The base type `CommentedMap` is specific to the used YAML parser.
     """
 
     def findone(self, path, default=UNSET):

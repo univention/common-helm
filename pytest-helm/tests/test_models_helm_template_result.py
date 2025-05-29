@@ -1,9 +1,7 @@
 import yaml
 
-
 from pytest_helm._yaml import CustomSafeLoader
 from pytest_helm.models import HelmTemplateResult
-
 
 stub_helm_output = """
 ---
