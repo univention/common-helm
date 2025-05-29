@@ -6,11 +6,11 @@
 # ruff: noqa: F541
 
 import pytest
-from yaml import safe_load
+from pytest_helm.utils import load_yaml
 
 
 def test_global_registry_is_used_as_default(helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         """
         global:
           imageRegistry: "stub-global-registry"
@@ -25,7 +25,7 @@ def test_global_registry_is_used_as_default(helm, chart_path):
 
 
 def test_image_registry_overrides_global_default_registry(helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         """
         global:
           imageRegistry: "stub-global-registry"
@@ -60,7 +60,7 @@ def test_global_registry_is_using_knut_registry_per_default(helm, chart_path):
 
 
 def test_image_pull_secrets_can_be_provided(helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         """
         global:
           imagePullSecrets:
@@ -77,7 +77,7 @@ def test_image_pull_secrets_can_be_provided(helm, chart_path):
 
 
 def test_image_repository_can_be_configured(helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         """
         image:
           repository: "stub-fragment/stub-image"
@@ -99,7 +99,7 @@ def test_image_repository_can_be_configured(helm, chart_path):
     ],
 )
 def test_image_tag_can_be_configured(image_tag, helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         f"""
         image:
           tag: "{image_tag}"
@@ -114,7 +114,7 @@ def test_image_tag_can_be_configured(image_tag, helm, chart_path):
 
 
 def test_image_digest_without_tag_can_be_configured(helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         f"""
         image:
           digest: "sha256:stub-digest"
@@ -128,7 +128,7 @@ def test_image_digest_without_tag_can_be_configured(helm, chart_path):
 
 
 def test_image_digest_and_tag_can_be_configured(helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         f"""
         image:
           tag: "stub-tag"
@@ -143,7 +143,7 @@ def test_image_digest_and_tag_can_be_configured(helm, chart_path):
 
 
 def test_all_image_values_are_configured(helm, chart_path):
-    values = safe_load(
+    values = load_yaml(
         f"""
         image:
           registry: "stub-registry.example"
