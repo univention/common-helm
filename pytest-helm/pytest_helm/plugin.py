@@ -61,8 +61,7 @@ def helm_values(request, helm_default_values):
     return request.config.option.values or helm_default_values
 
 
-helm_template_results_key = pytest.StashKey[list]()
-helm_template_call_results_key = pytest.StashKey[list]()
+helm_fixture_key = pytest.StashKey[Helm]()
 
 
 @pytest.fixture
@@ -73,8 +72,7 @@ def helm(request, helm_values):
     helm_path = request.config.option.helm_path
     debug = request.config.option.helm_debug
     fixture =  Helm(helm_path, helm_values, debug)
-    request.node.stash[helm_template_results_key] = fixture._helm_template_results
-    request.node.stash[helm_template_call_results_key] = fixture._helm_template_call_results
+    request.node.stash[helm_fixture_key] = fixture
     yield fixture
 
 
@@ -120,8 +118,9 @@ def chart(helm, chart_path):
 @pytest.hookimpl(wrapper=True)
 def pytest_runtest_makereport(item, call):
     report = yield
-    if call.when == "call":
-        helm_template_results = item.stash.get(helm_template_results_key, [])
+    helm_fixture = item.stash.get(helm_fixture_key, None)
+    if helm_fixture and call.when == "call":
+        helm_template_results = helm_fixture._helm_template_results
         content = []
         for helm_template_result in helm_template_results:
             for resource in helm_template_result._accessed_resources:
@@ -136,7 +135,7 @@ def pytest_runtest_makereport(item, call):
             report.sections.append(("Accessed Resources", "\n".join(content)))
 
         output = []
-        helm_template_call_results = item.stash.get(helm_template_call_results_key, [])
+        helm_template_call_results = helm_fixture._helm_template_call_results
         for call_result in helm_template_call_results:
             if call_result.returncode != 0:
                 output.append("Call:\n")
