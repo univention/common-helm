@@ -1,0 +1,8 @@
+apiVersion: local.test/v1
+kind: Stub
+metadata:
+  name: render-annotations
+  {{- include "nubus-common.annotations.render" ( dict
+    "values" ( list (.Values.ingress).annotations .Values.additionalAnnotations )
+    "context" . )
+    | nindent 2 }}
