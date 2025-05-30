@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from pytest_helm.utils import load_yaml
 from pytest_helm.utils import get_containers
 import pytest
 
+from .base import BestPracticeBase
 
-class ImageConfiguration:
+
+class ImageConfiguration(BestPracticeBase):
     """
     Expected container image configuration behavior.
     """
@@ -17,7 +18,7 @@ class ImageConfiguration:
     """
 
     def test_global_registry_is_used_as_default(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             global:
               imageRegistry: "stub-global-registry"
@@ -29,7 +30,7 @@ class ImageConfiguration:
                 _assert_all_images_use_registry(containers, expected_registry)
 
     def test_image_registry_overrides_global_default_registry(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             global:
               imageRegistry: "stub-global-registry"
@@ -44,7 +45,7 @@ class ImageConfiguration:
                 _assert_all_images_use_registry(containers, expected_registry)
 
     def test_global_pull_policy_is_used(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             global:
               imagePullPolicy: "stub-global-pull-policy"
@@ -56,7 +57,7 @@ class ImageConfiguration:
                 _assert_all_images_use_pull_policy(containers, expected_pull_policy)
 
     def test_image_pull_policy_overrides_global_value(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             global:
               imagePullPolicy: "stub-global-pull-policy"
@@ -93,7 +94,7 @@ class ImageConfiguration:
                 assert image_pull_secrets == expected_secrets
 
     def test_image_repository_can_be_configured(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             image:
               repository: "stub-fragment/stub-image"
@@ -113,7 +114,7 @@ class ImageConfiguration:
         ],
     )
     def test_image_tag_can_be_configured(self, image_tag, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             f"""
             image:
               tag: "{image_tag}"
@@ -126,7 +127,7 @@ class ImageConfiguration:
                 _assert_all_images_contain(containers, expected_tag)
 
     def test_all_image_values_are_configured(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             image:
               registry: "stub-registry.example"
