@@ -59,16 +59,16 @@ class BaseTest:
 
 
 def apply_mapping(values: Mapping, prefix_mapping: PrefixMapping, *, copy=False) -> None:
-    operation = _copy if copy else _move
+    op = "get" if copy else "pop"
     for target, source in prefix_mapping.items():
-        operation(values, target, source)
+        _map(values, target, source, op=op)
 
 
-def _copy(values: Mapping, target: JSONPath, source: JSONPath) -> None:
+def _map(values: Mapping, target: JSONPath, source: JSONPath, *, op="pop") -> None:
     target_path = target.split(".")
     source_path = source.split(".")
     try:
-        value = _get_value(values, source_path)
+        value = _get_or_pop_value(values, source_path, op=op)
     except KeyError:
         # Source does not exist, there is nothing to map.
         pass
@@ -76,32 +76,12 @@ def _copy(values: Mapping, target: JSONPath, source: JSONPath) -> None:
         _set_value(values, target_path, value)
 
 
-def _move(values: Mapping, target: JSONPath, source: JSONPath) -> None:
-    target_path = target.split(".")
-    source_path = source.split(".")
-    try:
-        value = _pop_value(values, source_path)
-    except KeyError:
-        # Source does not exist, there is nothing to map.
-        pass
-    else:
-        _set_value(values, target_path, value)
-
-
-def _get_value(values: Mapping, source_path: list[str]) -> any:
+def _get_or_pop_value(values: Mapping, source_path: list[str], *, op) -> any:
     if len(source_path) >= 2:
         sub_values = values[source_path[0]]
         sub_path = source_path[1:]
-        return _get_value(sub_values, sub_path)
-    return values.get(source_path[0])
-
-
-def _pop_value(values: Mapping, source_path: list[str]) -> any:
-    if len(source_path) >= 2:
-        sub_values = values[source_path[0]]
-        sub_path = source_path[1:]
-        return _pop_value(sub_values, sub_path)
-    return values.pop(source_path[0])
+        return _get_or_pop_value(sub_values, sub_path, op=op)
+    return getattr(values, op)(source_path[0])
 
 
 def _set_value(values: Mapping, target_path: list[str], value: any) -> None:
