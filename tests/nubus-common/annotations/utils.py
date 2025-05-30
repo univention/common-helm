@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+
 # The following values should all lead to no annotations being rendered output
 
 NO_ANNOTATION_VALUES = [
