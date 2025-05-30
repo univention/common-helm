@@ -12,7 +12,7 @@ class ImageConfiguration(BestPracticeBase):
     Expected container image configuration behavior.
     """
 
-    kinds = ("Deployment", "Job", "StatefulSet")
+    kinds = ("Deployment", "Job", "CronJob", "StatefulSet")
     """
     Which resource kinds to verify.
     """
@@ -90,7 +90,7 @@ class ImageConfiguration(BestPracticeBase):
         ]
         for containers, resource in self._generate_containers_of_resource_kinds(result):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
-                image_pull_secrets = resource.findone("spec.template.spec.imagePullSecrets", default=[])
+                image_pull_secrets = resource.findone("..spec.template.spec.imagePullSecrets", default=[])
                 assert image_pull_secrets == expected_secrets
 
     def test_image_repository_can_be_configured(self, chart, subtests):
