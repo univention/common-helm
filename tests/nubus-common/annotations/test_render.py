@@ -1,6 +1,7 @@
 import pytest
 from pytest_helm.utils import load_yaml
 
+from annotations.utils import NO_ANNOTATION_VALUES
 
 def test_renders_output(chart):
     values = load_yaml(
@@ -15,14 +16,7 @@ def test_renders_output(chart):
     assert annotations["local.test"] == "stub-local-test"
 
 
-@pytest.mark.parametrize("value", [
-    "{}",
-    "null",
-    # NOTE: Setting an empty string is technically invalid, people tend to
-    # use the empty string at times to unset a value. This ensures that the
-    # implementation is robust in this case.
-    '""',
-])
+@pytest.mark.parametrize("value", NO_ANNOTATION_VALUES)
 def test_omits_key_when_no_annotations(chart, value):
     values = load_yaml(
         f"""

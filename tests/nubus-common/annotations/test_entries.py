@@ -1,6 +1,8 @@
 import pytest
 from pytest_helm.utils import load_yaml
 
+from annotations.utils import NO_ANNOTATION_VALUES
+
 
 def test_merges_values(chart):
     values = load_yaml(
@@ -50,15 +52,8 @@ def test_allows_to_use_values_without_wrapping_in_a_list(chart):
     assert annotations["local.test"] == "stub-local-test"
 
 
-@pytest.mark.parametrize("value, expected_value", [
-    ("null", None),
-    ("{}", None),
-    # NOTE: Setting an empty string is technically invalid, people tend to
-    # use the empty string at times to unset a value. This ensures that the
-    # implementation is robust in this case.
-    ('""', None),
-])
-def test_renders_no_annotations(chart, value, expected_value):
+@pytest.mark.parametrize("value", NO_ANNOTATION_VALUES)
+def test_renders_no_annotations(chart, value):
     values = load_yaml(
         f"""
         additionalAnnotations: {value}
@@ -66,7 +61,7 @@ def test_renders_no_annotations(chart, value, expected_value):
     result = chart.helm_template(values, template_file="templates/annotations/test_entries_single_value.yaml")
     resource = result.get_resource()
     annotations = resource.findone("metadata.annotations")
-    assert annotations == expected_value
+    assert annotations is None
 
 
 def test_values_are_templated(chart):
