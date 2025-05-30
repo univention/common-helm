@@ -44,8 +44,8 @@ def get_containers(resource: YamlMapping) -> list:
 
     Includes both init containers and regular containers.
     """
-    init_containers = resource.findone("spec.template.spec.initContainers", default=[])
-    containers = resource.findone("spec.template.spec.containers")
+    init_containers = resource.findone("..spec.template.spec.initContainers", default=[])
+    containers = resource.findone("..spec.template.spec.containers")
     return init_containers + containers
 
 

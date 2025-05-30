@@ -32,6 +32,23 @@ def test_get_containers_returns_init_containers_and_containers():
     assert result == ["stub-init-container", "stub-container"]
 
 
+def test_get_containers_finds_cron_job_containers():
+    resource = load_yaml(
+        """
+        spec:
+          jobTemplate:
+            spec:
+              template:
+                spec:
+                  initContainers:
+                    - stub-init-container
+                  containers:
+                    - stub-container
+        """)
+    result = get_containers(resource)
+    assert result == ["stub-init-container", "stub-container"]
+
+
 def test_load_yaml():
     data = load_yaml(
         """
