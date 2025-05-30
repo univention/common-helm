@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
+from collections.abc import Iterable
+
+from pytest_helm.models import HelmTemplateResult
 from pytest_helm.utils import load_yaml
 
 
@@ -19,7 +22,7 @@ class Labels:
               local.test/name: "value"
             """)
         result = chart.helm_template(values)
-        for resource in result:
+        for resource in self.resources_to_check(result):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
                 labels = resource.findone("metadata.labels")
                 assert labels["local.test/name"] == "value"
@@ -31,7 +34,7 @@ class Labels:
               app.kubernetes.io/name: "replaced value"
             """)
         result = chart.helm_template(values)
-        for resource in result:
+        for resource in self.resources_to_check(result):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
                 labels = resource.findone("metadata.labels")
                 assert labels["app.kubernetes.io/name"] == "replaced value"
@@ -45,7 +48,13 @@ class Labels:
               local.test/name: "{{ .Values.global.test }}"
             """)
         result = chart.helm_template(values)
-        for resource in result:
+        for resource in self.resources_to_check(result):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
                 labels = resource.findone("metadata.labels")
                 assert labels["local.test/name"] == "stub-value"
+
+    def resources_to_check(self, resources: HelmTemplateResult) -> Iterable[HelmTemplateResult]:
+        """
+        Allows to filter resources in subclasses.
+        """
+        return resources
