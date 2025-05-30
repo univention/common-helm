@@ -1,3 +1,6 @@
+from collections.abc import Iterable
+
+from pytest_helm.models import HelmTemplateResult
 from pytest_helm.utils import load_yaml
 
 
@@ -18,3 +21,9 @@ class BestPracticeBase:
         structure for the chart under test.
         """
         return values
+
+    def resources_to_check(self, resources: HelmTemplateResult) -> Iterable[HelmTemplateResult]:
+        """
+        Allows to filter resources in subclasses.
+        """
+        return resources
