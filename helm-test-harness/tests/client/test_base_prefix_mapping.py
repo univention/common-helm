@@ -3,6 +3,7 @@
 
 from univention.testing.helm.client import base
 
+
 def test_apply_mapping_removes_the_source_value():
     prefix_mapping = {
         "a.b": "x",
@@ -20,5 +21,29 @@ def test_apply_mapping_removes_the_source_value():
             "b": {
                 "sub": "structure",
             },
+        },
+    }
+
+
+def test_apply_mapping_copies_the_value():
+    prefix_mapping = {
+        "a.b": "x",
+    }
+    values = {
+        "x": {
+            "sub": "structure",
+        },
+    }
+
+    base.apply_mapping(values, prefix_mapping, copy=True)
+
+    assert values == {
+        "a": {
+            "b": {
+                "sub": "structure",
+            },
+        },
+        "x": {
+            "sub": "structure",
         },
     }

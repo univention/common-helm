@@ -58,9 +58,22 @@ class BaseTest:
         return values
 
 
-def apply_mapping(values: Mapping, prefix_mapping: PrefixMapping) -> None:
+def apply_mapping(values: Mapping, prefix_mapping: PrefixMapping, *, copy=False) -> None:
+    operation = _copy if copy else _move
     for target, source in prefix_mapping.items():
-        _move(values, target, source)
+        operation(values, target, source)
+
+
+def _copy(values: Mapping, target: JSONPath, source: JSONPath) -> None:
+    target_path = target.split(".")
+    source_path = source.split(".")
+    try:
+        value = _get_value(values, source_path)
+    except KeyError:
+        # Source does not exist, there is nothing to map.
+        pass
+    else:
+        _set_value(values, target_path, value)
 
 
 def _move(values: Mapping, target: JSONPath, source: JSONPath) -> None:
@@ -73,6 +86,14 @@ def _move(values: Mapping, target: JSONPath, source: JSONPath) -> None:
         pass
     else:
         _set_value(values, target_path, value)
+
+
+def _get_value(values: Mapping, source_path: list[str]) -> any:
+    if len(source_path) >= 2:
+        sub_values = values[source_path[0]]
+        sub_path = source_path[1:]
+        return _get_value(sub_values, sub_path)
+    return values.get(source_path[0])
 
 
 def _pop_value(values: Mapping, source_path: list[str]) -> any:
