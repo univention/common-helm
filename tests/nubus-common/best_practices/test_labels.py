@@ -5,4 +5,9 @@ from univention.testing.helm.best_practice.labels import Labels
 
 
 class TestLabels(Labels):
-    pass
+
+    def resources_to_check(self, resources):
+        for resource in resources:
+            if resource["apiVersion"].startswith("local.test"):
+                continue
+            yield resource
