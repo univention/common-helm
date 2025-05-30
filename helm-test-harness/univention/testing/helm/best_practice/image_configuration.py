@@ -158,15 +158,6 @@ class ImageConfiguration:
                 yield containers, resource
 
 
-def get_containers_of_deployment(result):
-    return _get_containers_of("Deployment", result)
-
-
-def _get_containers_of(kind, result):
-    resource = result.get_resource(kind=kind)
-    return get_containers(resource)
-
-
 def _assert_all_images_contain(containers, expected_value):
     for container in containers:
         name = container["name"]
