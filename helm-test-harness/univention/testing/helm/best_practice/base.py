@@ -1,3 +1,9 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+
+from collections.abc import Iterable
+
+from pytest_helm.models import HelmTemplateResult
 from pytest_helm.utils import load_yaml
 
 
@@ -18,3 +24,9 @@ class BestPracticeBase:
         structure for the chart under test.
         """
         return values
+
+    def resources_to_check(self, resources: HelmTemplateResult) -> Iterable[HelmTemplateResult]:
+        """
+        Allows to filter resources in subclasses.
+        """
+        return resources

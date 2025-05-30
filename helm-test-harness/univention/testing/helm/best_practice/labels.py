@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from collections.abc import Iterable
 
-from pytest_helm.models import HelmTemplateResult
 from pytest_helm.utils import load_yaml
 
+from .base import BestPracticeBase
 
-class Labels:
+
+class Labels(BestPracticeBase):
     """
     Checks the common labels behavior expected for all chart resources.
 
@@ -52,9 +52,3 @@ class Labels:
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
                 labels = resource.findone("metadata.labels")
                 assert labels["local.test/name"] == "stub-value"
-
-    def resources_to_check(self, resources: HelmTemplateResult) -> Iterable[HelmTemplateResult]:
-        """
-        Allows to filter resources in subclasses.
-        """
-        return resources
