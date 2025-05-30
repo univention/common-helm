@@ -50,7 +50,12 @@ def _get_or_pop_value(values: Mapping, source_path: list[str], *, op) -> any:
         sub_values = values[source_path[0]]
         sub_path = source_path[1:]
         return _get_or_pop_value(sub_values, sub_path, op=op)
-    return getattr(values, op)(source_path[0])
+    if op == "pop":
+        return values.pop(source_path[0])
+    elif op == "get":
+        return values[source_path[0]]
+    else:
+        raise RuntimeError(f"Invalid op value: {op}.")
 
 
 def _set_value(values: Mapping, target_path: list[str], value: any) -> None:
