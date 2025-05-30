@@ -71,13 +71,34 @@ class ImageConfiguration(BestPracticeBase):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
                 _assert_all_images_use_pull_policy(containers, expected_pull_policy)
 
-    def test_image_pull_secrets_can_be_provided(self, chart, subtests):
-        values = load_yaml(
+    def test_global_image_pull_secrets_can_be_provided(self, chart, subtests):
+        values = self._load_and_map(
             """
             global:
               imagePullSecrets:
                 - "stub-secret-a"
                 - "stub-secret-b"
+            """)
+        result = chart.helm_template(values)
+        expected_secrets = [
+            {
+                "name": "stub-secret-a",
+            },
+            {
+                "name": "stub-secret-b",
+            },
+        ]
+        for containers, resource in self._generate_containers_of_resource_kinds(result):
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                image_pull_secrets = resource.findone("..spec.template.spec.imagePullSecrets", default=[])
+                assert image_pull_secrets == expected_secrets
+
+    def test_local_image_pull_secrets_can_be_provided(self, chart, subtests):
+        values = self._load_and_map(
+            """
+            imagePullSecrets:
+              - "stub-secret-a"
+              - "stub-secret-b"
             """)
         result = chart.helm_template(values)
         expected_secrets = [
