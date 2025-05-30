@@ -47,3 +47,15 @@ def test_apply_mapping_copies_the_value():
             "sub": "structure",
         },
     }
+
+
+def test_apply_mapping_ignores_missing_values():
+    prefix_mapping = {
+        "a.b": "x",
+    }
+    values = {
+    }
+
+    apply_mapping(values, prefix_mapping, copy=True)
+
+    assert values == {}
