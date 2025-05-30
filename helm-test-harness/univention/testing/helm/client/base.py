@@ -1,15 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from collections.abc import Mapping
 from pytest_helm.utils import load_yaml
 
-
-# TODO: Change once the Python version has been upgraded in the test runner to >= 3.12
-JSONPath = str
-PrefixMapping = Mapping[JSONPath, JSONPath]
-# type JSONPath = str
-# type PrefixMapping = Mapping[JSONPath, JSONPath]
+from univention.testing.helm.utils import apply_mapping, PrefixMapping
 
 
 class BaseTest:
@@ -56,38 +50,3 @@ class BaseTest:
         values = load_yaml(values_yaml)
         apply_mapping(values, self.prefix_mapping)
         return values
-
-
-def apply_mapping(values: Mapping, prefix_mapping: PrefixMapping, *, copy=False) -> None:
-    op = "get" if copy else "pop"
-    for target, source in prefix_mapping.items():
-        _map(values, target, source, op=op)
-
-
-def _map(values: Mapping, target: JSONPath, source: JSONPath, *, op="pop") -> None:
-    target_path = target.split(".")
-    source_path = source.split(".")
-    try:
-        value = _get_or_pop_value(values, source_path, op=op)
-    except KeyError:
-        # Source does not exist, there is nothing to map.
-        pass
-    else:
-        _set_value(values, target_path, value)
-
-
-def _get_or_pop_value(values: Mapping, source_path: list[str], *, op) -> any:
-    if len(source_path) >= 2:
-        sub_values = values[source_path[0]]
-        sub_path = source_path[1:]
-        return _get_or_pop_value(sub_values, sub_path, op=op)
-    return getattr(values, op)(source_path[0])
-
-
-def _set_value(values: Mapping, target_path: list[str], value: any) -> None:
-    if len(target_path) >= 2:
-        sub_values = values.setdefault(target_path[0], {})
-        sub_path = target_path[1:]
-        _set_value(sub_values, sub_path, value)
-    else:
-        values[target_path[0]] = value
