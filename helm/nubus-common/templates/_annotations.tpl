@@ -1,7 +1,45 @@
 {{/*
+
+Render the full annotation structure for a resource.
+
+The main purpose of this template is to make the annotations handling as
+fool-proof as possible for the standard cases. It includes the key "annotations"
+in its output and ensures that the key is only present if there are
+annotations.
+
+Cases which require additional entries should use the template
+"nubus.annotations.entries" instead.
+
+Common usage patterns:
+
+{{- include "nubus-common.annotations.render" ( dict
+  "values" .Values.additionalAnnotations
+  "context" . )
+  | nindent 2 }}
+
+{{- include "nubus-common.annotations.render" ( dict
+  "values" ( list .Values.ingress.annotations .Values.additionalAnnotations )
+  "context" . )
+  | nindent 2 }}
+
+Params: See "nubus-common.annotations.entries".
+
+*/}}
+
+{{- define "nubus-common.annotations.render" }}
+{{- $entries := include "nubus-common.annotations.entries" . }}
+{{- if $entries -}}
+annotations:
+  {{- $entries | nindent 2 }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+
 Render the annotation entries for a resource.
 
-Usage:
+Common usage patterns:
 
 {{- include "nubus-common.annotations.entries" ( dict
   "values" .Values.additionalAnnotations
@@ -28,12 +66,11 @@ Params:
 
 {{- define "nubus-common.annotations.entries" }}
 
-{{ $values := .values }}
-{{- if kindIs "map" $values }}
+{{- $values := .values }}
+{{- if not ( kindIs "slice" $values ) }}
   {{- $values = ( list $values ) }}
 {{- end }}
-
-{{- if .values }}
+{{- if ( compact $values ) }}
   {{- include "common.tplvalues.merge" ( dict "values" $values "context" .context ) }}
 {{- end }}
 {{- end }}
