@@ -16,6 +16,7 @@ class Ldap(BaseTest):
 
     config_map_name = None
     secret_name = "release-name-test-nubus-common-ldap"
+    workload_resource_kind = "Deployment"
 
     default_bind_dn = "cn=admin,dc=univention-organization,dc=intranet"
     default_port = "389"
@@ -266,7 +267,7 @@ class Ldap(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="StatefulSet")
+        deployment = result.get_resource(kind=self.workload_resource_kind)
         secret_ldap_volume = deployment.findone(self.path_volume_secret_ldap)
         assert secret_ldap_volume.findone("secret.secretName") == "stub-secret-name"
 
@@ -279,7 +280,7 @@ class Ldap(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="StatefulSet")
+        deployment = result.get_resource(kind=self.workload_resource_kind)
         main_container = deployment.findone(self.path_main_container)
         secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
 
@@ -295,7 +296,7 @@ class Ldap(BaseTest):
                 existingSecret: null
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="StatefulSet")
+        deployment = result.get_resource(kind=self.workload_resource_kind)
         secret_ldap_volume = deployment.findone(self.path_volume_secret_ldap)
         main_container = deployment.findone(self.path_main_container)
         secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
@@ -314,7 +315,7 @@ class Ldap(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind="StatefulSet")
+        deployment = result.get_resource(kind=self.workload_resource_kind)
         main_container = deployment.findone(self.path_main_container)
         secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
 
@@ -335,7 +336,7 @@ class Ldap(BaseTest):
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        deployment = result.get_resource(kind="StatefulSet")
+        deployment = result.get_resource(kind=self.workload_resource_kind)
         secret_ldap_volume = deployment.findone(self.path_volume_secret_ldap)
         main_container = deployment.findone(self.path_main_container)
         secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
