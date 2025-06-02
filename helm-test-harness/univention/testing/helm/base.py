@@ -84,7 +84,7 @@ class Labels(Base):
 
         assert labels["app.kubernetes.io/name"] == "replaced value"
 
-    def test_value_is_templated(self, helm: Helm, chart_path):
+    def test_label_value_is_templated(self, helm: Helm, chart_path):
         values = self.add_prefix(
             safe_load(
                 """
@@ -99,6 +99,43 @@ class Labels(Base):
         labels = result.findone("metadata.labels")
 
         assert labels["local.test/name"] == "stub-value"
+
+
+class Annotations(Base):
+    """
+    Test harness class to validate that an arbitrary kubernetes manifests
+    conforms to our standards around `additionalAnnotations`
+    """
+
+    def test_add_another_annotation(self, helm, chart_path):
+        values = self.add_prefix(
+            safe_load(
+                """
+            additionalAnnotations:
+              local.test/annotation: "stub-value"
+        """,
+            ),
+        )
+        result = self.helm_template_file(helm, chart_path, values, self.template_file)
+        annotations = result.findone("metadata.annotations")
+
+        assert annotations["local.test/annotation"] == "stub-value"
+
+    def test_annotation_value_is_templated(self, helm: Helm, chart_path):
+        values = self.add_prefix(
+            safe_load(
+                """
+            global:
+              test: "global-stub-value"
+            additionalAnnotations:
+              local.test/annotation: "{{ .Values.global.test }}"
+        """,
+            ),
+        )
+        result = self.helm_template_file(helm, chart_path, values, self.template_file)
+        labels = result.findone("metadata.annotations")
+
+        assert labels["local.test/annotation"] == "global-stub-value"
 
 
 class Namespace(Base):

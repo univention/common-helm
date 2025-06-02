@@ -5,11 +5,11 @@ import subprocess
 
 import pytest
 
-from univention.testing.helm.base import Labels, Namespace
+from univention.testing.helm.base import Annotations, Labels, Namespace
 from yaml import safe_load
 
 
-class SecretPasswords(Labels, Namespace):
+class SecretPasswords(Annotations, Labels, Namespace):
     """
     Verify a password Secret in the Client role.
 
@@ -18,7 +18,7 @@ class SecretPasswords(Labels, Namespace):
     Supporting:
     - Generated passwords
     - Injected passwords via helm values
-    - Passwords via configured existingSecretsSecret
+    - Passwords via configured existingSecret
     """
 
     secret_key = "password"
