@@ -85,6 +85,17 @@ class Deployment(Labels, Namespace):
         containers = get_containers(deployment)
         _assert_all_have_security_context(containers, expected_security_context)
 
+    def test_has_configuable_service_account(self, helm, chart_path):
+        values = safe_load(
+            """
+        serviceAccount:
+            create: true
+            """,
+        )
+        deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
+        service_account_name = deployment["spec"]["template"]["spec"]["serviceAccountName"]
+        assert service_account_name.startswith("release-name-"), f"unexpected serviceAccountName: {service_account_name}"
+
 
 def _assert_all_have_security_context(containers, expected_security_context):
     for container in containers:
