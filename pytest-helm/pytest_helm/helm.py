@@ -25,6 +25,7 @@ class Helm:
         values=None,
         template_file: str | None = None,
         helm_args: list[str] | None = None,
+        release_name: str = "",
     ):
         """
         Generates helm templates from a chart.
@@ -46,15 +47,20 @@ class Helm:
                 print("Dumped Helm values:\n")
                 print(values_yaml)
 
-            helm_args = helm_args or []
+            args = [self.helm_cmd, "template"]
+
+            if release_name:
+                args.append(release_name)
+            args.append(chart)
+
             for item in self.values:
-                helm_args.extend(("--values", item))
-            helm_args.extend(("--values", path))
+                args.extend(("--values", item))
+            args.extend(("--values", path))
 
             if template_file:
-                helm_args.extend(("--show-only", template_file))
+                args.extend(("--show-only", template_file))
 
-            run_result = self._run_command(self.helm_cmd, "template", chart, *helm_args)
+            run_result = self._run_command(*args, *helm_args or [])
         finally:
             os.remove(path)
 

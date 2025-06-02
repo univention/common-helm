@@ -34,7 +34,7 @@ def findall(data, path):
 def get_containers(manifest):
     try:
         init_containers = manifest.findone("spec.template.spec.initContainers")
-    except AttributeError:
+    except (AttributeError, IndexError):
         init_containers = []
     containers = manifest.findone("spec.template.spec.containers")
     return init_containers + containers
