@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.18.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.17.0...v0.18.0) (2025-06-04)
+
+
+### Features
+
+* **helm-test-harness:** make the release name configurable when templating charts ([600ce31](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/600ce318e92ce8f0d164927e8a4b35b2bb303773))
+* **helm-test-harness:** Test Annotations ([a1e259c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/a1e259c19a9e2af5301ea08f632ca21bf0dc4690)), closes [univention/dev/internal/team-nubus#1173](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1173)
+* **helm-test-harness:** Test env variables with a default value in the helm template. With e.g. the coalesce or default functions ([4792cd9](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/4792cd97fc2658754fe850bd1c493c9da09255b9)), closes [univention/dev/internal/team-nubus#1173](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1173)
+* **helm-test-harness:** Test harness for ServiceAccount manifests ([6d68a83](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/6d68a83718ed8307f5b039c3d8b6325e8e0ee23e)), closes [univention/dev/internal/team-nubus#1173](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1173)
+
 ## [0.17.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.16.0...v0.17.0) (2025-05-23)
 
 
