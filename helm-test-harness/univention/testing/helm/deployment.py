@@ -88,10 +88,9 @@ class Deployment(Labels, Namespace):
     def test_has_configuable_service_account(self, helm, chart_path):
         values = load_yaml(
             """
-        serviceAccount:
-            create: true
-            """,
-        )
+            serviceAccount:
+              create: true
+            """)
         deployment = self.helm_template_file(helm, chart_path, values, self.template_file)
         service_account_name = deployment["spec"]["template"]["spec"]["serviceAccountName"]
         assert service_account_name.startswith("release-name-"), f"unexpected serviceAccountName: {service_account_name}"

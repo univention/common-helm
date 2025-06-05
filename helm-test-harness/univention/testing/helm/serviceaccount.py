@@ -11,9 +11,8 @@ class ServiceAccount(Annotations, Labels, Namespace):
     def test_automount_service_account_token(self, helm, chart_path):
         values = load_yaml(
             """
-        serviceAccount:
-            automountServiceAccountToken: true
-            """,
-        )
+            serviceAccount:
+              automountServiceAccountToken: true
+            """)
         serviceaccount = self.helm_template_file(helm, chart_path, values, self.template_file)
         assert serviceaccount["automountServiceAccountToken"] is True
