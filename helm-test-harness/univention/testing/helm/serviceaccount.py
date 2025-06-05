@@ -7,7 +7,7 @@ from univention.testing.helm.base import Annotations, Labels, Namespace
 
 
 class ServiceAccount(Annotations, Labels, Namespace):
-    ...
+
     def test_automount_service_account_token(self, helm, chart_path):
         values = load_yaml(
             """
