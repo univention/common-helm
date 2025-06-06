@@ -36,6 +36,18 @@ class Ldap(BaseTest):
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         return config_map.findone(self.path_ldap_bind_dn)
 
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        secret_ldap_volume = workload_resource.findone(self.path_volume_secret_ldap)
+        main_container = workload_resource.findone(self.path_main_container)
+        secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
+
+        if name:
+            assert secret_ldap_volume.findone("secret.secretName") == name
+
+        if key:
+            assert secret_ldap_volume_mount["subPath"] == key
+
     def test_connection_host_is_required(self, chart):
         values = self.load_and_map(
             """
@@ -274,9 +286,7 @@ class Ldap(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        secret_ldap_volume = deployment.findone(self.path_volume_secret_ldap)
-        assert secret_ldap_volume.findone("secret.secretName") == "stub-secret-name"
+        self.assert_correct_secret_usage(result, name="stub-secret-name")
 
     def test_auth_existing_secret_mounts_correct_default_key(self, chart):
         values = self.load_and_map(
@@ -287,11 +297,7 @@ class Ldap(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        main_container = deployment.findone(self.path_main_container)
-        secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
-
-        assert secret_ldap_volume_mount["subPath"] == "password"
+        self.assert_correct_secret_usage(result, key="password")
 
     def test_auth_disabling_existing_secret_by_setting_it_to_null(self, chart):
         values = self.load_and_map(
@@ -303,13 +309,7 @@ class Ldap(BaseTest):
                 existingSecret: null
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        secret_ldap_volume = deployment.findone(self.path_volume_secret_ldap)
-        main_container = deployment.findone(self.path_main_container)
-        secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
-
-        assert secret_ldap_volume_mount["subPath"] == "password"
-        assert secret_ldap_volume.findone("secret.secretName") == self.secret_name
+        self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
 
     def test_auth_existing_secret_mounts_correct_custom_key(self, chart):
         values = self.load_and_map(
@@ -322,11 +322,7 @@ class Ldap(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        main_container = deployment.findone(self.path_main_container)
-        secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
-
-        assert secret_ldap_volume_mount["subPath"] == "stub_password_key"
+        self.assert_correct_secret_usage(result, key="stub_password_key")
 
     def test_auth_existing_secret_has_precedence(self, chart):
         values = self.load_and_map(
@@ -340,16 +336,11 @@ class Ldap(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
+
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        secret_ldap_volume = deployment.findone(self.path_volume_secret_ldap)
-        main_container = deployment.findone(self.path_main_container)
-        secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
-
-        assert secret_ldap_volume_mount["subPath"] == "stub_password_key"
-        assert secret_ldap_volume.findone("secret.secretName") == "stub-secret-name"
+        self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
 
     def test_global_secrets_keep_is_ignored(self, chart):
         """
