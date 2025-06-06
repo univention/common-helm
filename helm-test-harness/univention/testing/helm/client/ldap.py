@@ -367,7 +367,7 @@ class Ldap(BaseTest):
         assert helm_resource_policy != "keep"
 
 
-class LdapUsageViaEnv(BaseTest):
+class LdapUsageViaEnv:
 
     def get_bind_dn(self, result: HelmTemplateResult):
         workload_resource = result.get_resource(kind=self.workload_resource_kind)
@@ -385,67 +385,3 @@ class LdapUsageViaEnv(BaseTest):
 
         if key:
             assert env_password.findone("valueFrom.secretKeyRef.key") == key
-
-    def test_auth_existing_secret_password_as_env(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                existingSecret:
-                  name: "stub-secret-name"
-            """)
-        result = chart.helm_template(values)
-        self.assert_correct_secret_usage(result, name="stub-secret-name")
-
-    def test_auth_existing_secret_password_as_env_uses_correct_default_key(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                existingSecret:
-                  name: "stub-secret-name"
-            """)
-        result = chart.helm_template(values)
-        self.assert_correct_secret_usage(result, key="password")
-
-    def test_auth_disabling_existing_secret_by_setting_it_to_null_env(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                bindDn: "stub-bind-dn"
-                password: "stub-password"
-                existingSecret: null
-            """)
-        result = chart.helm_template(values)
-        self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
-
-    def test_auth_existing_secret_uses_correct_custom_key_in_env(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                existingSecret:
-                  name: "stub-secret-name"
-                  keyMapping:
-                    password: "stub_password_key"
-            """)
-        result = chart.helm_template(values)
-        self.assert_correct_secret_usage(result, key="stub_password_key")
-
-    def test_auth_existing_secret_has_precedence_env(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                password: stub-plain-password
-                existingSecret:
-                  name: "stub-secret-name"
-                  keyMapping:
-                    password: "stub_password_key"
-            """)
-        result = chart.helm_template(values)
-        with pytest.raises(LookupError):
-            result.get_resource(kind="Secret", name=self.secret_name)
-
-        self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
