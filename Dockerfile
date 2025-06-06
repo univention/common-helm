@@ -4,7 +4,7 @@
 
 # Inspired by: https://hynek.me/articles/docker-uv/
 
-ARG UCS_BASE_IMAGE_TAG=0.17.3-build-2025-05-11
+ARG UCS_BASE_IMAGE_TAG=0.18.1-build-2025-06-05@sha256:72ef660138b844b65aa342322dcd5f1b8f68c8f7c6c11e3a556d6f4f50cf03d8
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base-python-521
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
