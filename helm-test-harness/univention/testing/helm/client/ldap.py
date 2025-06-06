@@ -384,6 +384,17 @@ class LdapUsageViaEnv(BaseTest):
         env_basn_dn = main_container.findone(self.sub_path_env_bind_dn)
         return env_basn_dn["value"]
 
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        main_container = workload_resource.findone(self.path_main_container)
+        env_password = main_container.findone(self.sub_path_env_password)
+
+        if name:
+            assert env_password.findone("valueFrom.secretKeyRef.name") == name
+
+        if key:
+            assert env_password.findone("valueFrom.secretKeyRef.key") == key
+
     def test_auth_existing_secret_password_as_env(self, chart):
         values = self.load_and_map(
             """
@@ -393,10 +404,7 @@ class LdapUsageViaEnv(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
-        env_password = main_container.findone(self.sub_path_env_password)
-        assert env_password.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
+        self.assert_correct_secret_usage(result, name="stub-secret-name")
 
     def test_auth_existing_secret_password_as_env_uses_correct_default_key(self, chart):
         values = self.load_and_map(
@@ -407,10 +415,7 @@ class LdapUsageViaEnv(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
-        env_password = main_container.findone(self.sub_path_env_password)
-        assert env_password.findone("valueFrom.secretKeyRef.key") == "password"
+        self.assert_correct_secret_usage(result, key="password")
 
     def test_auth_disabling_existing_secret_by_setting_it_to_null_env(self, chart):
         values = self.load_and_map(
@@ -422,12 +427,7 @@ class LdapUsageViaEnv(BaseTest):
                 existingSecret: null
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
-        env_password = main_container.findone(self.sub_path_env_password)
-
-        assert env_password.findone("valueFrom.secretKeyRef.name") == self.secret_name
-        assert env_password.findone("valueFrom.secretKeyRef.key") == "password"
+        self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
 
     def test_auth_existing_secret_uses_correct_custom_key_in_env(self, chart):
         values = self.load_and_map(
@@ -440,13 +440,9 @@ class LdapUsageViaEnv(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
-        env_password = main_container.findone(self.sub_path_env_password)
+        self.assert_correct_secret_usage(result, key="stub_password_key")
 
-        assert env_password.findone("valueFrom.secretKeyRef.key") == "stub_password_key"
-
-    def test_auth_existing_secret_has_precedence(self, chart):
+    def test_auth_existing_secret_has_precedence_env(self, chart):
         values = self.load_and_map(
             """
             ldap:
@@ -461,9 +457,4 @@ class LdapUsageViaEnv(BaseTest):
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
-        env_password = main_container.findone(self.sub_path_env_password)
-
-        assert env_password.findone("valueFrom.secretKeyRef.name") == "stub-secret_name"
-        assert env_password.findone("valueFrom.secretKeyRef.key") == "stub_password_key"
+        self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
