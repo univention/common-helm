@@ -480,3 +480,22 @@ class LdapConnectionUri(BaseTest):
         env_connection_uri = main_container.findone(self.sub_path_env_connection_uri)
 
         assert env_connection_uri["value"] == value
+
+
+class LdapConnectionUriViaConfigMap:
+    """
+    Mixin which expects the connection URI in a ConfigMap.
+    """
+
+    config_map_name = None
+
+    path_ldap_uri = "data.LDAP_URI"
+
+    def get_ldap_uri(self, result: HelmTemplateResult):
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
+        uri = config_map.findone(self.path_ldap_uri)
+        return uri
+
+    def assert_connection_uri_value(self, result, value):
+        uri = self.get_ldap_uri(result)
+        assert uri == value
