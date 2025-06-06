@@ -412,10 +412,14 @@ class LdapConnectionHostAndPort(BaseTest):
         assert "local_stub" == ldap_port
 
 
-class LdapConnectionUri:
+class LdapConnectionUri(BaseTest):
     """
-    Mixin with tests related to the usage of `ldap.connection.uri`.
+    Tests related to the usage of `ldap.connection.uri`.
     """
+
+    workload_resource_kind = "Deployment"
+
+    path_main_container = "spec.template.spec.containers[?@.name=='main']"
 
     sub_path_env_connection_uri = "env[?@name=='LDAP_URI']"
 
