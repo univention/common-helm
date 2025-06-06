@@ -396,3 +396,69 @@ class LdapUsageViaEnv:
 
         if key:
             assert env_password.findone("valueFrom.secretKeyRef.key") == key
+
+
+class LdapConnectionUri:
+    """
+    Mixin with tests related to the usage of `ldap.connection.uri`.
+    """
+
+    sub_path_env_connection_uri = "env[?@name=='LDAP_URI']"
+
+    def test_connection_uri_is_required(self, chart):
+        values = self.load_and_map(
+            """
+            ldap:
+              connection:
+                uri: null
+            """)
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            chart.helm_template(values)
+        assert "connection has to be configured" in error.value.stderr
+
+    def test_connection_uri_is_templated(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              test: "stub_value"
+            ldap:
+              connection:
+                uri: "{{ .Values.global.test }}"
+            """)
+        result = chart.helm_template(values)
+        self.assert_connection_uri_value(result, "stub_value")
+
+    def test_connection_uri_supports_global_default(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              ldap:
+                connection:
+                  uri: "global_stub"
+            ldap:
+              connection:
+                uri: null
+            """)
+        result = chart.helm_template(values)
+        self.assert_connection_uri_value(result, "global_stub")
+
+    def test_connection_uri_local_overrides_global(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              ldap:
+                connection:
+                  uri: "global_stub"
+            ldap:
+              connection:
+                uri: "local_stub"
+        """)
+        result = chart.helm_template(values)
+        self.assert_connection_uri_value(result, "local_stub")
+
+    def assert_connection_uri_value(self, result, value):
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        main_container = workload_resource.findone(self.path_main_container)
+        env_connection_uri = main_container.findone(self.sub_path_env_connection_uri)
+
+        assert env_connection_uri["value"] == value
