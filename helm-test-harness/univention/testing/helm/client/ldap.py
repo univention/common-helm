@@ -5,6 +5,7 @@ from contextlib import nullcontext as does_not_raise
 import subprocess
 
 import pytest
+from pytest_helm.models import HelmTemplateResult
 
 from .base import BaseTest
 
@@ -27,7 +28,13 @@ class Ldap(BaseTest):
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
     path_volume_secret_ldap = "spec.template.spec.volumes[?@.name=='secret-ldap']"
 
+    sub_path_env_bind_dn = "env[?@.name=='LDAP_ADMIN_USER']"
+    sub_path_env_password = "env[?@.name=='LDAP_ADMIN_PASSWORD']"
     sub_path_ldap_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
+
+    def get_bind_dn(self, result: HelmTemplateResult):
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
+        return config_map.findone(self.path_ldap_bind_dn)
 
     def test_connection_host_is_required(self, chart):
         values = self.load_and_map(
@@ -157,7 +164,7 @@ class Ldap(BaseTest):
 
         assert secret.findone("stringData.password") == "stub-password"
 
-    def test_auth_plain_values_provide_bind_dn_via_config_map(self, chart):
+    def test_auth_plain_values_provide_bind_dn(self, chart):
         values = self.load_and_map(
             """
             ldap:
@@ -166,8 +173,8 @@ class Ldap(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        assert config_map.findone(self.path_ldap_bind_dn) == "stub-bind-dn"
+        bind_dn = self.get_bind_dn(result)
+        assert bind_dn == "stub-bind-dn"
 
     def test_auth_plain_values_bind_dn_is_templated(self, chart):
         values = self.load_and_map(
@@ -180,32 +187,8 @@ class Ldap(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        assert config_map.findone(self.path_ldap_bind_dn) == "stub-value"
-
-    def test_auth_plain_values_password_is_not_templated(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                bindDn: "stub-bind-dn"
-                password: "{{ value }}"
-            """)
-        result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.password") == "{{ value }}"
-
-    def test_auth_plain_values_password_is_required(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                bindDn: "stub-bind-dn"
-                password: null
-            """)
-        with pytest.raises(subprocess.CalledProcessError) as error:
-            chart.helm_template(values)
-        assert "password has to be supplied" in error.value.stderr
+        bind_dn = self.get_bind_dn(result)
+        assert bind_dn == "stub-value"
 
     @pytest.mark.parametrize("value", [
         "null",
@@ -231,8 +214,32 @@ class Ldap(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        assert config_map.findone(self.path_ldap_bind_dn) == self.default_bind_dn
+        bind_dn = self.get_bind_dn(result)
+        assert bind_dn == self.default_bind_dn
+
+    def test_auth_plain_values_password_is_not_templated(self, chart):
+        values = self.load_and_map(
+            """
+            ldap:
+              auth:
+                bindDn: "stub-bind-dn"
+                password: "{{ value }}"
+            """)
+        result = chart.helm_template(values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        assert secret.findone("stringData.password") == "{{ value }}"
+
+    def test_auth_plain_values_password_is_required(self, chart):
+        values = self.load_and_map(
+            """
+            ldap:
+              auth:
+                bindDn: "stub-bind-dn"
+                password: null
+            """)
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            chart.helm_template(values)
+        assert "password has to be supplied" in error.value.stderr
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, chart):
         values = self.load_and_map(
@@ -367,3 +374,13 @@ class Ldap(BaseTest):
         annotations = secret.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
+
+
+class LdapUsageViaEnv(BaseTest):
+
+    def get_bind_dn(self, result: HelmTemplateResult):
+        workload_resource = result.get_resource(kind=self.workload_resource_kind)
+        main_container = workload_resource.findone(self.path_main_container)
+        env_basn_dn = main_container.findone(self.sub_path_env_bind_dn)
+        return env_basn_dn["value"]
+
