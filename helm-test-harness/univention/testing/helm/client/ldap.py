@@ -10,9 +10,9 @@ from pytest_helm.models import HelmTemplateResult
 from .base import BaseTest
 
 
-class Ldap(BaseTest):
+class LdapAuth(BaseTest):
     """
-    LDAP access configuration related checks.
+    Tests for the value `ldap.auth` of the LDAP client configuration.
 
     Per default the test template will assume the password to be mounted out of
     a secret and the other parameters to be provided via the `envFrom`
@@ -251,7 +251,7 @@ class Ldap(BaseTest):
         assert helm_resource_policy != "keep"
 
 
-class LdapUsageViaEnv:
+class LdapAuthUsageViaEnv:
     """
     Mixin to change the expected behavior to be based on env configuration.
 
