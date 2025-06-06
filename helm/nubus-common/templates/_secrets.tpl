@@ -41,7 +41,7 @@ parameter "existingSecret". It will fall back to the value of "key"
 if there is no mapping configured for the key.
 
 The implementation follows the API from the common chart of Bitnami to some extend.
-It does allow and encouraged the usage of "null" vales or empty strings in the
+It does allow and encouraged the usage of "null" values or empty strings in the
 object "keyMapping" and will use the default key name if the value is "null"
 or the empty string.
 
