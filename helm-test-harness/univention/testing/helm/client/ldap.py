@@ -13,6 +13,10 @@ from .base import BaseTest
 class Ldap(BaseTest):
     """
     LDAP access configuration related checks.
+
+    Per default the test template will assume the password to be mounted out of
+    a secret and the other parameters to be provided via the `envFrom`
+    attribute of the container configuration.
     """
 
     config_map_name = None
@@ -28,8 +32,6 @@ class Ldap(BaseTest):
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
     path_volume_secret_ldap = "spec.template.spec.volumes[?@.name=='secret-ldap']"
 
-    sub_path_env_bind_dn = "env[?@.name=='LDAP_ADMIN_USER']"
-    sub_path_env_password = "env[?@.name=='LDAP_ADMIN_PASSWORD']"
     sub_path_ldap_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
 
     def get_bind_dn(self, result: HelmTemplateResult):
@@ -368,6 +370,15 @@ class Ldap(BaseTest):
 
 
 class LdapUsageViaEnv:
+    """
+    Mixin to change the expected behavior to be based on env configuration.
+
+    Both the `bindDn` and the `password` out of `ldap.auth` are expected to be
+    used via the attribute `env` within the container configuration.
+    """
+
+    sub_path_env_bind_dn = "env[?@.name=='LDAP_ADMIN_USER']"
+    sub_path_env_password = "env[?@.name=='LDAP_ADMIN_PASSWORD']"
 
     def get_bind_dn(self, result: HelmTemplateResult):
         workload_resource = result.get_resource(kind=self.workload_resource_kind)
