@@ -6,6 +6,41 @@ from pytest_helm.utils import load_yaml
 from univention.testing.helm.utils import apply_mapping, PrefixMapping
 
 
+class DefaultAttributes:
+    """
+    Default attributes and attribute names used in test classes.
+
+    This class serves mainly documentation purposes.
+    """
+
+    workload_kind: str = "Deployment"
+    """
+    Workloads can be deployed via multiple types in Kubernetes.
+
+    This attribute allows to specify which workload kind shall be looked up.
+    This way a test template can be used to check a `Deployment`, a
+    `StatefulSet` and also a `Job` or `CronJob`.
+
+    See also:
+
+    - The attribute `kind` within Kubernetes objects.
+    """
+
+    workload_name: str | None = None
+    """
+    The name to use when looking up the workload object.
+
+    Specification of a name in the lookup is needed for cases when a Helm chart
+    deploys multiple workloads of the same kind. In other cases it can be kept
+    as `None` so that no filtering by name is applied.
+
+    See also:
+
+    - The attribute `metadata.name` within Kubernetes objects.
+    - The method `HelmTemplateResult.get_resources` in `pytest-helm`.
+    """
+
+
 class BaseTest:
     """
     Base class for client configuration focused tests.
