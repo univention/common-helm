@@ -35,6 +35,10 @@ class LdapAuth(BaseTest):
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         return config_map.findone(self.path_ldap_bind_dn)
 
+    def assert_bind_dn_value(self, result: HelmTemplateResult, value: str):
+        bind_dn = self.get_bind_dn(result)
+        assert bind_dn == value
+
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload_resource = result.get_resource(kind=self.workload_resource_kind)
         secret_ldap_volume = workload_resource.findone(self.path_volume_secret_ldap)
@@ -69,8 +73,7 @@ class LdapAuth(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        bind_dn = self.get_bind_dn(result)
-        assert bind_dn == "stub-bind-dn"
+        self.assert_bind_dn_value(result, "stub-bind-dn")
 
     def test_auth_plain_values_bind_dn_is_templated(self, chart):
         values = self.load_and_map(
@@ -83,8 +86,7 @@ class LdapAuth(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        bind_dn = self.get_bind_dn(result)
-        assert bind_dn == "stub-value"
+        self.assert_bind_dn_value(result, "stub-value")
 
     @pytest.mark.parametrize("value", [
         "null",
@@ -110,8 +112,7 @@ class LdapAuth(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        bind_dn = self.get_bind_dn(result)
-        assert bind_dn == self.default_bind_dn
+        self.assert_bind_dn_value(result, self.default_bind_dn)
 
     def test_auth_plain_values_password_is_not_templated(self, chart):
         values = self.load_and_map(
