@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
+from collections.abc import Sequence
+
 from pytest_helm.utils import load_yaml
 
 from univention.testing.helm.utils import apply_mapping, PrefixMapping
@@ -11,6 +13,18 @@ class DefaultAttributes:
     Default attributes and attribute names used in test classes.
 
     This class serves mainly documentation purposes.
+    """
+
+    kinds: Sequence = tuple()
+    """
+    List of Kubernetes object types to check.
+
+    Some tests check multiple types like the image configuration related tests.
+    The list of types to look up is configured via this attribute.
+
+    See also:
+
+    - The attribute `kind` within Kubernetes objects.
     """
 
     workload_kind: str = "Deployment"
