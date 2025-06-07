@@ -21,7 +21,6 @@ class LdapAuth(BaseTest):
 
     config_map_name = None
     secret_name = "release-name-test-nubus-common-ldap"
-    workload_resource_kind = "Deployment"
 
     default_bind_dn = "cn=admin,dc=univention-organization,dc=intranet"
 
@@ -40,9 +39,9 @@ class LdapAuth(BaseTest):
         assert bind_dn == value
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        secret_ldap_volume = workload_resource.findone(self.path_volume_secret_ldap)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        secret_ldap_volume = workload.findone(self.path_volume_secret_ldap)
+        main_container = workload.findone(self.path_main_container)
         secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
 
         if name:
@@ -264,14 +263,14 @@ class LdapAuthUsageViaEnv:
     sub_path_env_password = "env[?@.name=='LDAP_ADMIN_PASSWORD']"
 
     def get_bind_dn(self, result: HelmTemplateResult):
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
         env_basn_dn = main_container.findone(self.sub_path_env_bind_dn)
         return env_basn_dn["value"]
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
         env_password = main_container.findone(self.sub_path_env_password)
 
         if name:
@@ -418,8 +417,6 @@ class LdapConnectionUri(BaseTest):
     Tests related to the usage of `ldap.connection.uri`.
     """
 
-    workload_resource_kind = "Deployment"
-
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
 
     sub_path_env_connection_uri = "env[?@name=='LDAP_URI']"
@@ -476,8 +473,8 @@ class LdapConnectionUri(BaseTest):
         self.assert_connection_uri_value(result, "local_stub")
 
     def assert_connection_uri_value(self, result, value):
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
         env_connection_uri = main_container.findone(self.sub_path_env_connection_uri)
 
         assert env_connection_uri["value"] == value

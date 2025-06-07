@@ -17,7 +17,6 @@ class ProvisioningApi(BaseTest):
     # TODO: Check what's needed
     config_map_name = None
     secret_name = "release-name-test-nubus-common-provisioning-api"
-    workload_resource_kind = "Deployment"
 
     default_username = "stub-values-username"
 
@@ -170,8 +169,8 @@ class ProvisioningApi(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(f"env[?@name=='{self.env_password}']")
         assert password.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
@@ -185,8 +184,8 @@ class ProvisioningApi(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(f"env[?@name=='{self.env_password}']")
         assert password.findone("valueFrom.secretKeyRef.key") == "password"
@@ -202,8 +201,8 @@ class ProvisioningApi(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(f"env[?@name=='{self.env_password}']")
         assert password.findone("valueFrom.secretKeyRef.key") == "stub_password_key"
@@ -223,8 +222,8 @@ class ProvisioningApi(BaseTest):
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(f"env[?@name=='{self.env_password}']")
         assert password.findone("valueFrom.secretKeyRef.key") == "stub_password_key"
@@ -239,8 +238,8 @@ class ProvisioningApi(BaseTest):
                 existingSecret: null
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(f"env[?@name=='{self.env_password}']")
         assert password.findone("valueFrom.secretKeyRef.name") == self.secret_name
