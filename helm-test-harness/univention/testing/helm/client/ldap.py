@@ -161,7 +161,7 @@ class LdapAuth(BaseTest):
         with does_not_raise():
             chart.helm_template(values)
 
-    def test_auth_existing_secret_mounts_password(self, chart):
+    def test_auth_existing_secret_uses_password(self, chart):
         values = self.load_and_map(
             """
             ldap:
@@ -172,7 +172,7 @@ class LdapAuth(BaseTest):
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, name="stub-secret-name")
 
-    def test_auth_existing_secret_mounts_correct_default_key(self, chart):
+    def test_auth_existing_secret_uses_correct_default_key(self, chart):
         values = self.load_and_map(
             """
             ldap:
@@ -195,7 +195,7 @@ class LdapAuth(BaseTest):
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
 
-    def test_auth_existing_secret_mounts_correct_custom_key(self, chart):
+    def test_auth_existing_secret_uses_correct_custom_key(self, chart):
         values = self.load_and_map(
             """
             ldap:
