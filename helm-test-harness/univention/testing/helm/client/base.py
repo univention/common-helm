@@ -41,7 +41,7 @@ class DefaultAttributes:
     """
 
 
-class BaseTest:
+class BaseTest(DefaultAttributes):
     """
     Base class for client configuration focused tests.
 
