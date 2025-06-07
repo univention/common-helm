@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+
 from collections.abc import Iterable
 
 from pytest_helm.models import HelmTemplateResult
