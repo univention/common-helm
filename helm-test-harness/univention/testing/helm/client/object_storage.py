@@ -19,7 +19,6 @@ class ObjectStorage(BaseTest):
     """
 
     secret_name = "release-name-test-nubus-common-object-storage"
-    workload_resource_kind = "Deployment"
 
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
 
@@ -139,8 +138,8 @@ class ObjectStorage(BaseTest):
 
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         access_key_id = main_container.findone(f"env[?@name=='{self.env_access_key_id}']")
         assert access_key_id.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
@@ -157,8 +156,8 @@ class ObjectStorage(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         access_key_id = main_container.findone(f"env[?@name=='{self.env_access_key_id}']")
         assert access_key_id.findone("valueFrom.secretKeyRef.key") == "access_key_id"
@@ -180,8 +179,8 @@ class ObjectStorage(BaseTest):
                     secret_access_key: "stub_secret_access_key_key"
             """)
         result = chart.helm_template(values)
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         access_key_id = main_container.findone(f"env[?@name=='{self.env_access_key_id}']")
         assert access_key_id.findone("valueFrom.secretKeyRef.key") == "stub_access_key_id_key"
@@ -208,8 +207,8 @@ class ObjectStorage(BaseTest):
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         access_key_id = main_container.findone(f"env[?@name=='{self.env_access_key_id}']")
         assert access_key_id.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"

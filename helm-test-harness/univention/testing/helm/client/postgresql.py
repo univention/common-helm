@@ -18,7 +18,6 @@ class PostgresqlClient(BaseTest):
     """
 
     secret_name = "release-name-test-nubus-common-postgresql"
-    workload_resource_kind = "Deployment"
 
     default_username = "stub-values-username"
     default_port = "5432"
@@ -332,8 +331,8 @@ class PostgresqlClient(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        main_container = deployment.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(self.sub_path_env_db_password)
         assert password.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
@@ -347,8 +346,8 @@ class PostgresqlClient(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        main_container = deployment.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(self.sub_path_env_db_password)
         assert password.findone("valueFrom.secretKeyRef.key") == self.secret_default_key
@@ -364,8 +363,8 @@ class PostgresqlClient(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        main_container = deployment.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
 
         password = main_container.findone(self.sub_path_env_db_password)
         assert password.findone("valueFrom.secretKeyRef.key") == "stub_password_key"
@@ -381,8 +380,8 @@ class PostgresqlClient(BaseTest):
                 existingSecret: null
             """)
         result = chart.helm_template(values)
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        main_container = deployment.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
         password = main_container.findone(self.sub_path_env_db_password)
         expected_value = {"name": self.secret_name, "key": self.secret_default_key}
         assert password.findone("valueFrom.secretKeyRef") == expected_value
@@ -402,8 +401,8 @@ class PostgresqlClient(BaseTest):
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        deployment = result.get_resource(kind=self.workload_resource_kind)
-        main_container = deployment.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
         password = main_container.findone(self.sub_path_env_db_password)
         expected_value = {"name": "stub-secret-name", "key": "stub_password_key"}
         assert password.findone("valueFrom.secretKeyRef") == expected_value
@@ -433,7 +432,7 @@ class PostgresqlClient(BaseTest):
         assert helm_resource_policy != "keep"
 
     def _get_database_url(self, result):
-        workload_resource = result.get_resource(kind=self.workload_resource_kind)
-        main_container = workload_resource.findone(self.path_main_container)
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
         database_url = main_container.findone(self.sub_path_database_url)
         return database_url
