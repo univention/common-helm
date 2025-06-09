@@ -25,8 +25,8 @@ class LdapAuth(BaseTest):
     default_bind_dn = "cn=admin,dc=univention-organization,dc=intranet"
 
     path_ldap_bind_dn = "data.LDAP_HOST_DN"
-    path_main_container = "spec.template.spec.containers[?@.name=='main']"
-    path_volume_secret_ldap = "spec.template.spec.volumes[?@.name=='secret-ldap']"
+    path_main_container = "..spec.template.spec.containers[?@.name=='main']"
+    path_volume_secret_ldap = "..spec.template.spec.volumes[?@.name=='secret-ldap']"
 
     sub_path_ldap_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
 
