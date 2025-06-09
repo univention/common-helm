@@ -19,12 +19,15 @@ test-chart-portal-server:
   image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:VERSION"
   script:
     - helm dep build helm/portal-server
-    - pytest portal-server/tests/chart
+    - pytest -W error portal-server/tests/chart
 ```
 
 Hints:
 
 - `VERSION` has to be replaced with a specific version of the container image.
+
+- `-W error` shall be used within the CI pipline to ensure that we catch up with
+  _DeprecationWarnings_ when upgrading to a new version of the test harness.
 
 
 ### Docker Compose
