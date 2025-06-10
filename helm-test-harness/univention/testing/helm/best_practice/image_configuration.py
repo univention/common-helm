@@ -10,6 +10,17 @@ from .base import BestPracticeBase
 class ImageConfiguration(BestPracticeBase):
     """
     Expected container image configuration behavior.
+
+    TODO: The check of an image configuration has to be done per container per
+    workload object.
+
+    Every container may have a different image and configuration segment in the
+    values structure. This means there has to be a configurable mapping which
+    maps "kind/name: map" and inside it maps "container-name: values-prefix".
+
+    The approach taken should be to template the chart to gather the list of
+    containers and then generate test cases based on this result. Every test
+    case would then map values and run the check.
     """
 
     kinds = ("Deployment", "Job", "CronJob", "StatefulSet")
