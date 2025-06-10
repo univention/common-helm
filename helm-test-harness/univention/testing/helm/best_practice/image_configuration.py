@@ -56,6 +56,28 @@ class ImageConfiguration(BestPracticeBase):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
                 _assert_all_images_use_pull_policy(containers, expected_pull_policy)
 
+    def test_image_pull_policy_is_unset_by_default(self, chart, subtests):
+        """
+        Kubernetes has a good heuristic to set the pull policy default.
+
+        See: https://kubernetes.io/docs/concepts/containers/images/#imagepullpolicy-defaulting
+        """
+        values = self._load_and_map(
+            """
+            global:
+              imagePullPolicy: null
+
+            imagePullPolicy: null
+            """)
+        result = chart.helm_template(values)
+        expected_pull_policy = None
+
+        for containers, resource in self._generate_containers_of_resource_kinds(result):
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
+                for container in containers:
+                    pull_policy = container.get("imagePullPolicy", None)
+                    assert pull_policy == expected_pull_policy
+
     def test_image_pull_policy_overrides_global_value(self, chart, subtests):
         values = self._load_and_map(
             """
