@@ -18,6 +18,14 @@ def pytest_addoption(parser):
         help="Enable verbose output of the Helm checking, e.g. dump the template result.",
     )
     group.addoption(
+        "--helm-deps",
+        "--helm-dependencies",
+        action="store_true",
+        dest="helm_dependencies",
+        default=False,
+        help='Run "helm dep build" before running the tests.',
+    )
+    group.addoption(
         "--helm-path",
         action="store",
         dest="helm_path",
