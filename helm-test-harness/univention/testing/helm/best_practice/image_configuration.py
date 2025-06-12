@@ -79,7 +79,7 @@ class ImageConfiguration(BestPracticeBase):
               imagePullPolicy: null
 
             image:
-              imagePullPolicy: null
+              pullPolicy: null
             """)
         result = chart.helm_template(values)
         expected_pull_policy = None
@@ -97,7 +97,7 @@ class ImageConfiguration(BestPracticeBase):
               imagePullPolicy: "stub-global-pull-policy"
 
             image:
-              imagePullPolicy: "stub-pull-policy"
+              pullPolicy: "stub-pull-policy"
             """)
         result = chart.helm_template(values)
         expected_pull_policy = "stub-pull-policy"
