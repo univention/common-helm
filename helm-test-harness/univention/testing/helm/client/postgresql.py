@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from contextlib import nullcontext as does_not_raise
+from urllib.parse import urlparse
 import subprocess
 
 import pytest
@@ -28,6 +29,21 @@ class PostgresqlAuth(BaseTest):
     sub_path_database_url = "env[?@name=='DATABASE_URL'].value"
     sub_path_env_db_password = "env[?@name=='DB_PASSWORD']"
 
+    def get_username(self, result):
+        url = self._get_database_url(result)
+        parsed_url = urlparse(url)
+        return parsed_url.username
+
+    def _get_database_url(self, result):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
+        database_url = main_container.findone(self.sub_path_database_url)
+        return database_url
+
+    def assert_username_value(self, result, value):
+        username = self.get_username(result)
+        assert username == value
+
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
             """
@@ -43,7 +59,7 @@ class PostgresqlAuth(BaseTest):
 
         assert secret.findone("stringData.password") == "stub-password"
 
-    def test_auth_plain_values_provide_username_in_database_url_via_config_map(self, chart):
+    def test_auth_plain_values_provide_username(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -51,11 +67,9 @@ class PostgresqlAuth(BaseTest):
                 username: "stub-username"
                 database: "stub-database"
                 password: "stub-password"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
-        database_url = self._get_database_url(result)
-        assert "stub-username" in database_url
+        self.assert_username_value(result, "stub-username")
 
     def test_auth_plain_values_username_is_templated(self, chart):
         values = self.load_and_map(
@@ -305,12 +319,6 @@ class PostgresqlAuth(BaseTest):
         annotations = secret.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
-
-    def _get_database_url(self, result):
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
-        database_url = main_container.findone(self.sub_path_database_url)
-        return database_url
 
 
 class PostgresqlConnection(BaseTest):
