@@ -34,6 +34,13 @@ class PostgresqlAuth(BaseTest):
         parsed_url = urlparse(url)
         return parsed_url.username
 
+    def get_database(self, result):
+        url = self._get_database_url(result)
+        parsed_url = urlparse(url)
+        path_segment = parsed_url.path
+        database = path_segment.strip("/").split("/")[0]
+        return database
+
     def _get_database_url(self, result):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
         main_container = workload.findone(self.path_main_container)
@@ -44,6 +51,21 @@ class PostgresqlAuth(BaseTest):
         username = self.get_username(result)
         assert username == value
 
+    def assert_database_value(self, result, value):
+        database = self.get_database(result)
+        assert value == database
+
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
+        password = main_container.findone(self.sub_path_env_db_password)
+
+        if name:
+            assert password.findone("valueFrom.secretKeyRef.name") == name
+
+        if key:
+            assert password.findone("valueFrom.secretKeyRef.key") == key
+
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
             """
@@ -52,11 +74,9 @@ class PostgresqlAuth(BaseTest):
                 username: "stub-username"
                 database: "stub-database"
                 password: "stub-password"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
-
         assert secret.findone("stringData.password") == "stub-password"
 
     def test_auth_plain_values_provide_username(self, chart):
@@ -84,8 +104,7 @@ class PostgresqlAuth(BaseTest):
         """,
         )
         result = chart.helm_template(values)
-        database_url = self._get_database_url(result)
-        assert "stub-value" in database_url
+        self.assert_username_value(result, "stub-value")
 
     def test_auth_plain_values_password_is_not_templated(self, chart):
         values = self.load_and_map(
@@ -138,8 +157,7 @@ class PostgresqlAuth(BaseTest):
         """,
         )
         result = chart.helm_template(values)
-        database_url = self._get_database_url(result)
-        assert self.default_username in database_url
+        self.assert_username_value(result, self.default_username)
 
     def test_auth_database_is_required(self, chart):
         values = self.load_and_map(
@@ -164,8 +182,7 @@ class PostgresqlAuth(BaseTest):
         """,
         )
         result = chart.helm_template(values)
-        database_url = self._get_database_url(result)
-        assert self.default_database in database_url
+        self.assert_database_value(result, self.default_database)
 
     def test_auth_database_is_templated(self, chart):
         values = self.load_and_map(
@@ -177,11 +194,9 @@ class PostgresqlAuth(BaseTest):
                 username: "stub-username"
                 database: "{{ .Values.global.test }}"
                 password: "stub-password"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
-        database_url = self._get_database_url(result)
-        assert "stub-value" in database_url
+        self.assert_database_value(result, "stub-value")
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, chart):
         values = self.load_and_map(
@@ -192,8 +207,7 @@ class PostgresqlAuth(BaseTest):
                 database: "stub-database"
                 existingSecret:
                   name: "stub-secret-name"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
@@ -206,12 +220,11 @@ class PostgresqlAuth(BaseTest):
                 password: null
                 existingSecret:
                   name: "stub-secret-name"
-        """,
-        )
+            """)
         with does_not_raise():
             chart.helm_template(values)
 
-    def test_auth_existing_secret_used_to_populate_environment_variables(self, chart):
+    def test_auth_existing_secret_uses_password(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -220,11 +233,7 @@ class PostgresqlAuth(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
-
-        password = main_container.findone(self.sub_path_env_db_password)
-        assert password.findone("valueFrom.secretKeyRef.name") == "stub-secret-name"
+        self.assert_correct_secret_usage(result, name="stub-secret-name")
 
     def test_auth_existing_secret_uses_correct_default_key(self, chart):
         values = self.load_and_map(
@@ -235,11 +244,7 @@ class PostgresqlAuth(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
-
-        password = main_container.findone(self.sub_path_env_db_password)
-        assert password.findone("valueFrom.secretKeyRef.key") == self.secret_default_key
+        self.assert_correct_secret_usage(result, key=self.secret_default_key)
 
     def test_auth_existing_secret_uses_correct_custom_key(self, chart):
         values = self.load_and_map(
@@ -252,13 +257,9 @@ class PostgresqlAuth(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
+        self.assert_correct_secret_usage(result, key="stub_password_key")
 
-        password = main_container.findone(self.sub_path_env_db_password)
-        assert password.findone("valueFrom.secretKeyRef.key") == "stub_password_key"
-
-    def test_auth_plain_values_uses_correct_secret(self, chart):
+    def test_auth_disabling_existing_secret_by_setting_it_to_null(self, chart):
         values = self.load_and_map(
             """
             postgresql:
@@ -269,11 +270,7 @@ class PostgresqlAuth(BaseTest):
                 existingSecret: null
             """)
         result = chart.helm_template(values)
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
-        password = main_container.findone(self.sub_path_env_db_password)
-        expected_value = {"name": self.secret_name, "key": self.secret_default_key}
-        assert password.findone("valueFrom.secretKeyRef") == expected_value
+        self.assert_correct_secret_usage(result, name=self.secret_name, key=self.secret_default_key)
 
     def test_auth_existing_secret_has_precedence(self, chart):
         values = self.load_and_map(
@@ -290,11 +287,7 @@ class PostgresqlAuth(BaseTest):
         with pytest.raises(LookupError):
             result.get_resource(kind="Secret", name=self.secret_name)
 
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
-        password = main_container.findone(self.sub_path_env_db_password)
-        expected_value = {"name": "stub-secret-name", "key": "stub_password_key"}
-        assert password.findone("valueFrom.secretKeyRef") == expected_value
+        self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
 
     def test_global_secrets_keep_is_ignored(self, chart):
         """
