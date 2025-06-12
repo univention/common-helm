@@ -10,7 +10,7 @@ import pytest
 from .base import BaseTest
 
 
-class PostgresqlAuth(BaseTest):
+class Auth(BaseTest):
     """
     Postgresql Client configuration
 
@@ -27,7 +27,6 @@ class PostgresqlAuth(BaseTest):
     path_postgresql_username = "data.DB_USERNAME"
 
     sub_path_database_url = "env[?@name=='DATABASE_URL'].value"
-    sub_path_env_db_password = "env[?@name=='DB_PASSWORD']"
 
     def get_username(self, result):
         url = self._get_database_url(result)
@@ -56,15 +55,7 @@ class PostgresqlAuth(BaseTest):
         assert value == database
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
-        password = main_container.findone(self.sub_path_env_db_password)
-
-        if name:
-            assert password.findone("valueFrom.secretKeyRef.name") == name
-
-        if key:
-            assert password.findone("valueFrom.secretKeyRef.key") == key
+        raise NotImplementedError("Use one of the mixins or implement this method.")
 
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
@@ -314,7 +305,26 @@ class PostgresqlAuth(BaseTest):
         assert helm_resource_policy != "keep"
 
 
-class PostgresqlAuthSecretUsageViaVolume:
+class SecretUsageViaEnv:
+    """
+    Mixin which implements the expected Secret usage via environment variables.
+    """
+
+    sub_path_env_db_password = "env[?@name=='DB_PASSWORD']"
+
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
+        password = main_container.findone(self.sub_path_env_db_password)
+
+        if name:
+            assert password.findone("valueFrom.secretKeyRef.name") == name
+
+        if key:
+            assert password.findone("valueFrom.secretKeyRef.key") == key
+
+
+class SecretUsageViaVolume:
     """
     Mixin which implements the expected Secret usage via volume mounts.
     """
@@ -336,7 +346,7 @@ class PostgresqlAuthSecretUsageViaVolume:
             assert secret_volume_mount["subPath"] == key
 
 
-class PostgresqlConnection(BaseTest):
+class Connection(BaseTest):
     """
     Test related to the connection configuration of postgresql.
 
