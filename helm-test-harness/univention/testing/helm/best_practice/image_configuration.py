@@ -78,7 +78,8 @@ class ImageConfiguration(BestPracticeBase):
             global:
               imagePullPolicy: null
 
-            imagePullPolicy: null
+            image:
+              imagePullPolicy: null
             """)
         result = chart.helm_template(values)
         expected_pull_policy = None
