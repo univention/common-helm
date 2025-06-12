@@ -314,6 +314,28 @@ class PostgresqlAuth(BaseTest):
         assert helm_resource_policy != "keep"
 
 
+class PostgresqlAuthSecretUsageViaVolume:
+    """
+    Mixin which implements the expected Secret usage via volume mounts.
+    """
+
+    path_volume_secret_postgresql = "..spec.template.spec.volumes[?@.name=='secret-postgresql']"
+
+    sub_path_postgresql_volume_mount = "volumeMounts[?@.name=='secret-postgresql']"
+
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        secret_volume = workload.findone(self.path_volume_secret_postgresql)
+        main_container = workload.findone(self.path_main_container)
+        secret_volume_mount = main_container.findone(self.sub_path_postgresql_volume_mount)
+
+        if name:
+            assert secret_volume.findone("secret.secretName") == name
+
+        if key:
+            assert secret_volume_mount["subPath"] == key
+
+
 class PostgresqlConnection(BaseTest):
     """
     Test related to the connection configuration of postgresql.
