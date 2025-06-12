@@ -7,6 +7,9 @@ The container image `testrunner` provides all dependencies for using
 `pytest-helm` it also includes the `helm-test-harness` package. It should be set
 up in the Gitlab CI configuration and in the Docker Compose setup.
 
+The project `common-helm` does provide a `uv` based Python environment which
+shall be used to run the tests.
+
 
 ### Gitlab CI
 
