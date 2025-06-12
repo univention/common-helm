@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.20.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.19.0...v0.20.0) (2025-06-12)
+
+
+### Features
+
+* **helm-test-harness:** Add "workload_resource_kind" attribute into LDAP tests ([681cf2b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/681cf2bae7ead9167a5e34d805d4289d5c16b166)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Add base class for best practice checks ([de23c14](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/de23c14d59a18102658e5e63c2aaa6e1b77ad9bf)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Add check for local image pull secrets configuration ([e8f6de1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/e8f6de1b5ad9d817c6e0e76a916889d7377c32db)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Add mixin LdapConnectionUri ([576c981](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/576c981e562555b178632e272674d3446f5de260))
+* **helm-test-harness:** Add mixin to verify the ldap connection uri via config map ([b9bacb5](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/b9bacb553e3da48e94052c5afae0055f5a949c5c))
+* **helm-test-harness:** Add support for CronJob resources in image related checks ([e8ecb23](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/e8ecb236223518305150242b18938e3671c653b8)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Adjust json path in ldap tests to also work for CronJob objects ([401c64c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/401c64c45f2605bf90e7f3c87e43f3a4077804bc))
+* **helm-test-harness:** Allow to filter out resources in labels test ([ce87e11](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/ce87e11bcb7b724614e54c1bf8cc3e620a8a04ff)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** BaseTest inherits now DefaultAttributes ([089004a](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/089004a2cf9eea4a9b9b6bb7d5777226144a8245))
+* **helm-test-harness:** Duplicate password usage checks in ldap ([c0ab53b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/c0ab53bccd2e7782d0e17f4ba85e5c64af34e181)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Find "bind dn" in ldap tests via utility method ([fd67a10](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/fd67a100c1240ef800e9e18d0af425270724257d)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Ldap client test template allows the auth usage to be customized ([ed610c2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/ed610c2332fce985b73a7b26a84c34807b85a5b7)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Move ldap connection related tests into ConnectionHostAndPort ([28d4919](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/28d491954507cb05a61cb6c039d47c66b49a378f))
+* **helm-test-harness:** Remove unused code in image related tests ([33ef663](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/33ef6636cedd496168d33cc3684d147ae1540238)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **helm-test-harness:** Support copy operation in apply_mapping ([43bdd4e](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/43bdd4e7b1c7c0435190ad51fed63c3b5a39f344)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **nubus-common:** Add template "nubus-common.annotations.render" ([997c02a](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/997c02a26ae7592ea3e395538ce2fef4b89ea99e)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **nubus-common:** Add utility template "nubus-common.annotations.entries" ([b9e6ebd](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/b9e6ebdefe5f9a0dfb89cc9144e62973bb50a117)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **pytest-helm:** Report Helm output in case of failed calls to "helm template" ([aabfb76](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/aabfb76ba108946b2eb2643328ea16c0df0de9ae)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **pytest-helm:** Support also containers in CronJob resources ([e075f4c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/e075f4c38c4f49af70b95a1ca067400597d16896)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+
+
+### Bug Fixes
+
+* **helm-test-harness:** Use HelmTemplateResult.get_resource in base class ([4436118](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/443611827a1c6afe75dad5c50d7c73e0f3ba9b68)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **pytest-helm:** Avoid creating ghost keys in apply_mapping ([c1dbbbc](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/c1dbbbc06f2d1854918a400f2e0b047dbac8fc84)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+
 ## [0.19.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.18.0...v0.19.0) (2025-06-06)
 
 
