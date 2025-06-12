@@ -40,15 +40,15 @@ class LdapAuth(BaseTest):
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        secret_ldap_volume = workload.findone(self.path_volume_secret_ldap)
+        secret_volume = workload.findone(self.path_volume_secret_ldap)
         main_container = workload.findone(self.path_main_container)
-        secret_ldap_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
+        secret_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
 
         if name:
-            assert secret_ldap_volume.findone("secret.secretName") == name
+            assert secret_volume.findone("secret.secretName") == name
 
         if key:
-            assert secret_ldap_volume_mount["subPath"] == key
+            assert secret_volume_mount["subPath"] == key
 
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
