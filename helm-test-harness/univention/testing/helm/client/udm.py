@@ -31,9 +31,9 @@ class UdmClient(BaseTest):
 
     path_udm_api_url = "data.UDM_API_URL"
     path_udm_api_username = "data.UDM_API_USERNAME"
-    path_volume_secret_udm = "spec.template.spec.volumes[?@.name=='secret-udm']"
+    path_volume = "spec.template.spec.volumes[?@.name=='secret-udm']"
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
-    sub_path_udm_volume_mount = "volumeMounts[?@.name=='secret-udm']"
+    sub_path_volume_mount = "volumeMounts[?@.name=='secret-udm']"
 
     def test_connection_url_is_required(self, chart):
         values = self.load_and_map(
@@ -209,7 +209,7 @@ class UdmClient(BaseTest):
             """)
         result = chart.helm_template(values)
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        secret_udm_volume = workload.findone(self.path_volume_secret_udm)
+        secret_udm_volume = workload.findone(self.path_volume)
         assert secret_udm_volume.findone("secret.secretName") == "stub-secret-name"
 
     def test_auth_existing_secret_mounts_correct_default_key(self, chart):
@@ -223,7 +223,7 @@ class UdmClient(BaseTest):
         result = chart.helm_template(values)
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
         main_container = workload.findone(self.path_main_container)
-        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
 
@@ -238,9 +238,9 @@ class UdmClient(BaseTest):
             """)
         result = chart.helm_template(values)
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        secret_udm_volume = workload.findone(self.path_volume_secret_udm)
+        secret_udm_volume = workload.findone(self.path_volume)
         main_container = workload.findone(self.path_main_container)
-        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "password"
         assert secret_udm_volume.findone("secret.secretName") == self.secret_name
@@ -258,7 +258,7 @@ class UdmClient(BaseTest):
         result = chart.helm_template(values)
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
         main_container = workload.findone(self.path_main_container)
-        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
 
@@ -278,9 +278,9 @@ class UdmClient(BaseTest):
             result.get_resource(kind="Secret", name=self.secret_name)
 
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        secret_udm_volume = workload.findone(self.path_volume_secret_udm)
+        secret_udm_volume = workload.findone(self.path_volume)
         main_container = workload.findone(self.path_main_container)
-        secret_udm_volume_mount = main_container.findone(self.sub_path_udm_volume_mount)
+        secret_udm_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_udm_volume_mount["subPath"] == "stub_password_key"
         assert secret_udm_volume.findone("secret.secretName") == "stub-secret-name"
