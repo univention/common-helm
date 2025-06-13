@@ -260,15 +260,15 @@ class SecretUsageViaVolume:
     Mixin which implements the expected Secret usage via volume mounts.
     """
 
-    path_volume_secret_smtp= "..spec.template.spec.volumes[?@.name=='secret-smtp']"
+    path_volume= "..spec.template.spec.volumes[?@.name=='secret-smtp']"
 
-    sub_path_smtp_volume_mount = "volumeMounts[?@.name=='secret-smtp']"
+    sub_path_volume_mount = "volumeMounts[?@.name=='secret-smtp']"
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        secret_volume = workload.findone(self.path_volume_secret_smtp)
+        secret_volume = workload.findone(self.path_volume)
         main_container = workload.findone(self.path_main_container)
-        secret_volume_mount = main_container.findone(self.sub_path_smtp_volume_mount)
+        secret_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         if name:
             assert secret_volume.findone("secret.secretName") == name
