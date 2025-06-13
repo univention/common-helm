@@ -63,11 +63,26 @@ test-chart-nubus-common:
   script:
     - pytest -v tests/nubus-common
 
+test-chart-test-client-config:
+  stage: test
+  image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
+  before_script:
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - helm dep build helm/nubus-common
+  script:
+    - pytest -v tests/client-config
+
 test-pytest-helm-plugin:
   stage: test
   image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
   script:
     - pytest pytest-helm/tests
+
+test-helm-test-harness:
+  stage: test
+  image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
+  script:
+    - pytest helm-test-harness/tests
 
 build-and-publish-pip:
   extends: .build-and-publish-pip-package-with-uv
