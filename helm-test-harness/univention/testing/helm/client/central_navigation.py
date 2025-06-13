@@ -26,11 +26,11 @@ class CentralNavigationClient(BaseTest):
     secret_name = "release-name-test-nubus-common-central-navigation"
 
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
-    sub_path_central_navigation_volume_mount = "volumeMounts[?@.name=='secret-central-navigation']"
 
     path_shared_secret = "stringData.shared_secret"
-    path_volume_secret_central_navigation = "spec.template.spec.volumes[?@.name=='secret-central-navigation']"
+    path_volume = "spec.template.spec.volumes[?@.name=='secret-central-navigation']"
 
+    sub_path_volume_mount = "volumeMounts[?@.name=='secret-central-navigation']"
 
     def test_auth_plain_values_does_not_generate_secret_if_disabled(self, chart):
         values = self.load_and_map(
@@ -116,7 +116,7 @@ class CentralNavigationClient(BaseTest):
             """)
         result = chart.helm_template(values)
         deployment = result.get_resource(kind="Deployment")
-        secret_central_navigation_volume = deployment.findone(self.path_volume_secret_central_navigation)
+        secret_central_navigation_volume = deployment.findone(self.path_volume)
         assert secret_central_navigation_volume.findone("secret.secretName") == "stub-secret-name"
 
     def test_auth_existing_secret_mounts_correct_default_key(self, chart):
@@ -131,7 +131,7 @@ class CentralNavigationClient(BaseTest):
         result = chart.helm_template(values)
         deployment = result.get_resource(kind="Deployment")
         main_container = deployment.findone(self.path_main_container)
-        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_central_navigation_volume_mount)
+        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_central_navigation_volume_mount["subPath"] == "shared_secret"
 
@@ -145,9 +145,9 @@ class CentralNavigationClient(BaseTest):
         """)
         result = chart.helm_template(values)
         deployment = result.get_resource(kind="Deployment")
-        secret_central_navigation_volume = deployment.findone(self.path_volume_secret_central_navigation)
+        secret_central_navigation_volume = deployment.findone(self.path_volume)
         main_container = deployment.findone(self.path_main_container)
-        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_central_navigation_volume_mount)
+        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_central_navigation_volume_mount["subPath"] == "shared_secret"
         assert secret_central_navigation_volume.findone("secret.secretName") == self.secret_name
@@ -166,7 +166,7 @@ class CentralNavigationClient(BaseTest):
         result = chart.helm_template(values)
         deployment = result.get_resource(kind="Deployment")
         main_container = deployment.findone(self.path_main_container)
-        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_central_navigation_volume_mount)
+        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_central_navigation_volume_mount["subPath"] == "stub_shared_secret_key"
 
@@ -187,9 +187,9 @@ class CentralNavigationClient(BaseTest):
             result.get_resource(kind="Secret", name=self.secret_name)
 
         deployment = result.get_resource(kind="Deployment")
-        secret_central_navigation_volume = deployment.findone(self.path_volume_secret_central_navigation)
+        secret_central_navigation_volume = deployment.findone(self.path_volume)
         main_container = deployment.findone(self.path_main_container)
-        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_central_navigation_volume_mount)
+        secret_central_navigation_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         assert secret_central_navigation_volume_mount["subPath"] == "stub_shared_secret_key"
         assert secret_central_navigation_volume.findone("secret.secretName") == "stub-secret-name"
