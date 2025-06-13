@@ -14,13 +14,14 @@ class Auth(BaseTest):
     SMTP Client configuration.
     """
 
-    secret_name = "release-name-test-nubus-common-smtp"
+    config_map_name = "release-name-test-client-config"
+    secret_name = "release-name-test-client-config-smtp"
 
     default_username = "stub-values-username"
     secret_default_key = "password"
 
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
-    path_smtp_username = "data.SMTP_USERNAME"
+    path_username = "data.SMTP_USERNAME"
 
     def get_username(self, result):
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
