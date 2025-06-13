@@ -26,9 +26,9 @@ class LdapAuth(BaseTest):
 
     path_ldap_bind_dn = "data.LDAP_HOST_DN"
     path_main_container = "..spec.template.spec.containers[?@.name=='main']"
-    path_volume_secret_ldap = "..spec.template.spec.volumes[?@.name=='secret-ldap']"
+    path_volume = "..spec.template.spec.volumes[?@.name=='secret-ldap']"
 
-    sub_path_ldap_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
+    sub_path_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
 
     def get_bind_dn(self, result: HelmTemplateResult):
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
@@ -40,9 +40,9 @@ class LdapAuth(BaseTest):
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        secret_volume = workload.findone(self.path_volume_secret_ldap)
+        secret_volume = workload.findone(self.path_volume)
         main_container = workload.findone(self.path_main_container)
-        secret_volume_mount = main_container.findone(self.sub_path_ldap_volume_mount)
+        secret_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         if name:
             assert secret_volume.findone("secret.secretName") == name
