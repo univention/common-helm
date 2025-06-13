@@ -1,0 +1,18 @@
+---
+
+# SPDX-FileCopyrightText: 2025 Univention GmbH
+# SPDX-License-Identifier: AGPL-3.0-only
+
+apiVersion: v2
+name: test-client-config
+description: Test chart for the client configuration pattern
+type: application
+version: 0.0.1
+
+dependencies:
+  - name: "nubus-common"
+    # Intentionally left out "repository", the idea is to use a symlink in
+    # "./charts/" so that one has the correct state linked always.
+    #
+    # repository: "file://../nubus-common"
+    version: "*"
