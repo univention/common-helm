@@ -26,10 +26,16 @@ spec:
       containers:
         - name: "main"
           volumeMounts:
+            - name: secret-memcached
+              mountPath: /run/secrets/univention.de/memcached_password
+              subPath: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.memcached.auth.existingSecret "key" "password") | quote }}
             - name: secret-smtp
               mountPath: /run/secrets/univention.de/smtp_password
               subPath: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.smtp.auth.existingSecret "key" "password") | quote }}
       volumes:
+        - name: secret-memcached
+          secret:
+            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.memcached.auth.existingSecret "defaultNameSuffix" "memcached" "context" .) | quote }}
         - name: secret-smtp
           secret:
             secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.smtp.auth.existingSecret "defaultNameSuffix" "smtp" "context" .) | quote }}
