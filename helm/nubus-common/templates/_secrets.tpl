@@ -60,7 +60,7 @@ Params:
 
 {{- define "nubus-common.secrets.key" -}}
 {{- $_ := required "Variable .key is required" .key -}}
-{{- default .key (get (.existingSecret).keyMapping .key) -}}
+{{- default .key (get ( default dict (.existingSecret).keyMapping ) .key) -}}
 {{- end -}}
 
 
