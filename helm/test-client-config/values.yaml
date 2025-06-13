@@ -8,14 +8,22 @@
 # "--values" or "--set" in the call to the "helm" utility.
 
 global:
+  memcached:
+    auth:
+      username: null
   smtp:
     auth:
       username: null
 
+memcached:
+  auth:
+    username: "stub-values-username"
+    password: "stub-values-password"
+
 smtp:
   auth:
     username: "stub-values-username"
-    password: null
+    password: "stub-values-password"
     existingSecret:
       name: null
       keyMapping:

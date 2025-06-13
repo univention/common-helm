@@ -14,8 +14,13 @@ metadata:
     "context" . )
     | nindent 2 }}
 data:
+  MEMCACHED_USERNAME: {{ tpl
+    ( required
+      "A Memcached username has to be supplied, see parameter memcached.auth."
+      ( coalesce .Values.memcached.auth.username (((.Values.global).memcached).auth).username )
+    ) . | quote }}
   SMTP_USERNAME: {{ tpl
     ( required
       "A SMTP username has to be supplied, see parameter smtp.auth."
-      ( coalesce .Values.smtp.auth.username .Values.global.smtp.auth.username )
+      ( coalesce .Values.smtp.auth.username (((.Values.global).smtp).auth).username )
     ) . | quote }}
