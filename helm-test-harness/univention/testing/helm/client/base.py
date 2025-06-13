@@ -54,6 +54,37 @@ class DefaultAttributes:
     - The method `HelmTemplateResult.get_resources` in `pytest-helm`.
     """
 
+    path_volume: str
+    """
+    Path to the related volume when testing something in the context of a workload.
+
+    When testing in the context of a Secret, then this path should point to the
+    volume mount in the workload under test.
+
+    Examples::
+
+        # Secret focused test
+        path_volume = "..spec.template.spec.volumes[?@.name=='secret-ldap']"
+
+    See also:
+
+    - The attribute `sub_path_volume_mount` is related.
+    """
+
+    sub_path_volume_mount: str
+    """
+    Sub path to find a volume mount inside of a container.
+
+    Examples::
+
+        # Secret focused test
+        sub_path_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
+
+    See also:
+
+    - The attribute `path_volume` is related.
+    """
+
 
 class BaseTest(DefaultAttributes):
     """
