@@ -321,6 +321,21 @@ class Connection(BaseTest):
             chart.helm_template(values)
         assert "connection has to be configured" in error.value.stderr
 
+    @pytest.mark.parametrize("value", [
+        "stub-hostname",
+        # This value is invalid, but will ensure that "quote" is correctly used
+        ":",
+    ])
+    def test_connection_host_can_be_configured(self, chart, value):
+        values = self.load_and_map(
+            f"""
+            nats:
+              connection:
+                host: "{value}"
+            """)
+        result = chart.helm_template(values)
+        self.assert_host_value(result, value)
+
     def test_connection_host_is_templated(self, chart):
         values = self.load_and_map(
             """
@@ -370,6 +385,21 @@ class Connection(BaseTest):
             """)
         result = chart.helm_template(values)
         self.assert_port_value(result, self.default_port)
+
+    @pytest.mark.parametrize("value", [
+        "1234",
+        # This value is invalid, but will ensure that "quote" is correctly used
+        ":",
+    ])
+    def test_connection_port_can_be_configured(self, chart, value):
+        values = self.load_and_map(
+            f"""
+            nats:
+              connection:
+                port: "{value}"
+            """)
+        result = chart.helm_template(values)
+        self.assert_port_value(result, value)
 
     def test_connection_port_is_templated(self, chart):
         values = self.load_and_map(
