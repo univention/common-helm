@@ -9,46 +9,20 @@ import pytest
 from .base import BaseTest
 
 
-class ProvisioningApi(BaseTest):
+class Auth(BaseTest):
     """
     Provisioning API Client configuration checks.
     """
 
-    # TODO: Check what's needed
     config_map_name = None
     secret_name = "release-name-test-nubus-common-provisioning-api"
 
     default_username = "stub-values-username"
 
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
-    path_provisioning_api_url = "data.PROVISIONING_API_URL"
     path_provisioning_api_username = "data.PROVISIONING_API_USERNAME"
 
     env_password = "PROVISIONING_API_PASSWORD"
-
-    def test_connection_url_is_required(self, chart):
-        values = self.load_and_map(
-            """
-            provisioningApi:
-              connection:
-                url: null
-            """)
-        with pytest.raises(subprocess.CalledProcessError) as error:
-            chart.helm_template(values)
-        assert "connection has to be configured" in error.value.stderr
-
-    def test_connection_url_is_templated(self, chart):
-        values = self.load_and_map(
-            """
-            global:
-              test: "stub_value"
-            provisioningApi:
-              connection:
-                url: "{{ .Values.global.test }}"
-            """)
-        result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        assert config_map.findone(self.path_provisioning_api_url) == "stub_value"
 
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
@@ -268,3 +242,34 @@ class ProvisioningApi(BaseTest):
         annotations = secret.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
+
+
+class Connection(BaseTest):
+
+    config_map_name = None
+
+    path_provisioning_api_url = "data.PROVISIONING_API_URL"
+
+    def test_connection_url_is_required(self, chart):
+        values = self.load_and_map(
+            """
+            provisioningApi:
+              connection:
+                url: null
+            """)
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            chart.helm_template(values)
+        assert "connection has to be configured" in error.value.stderr
+
+    def test_connection_url_is_templated(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              test: "stub_value"
+            provisioningApi:
+              connection:
+                url: "{{ .Values.global.test }}"
+            """)
+        result = chart.helm_template(values)
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
+        assert config_map.findone(self.path_provisioning_api_url) == "stub_value"
