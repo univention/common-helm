@@ -67,8 +67,7 @@ class Auth(BaseTest):
               auth:
                 username: "{{ .Values.global.test }}"
                 password: "stub-password"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         self.assert_username_value(result, "stub-value")
 
@@ -79,8 +78,7 @@ class Auth(BaseTest):
               auth:
                 username: "stub-username"
                 password: "{{ value }}"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         assert secret.findone("stringData.password") == "{{ value }}"
@@ -92,8 +90,7 @@ class Auth(BaseTest):
               auth:
                 username: "stub-username"
                 password: null
-        """,
-        )
+            """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
         assert "password has to be supplied" in error.value.stderr
@@ -105,8 +102,7 @@ class Auth(BaseTest):
               auth:
                 username: null
                 password: "stub-password"
-        """,
-        )
+            """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
         assert "username has to be supplied" in error.value.stderr
@@ -117,8 +113,7 @@ class Auth(BaseTest):
             smtp:
               auth:
                 password: "stub-password"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
         self.assert_username_value(result, self.default_username)
 
