@@ -14,15 +14,6 @@ class CentralNavigationClient(BaseTest):
     Client part of the Central Navigation API of the portal server.
     """
 
-    is_secret_owner = False
-    """
-    Flag to indicate if the Helm chart under test owns the secret.
-
-    Different behavior is expected if the secret is owned by the chart. The
-    main aspect is that a random or derived value is generated automatically if
-    the chart is the owner of the secret.
-    """
-
     secret_name = "release-name-test-nubus-common-central-navigation"
 
     path_main_container = "spec.template.spec.containers[?@.name=='main']"
