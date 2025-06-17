@@ -10,7 +10,7 @@ from pytest_helm.models import HelmTemplateResult
 from .base import BaseTest
 
 
-class LdapAuth(BaseTest):
+class Auth(BaseTest):
     """
     Tests for the value `ldap.auth` of the LDAP client configuration.
 
@@ -251,7 +251,7 @@ class LdapAuth(BaseTest):
         assert helm_resource_policy != "keep"
 
 
-class LdapAuthUsageViaEnv:
+class AuthViaEnv:
     """
     Mixin to change the expected behavior to be based on env configuration.
 
@@ -280,7 +280,7 @@ class LdapAuthUsageViaEnv:
             assert env_password.findone("valueFrom.secretKeyRef.key") == key
 
 
-class LdapConnectionHostAndPort(BaseTest):
+class ConnectionHostAndPort(BaseTest):
     """
     Tests related to the usage `host` and `port` in the connection.
 
@@ -446,7 +446,7 @@ class LdapConnectionHostAndPort(BaseTest):
         assert "local_stub" == ldap_port
 
 
-class LdapConnectionUri(BaseTest):
+class ConnectionUri(BaseTest):
     """
     Tests related to the usage of `ldap.connection.uri`.
     """
@@ -514,7 +514,7 @@ class LdapConnectionUri(BaseTest):
         assert env_connection_uri["value"] == value
 
 
-class LdapConnectionUriViaConfigMap:
+class ConnectionUriViaConfigMap:
     """
     Mixin which expects the connection URI in a ConfigMap.
     """
