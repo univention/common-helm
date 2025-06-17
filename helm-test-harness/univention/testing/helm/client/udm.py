@@ -9,13 +9,6 @@ import pytest
 from .base import BaseTest
 
 
-# NOTE: We want to have the values + linter_values always be passing the
-# schema validation and required checks. So in some way we have to "unset"
-# a value to verify that something is required. At the same time we want to
-# be sure that nothing else is missing so that we check exactly for the
-# item under test.
-
-
 class UdmClient(BaseTest):
     """
     UDM Rest API Client configuration
