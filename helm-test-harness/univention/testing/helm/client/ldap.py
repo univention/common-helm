@@ -64,9 +64,9 @@ class Auth(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        password = self.get_password(result)
 
-        assert secret.findone("stringData.password") == "stub-password"
+        assert password == "stub-password"
 
     def test_auth_plain_values_provide_bind_dn(self, chart):
         values = self.load_and_map(
@@ -127,8 +127,8 @@ class Auth(BaseTest):
                 password: "{{ value }}"
             """)
         result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.password") == "{{ value }}"
+        password = self.get_password(result)
+        assert password == "{{ value }}"
 
     def test_auth_plain_values_password_is_required(self, chart):
         if self.is_secret_owner:
