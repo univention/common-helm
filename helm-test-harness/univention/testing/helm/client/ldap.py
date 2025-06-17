@@ -25,6 +25,7 @@ class Auth(BaseTest):
     default_bind_dn = "cn=admin,dc=univention-organization,dc=intranet"
 
     path_ldap_bind_dn = "data.LDAP_HOST_DN"
+    path_password = "stringData.password"
     path_main_container = "..spec.template.spec.containers[?@.name=='main']"
     path_volume = "..spec.template.spec.volumes[?@.name=='secret-ldap']"
 
@@ -33,6 +34,10 @@ class Auth(BaseTest):
     def get_bind_dn(self, result: HelmTemplateResult):
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         return config_map.findone(self.path_ldap_bind_dn)
+
+    def get_password(self, result: HelmTemplateResult):
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        return secret.findone(self.path_password)
 
     def assert_bind_dn_value(self, result: HelmTemplateResult, value: str):
         bind_dn = self.get_bind_dn(result)
@@ -126,6 +131,8 @@ class Auth(BaseTest):
         assert secret.findone("stringData.password") == "{{ value }}"
 
     def test_auth_plain_values_password_is_required(self, chart):
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             ldap:
@@ -249,6 +256,49 @@ class Auth(BaseTest):
         annotations = secret.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
+
+
+class AuthOwner:
+    """
+    Mixin to configure the test template class to "own" the checked Secret.
+
+    See: `DefaultAttributes.is_secret_owner`
+    """
+
+    is_secret_owner = True
+
+    def test_auth_shared_secret_has_random_value(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            ldap:
+              auth:
+                password: null
+            """)
+        result = chart.helm_template(values)
+        password = self.get_password(result)
+        result_2 = chart.helm_template(values)
+        password_2 = self.get_password(result_2)
+
+        assert password != password_2
+
+    def test_auth_shared_secret_is_derived_from_master_password(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                masterPassword: "stub-master-password"
+
+            ldap:
+              auth:
+                password: null
+            """)
+        result = chart.helm_template(values)
+        password = self.get_password(result)
+        assert password == "751120bf3b933a18b7d637bfba5e9389939c4bbd"
 
 
 class AuthViaEnv:
