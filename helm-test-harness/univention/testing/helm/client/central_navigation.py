@@ -5,6 +5,7 @@ from contextlib import nullcontext as does_not_raise
 import subprocess
 
 import pytest
+from pytest_helm.models import HelmTemplateResult
 
 from .base import BaseTest
 
@@ -22,6 +23,10 @@ class CentralNavigationClient(BaseTest):
     path_volume = "spec.template.spec.volumes[?@.name=='secret-central-navigation']"
 
     sub_path_volume_mount = "volumeMounts[?@.name=='secret-central-navigation']"
+
+    def get_shared_secret(self, result: HelmTemplateResult):
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        return secret.findone(self.path_shared_secret)
 
     def test_auth_plain_values_does_not_generate_secret_if_disabled(self, chart):
         values = self.load_and_map(
@@ -43,9 +48,8 @@ class CentralNavigationClient(BaseTest):
                 sharedSecret: "stub-secret"
             """)
         result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-
-        assert secret.findone(self.path_shared_secret) == "stub-secret"
+        shared_secret = self.get_shared_secret(result)
+        assert shared_secret == "stub-secret"
 
     def test_auth_plain_values_shared_secret_is_not_templated(self, chart):
         values = self.load_and_map(
@@ -55,8 +59,8 @@ class CentralNavigationClient(BaseTest):
                 sharedSecret: "{{ value }}"
         """)
         result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone(self.path_shared_secret) == "{{ value }}"
+        shared_secret = self.get_shared_secret(result)
+        assert shared_secret == "{{ value }}"
 
     def test_auth_plain_values_shared_secret_is_required(self, chart):
         if self.is_secret_owner:
@@ -212,10 +216,13 @@ class CentralNavigationOwner(CentralNavigationClient):
               auth:
                 sharedSecret: null
             """)
+
         result = chart.helm_template(values, template_file="templates/secret-central-navigation.yaml")
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        secret_value = secret.findone(self.path_shared_secret)
-        assert secret_value
+        shared_secret = self.get_shared_secret(result)
+        result_2 = chart.helm_template(values, template_file="templates/secret-central-navigation.yaml")
+        shared_secret_2 = self.get_shared_secret(result_2)
+
+        assert shared_secret != shared_secret_2
 
     def test_auth_shared_secret_is_derived_from_master_password(self, chart):
         if not self.is_secret_owner:
@@ -231,6 +238,5 @@ class CentralNavigationOwner(CentralNavigationClient):
                 sharedSecret: null
             """)
         result = chart.helm_template(values, template_file="templates/secret-central-navigation.yaml")
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        secret_value = secret.findone(self.path_shared_secret)
-        assert secret_value == "86075010802d028f417ff11774c136829be3c0a0"
+        shared_secret = self.get_shared_secret(result)
+        assert shared_secret == "86075010802d028f417ff11774c136829be3c0a0"
