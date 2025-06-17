@@ -43,6 +43,10 @@ class Auth(BaseTest):
         bind_dn = self.get_bind_dn(result)
         assert bind_dn == value
 
+    def assert_password_value(self, result: HelmTemplateResult, value: str):
+        password = self.get_password(result)
+        assert password == value
+
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
         secret_volume = workload.findone(self.path_volume)
@@ -64,9 +68,7 @@ class Auth(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        password = self.get_password(result)
-
-        assert password == "stub-password"
+        self.assert_password_value(result, "stub-password")
 
     def test_auth_plain_values_provide_bind_dn(self, chart):
         values = self.load_and_map(
@@ -127,8 +129,7 @@ class Auth(BaseTest):
                 password: "{{ value }}"
             """)
         result = chart.helm_template(values)
-        password = self.get_password(result)
-        assert password == "{{ value }}"
+        self.assert_password_value(result, "{{ value }}")
 
     def test_auth_plain_values_password_is_required(self, chart):
         if self.is_secret_owner:
@@ -297,8 +298,7 @@ class AuthOwner:
                 password: null
             """)
         result = chart.helm_template(values)
-        password = self.get_password(result)
-        assert password == "751120bf3b933a18b7d637bfba5e9389939c4bbd"
+        self.assert_password_value(result, "751120bf3b933a18b7d637bfba5e9389939c4bbd")
 
 
 class AuthViaEnv:
