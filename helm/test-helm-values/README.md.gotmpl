@@ -1,0 +1,31 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.description" . }}
+
+- **Version**: {{ template "chart.version" . }}
+- **Type**: {{ template "chart.type" . }}
+- {{ template "chart.homepageLine" . }}
+
+## Introduction
+
+This is a test chart which renders all available values.
+
+Its purpose is to be used when trying to understand special behavior in the way
+how Helm is merging values from various sources (defaults, value files, CLI).
+
+Examples:
+
+    # Default values
+    helm template .
+
+    # Setting a value to "null" makes the key disappear suddenly
+    helm template . --set client.auth.password=null
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSectionHtml" . }}
