@@ -73,15 +73,7 @@ class ImageConfiguration(BestPracticeBase):
 
         See: https://kubernetes.io/docs/concepts/containers/images/#imagepullpolicy-defaulting
         """
-        values = self._load_and_map(
-            """
-            global:
-              imagePullPolicy: null
-
-            image:
-              pullPolicy: null
-            """)
-        result = chart.helm_template(values)
+        result = chart.helm_template()
         expected_pull_policy = None
 
         for containers, resource in self._generate_containers_of_resource_kinds(result):
