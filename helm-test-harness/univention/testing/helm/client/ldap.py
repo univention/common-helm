@@ -191,18 +191,6 @@ class Auth(BaseTest):
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, key="password")
 
-    def test_auth_disabling_existing_secret_by_setting_it_to_null(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                bindDn: "stub-bind-dn"
-                password: "stub-password"
-                existingSecret: null
-            """)
-        result = chart.helm_template(values)
-        self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
-
     def test_auth_existing_secret_uses_correct_custom_key(self, chart):
         values = self.load_and_map(
             """
@@ -215,6 +203,18 @@ class Auth(BaseTest):
             """)
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, key="stub_password_key")
+
+    def test_auth_disabling_existing_secret_by_setting_it_to_null(self, chart):
+        values = self.load_and_map(
+            """
+            ldap:
+              auth:
+                bindDn: "stub-bind-dn"
+                password: "stub-password"
+                existingSecret: null
+            """)
+        result = chart.helm_template(values)
+        self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
 
     def test_auth_existing_secret_has_precedence(self, chart):
         values = self.load_and_map(
