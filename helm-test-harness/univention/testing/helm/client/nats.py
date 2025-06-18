@@ -263,7 +263,7 @@ class UsernameViaEnv:
 
     def get_username(self, result):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
+        main_container = workload.findone(self.path_container)
         env_username = main_container.findone(self.sub_path_env_username)
         return env_username["value"]
 
@@ -277,7 +277,7 @@ class SecretUsageViaEnv:
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
+        main_container = workload.findone(self.path_container)
         password = main_container.findone(self.sub_path_env_password)
 
         if name:
@@ -299,7 +299,7 @@ class SecretUsageViaVolume:
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
         secret_volume = workload.findone(self.path_volume)
-        main_container = workload.findone(self.path_main_container)
+        main_container = workload.findone(self.path_container)
         secret_volume_mount = main_container.findone(self.sub_path_volume_mount)
 
         if name:
