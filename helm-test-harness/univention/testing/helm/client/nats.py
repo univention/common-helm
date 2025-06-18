@@ -5,31 +5,26 @@ from contextlib import nullcontext as does_not_raise
 import subprocess
 
 import pytest
+from pytest_helm.models import HelmTemplateResult
 
 from .base import BaseTest
 
 
-class Auth(BaseTest):
-    """
-    Nats client configuration.
-    """
+class AuthPassword(BaseTest):
 
-    config_map_name = "release-name-test-client-config"
     secret_name = "release-name-test-client-config-nats"
 
-    default_username = "stub-values-username"
     secret_default_key = "password"
 
-    path_main_container = "spec.template.spec.containers[?@.name=='main']"
-    path_username = "data.NATS_USERNAME"
+    path_password = "stringData.password"
 
-    def get_username(self, result):
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        return config_map.findone(self.path_username)
+    def get_password(self, result: HelmTemplateResult):
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        return secret.findone(self.path_password)
 
-    def assert_username_value(self, result, value):
-        username = self.get_username(result)
-        assert username == value
+    def assert_password_value(self, result: HelmTemplateResult, value: str):
+        password = self.get_password(result)
+        assert password == value
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         raise NotImplementedError("Use one of the mixins or implement this method.")
@@ -39,38 +34,10 @@ class Auth(BaseTest):
             """
             nats:
               auth:
-                username: "stub-username"
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.password") == "stub-password"
-
-    def test_auth_plain_values_provide_username(self, chart):
-        values = self.load_and_map(
-            """
-            nats:
-              auth:
-                username: "stub-username"
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        self.assert_username_value(result, "stub-username")
-
-    def test_auth_plain_values_username_is_templated(self, chart):
-        values = self.load_and_map(
-            """
-            global:
-              test: "stub-value"
-
-            nats:
-              auth:
-                username: "{{ .Values.global.test }}"
-                password: "stub-password"
-        """,
-        )
-        result = chart.helm_template(values)
-        self.assert_username_value(result, "stub-value")
+        self.assert_password_value(result, "stub-password")
 
     def test_auth_plain_values_password_is_not_templated(self, chart):
         values = self.load_and_map(
@@ -79,48 +46,23 @@ class Auth(BaseTest):
               auth:
                 username: "stub-username"
                 password: "{{ value }}"
-        """,
-        )
+            """)
         result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        assert secret.findone("stringData.password") == "{{ value }}"
+        self.assert_password_value(result, "{{ value }}")
 
     def test_auth_plain_values_password_is_required(self, chart):
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             nats:
               auth:
                 username: "stub-username"
                 password: null
-        """,
-        )
+            """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
         assert "password has to be supplied" in error.value.stderr
-
-    def test_auth_username_is_required(self, chart):
-        values = self.load_and_map(
-            """
-            nats:
-              auth:
-                username: null
-                password: "stub-password"
-        """,
-        )
-        with pytest.raises(subprocess.CalledProcessError) as error:
-            chart.helm_template(values)
-        assert "username has to be supplied" in error.value.stderr
-
-    def test_auth_username_has_default(self, chart):
-        values = self.load_and_map(
-            """
-            nats:
-              auth:
-                password: "stub-password"
-        """,
-        )
-        result = chart.helm_template(values)
-        self.assert_username_value(result, self.default_username)
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, chart):
         values = self.load_and_map(
@@ -219,6 +161,8 @@ class Auth(BaseTest):
         role. This is why the configuration `global.secrets.keep` shall not
         have any effect on Secrets in Client role.
         """
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             global:
@@ -234,6 +178,80 @@ class Auth(BaseTest):
         annotations = secret.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
+
+
+class AuthUsername(BaseTest):
+    """
+    Username configuration for Nats.
+    """
+
+    config_map_name = "release-name-test-client-config"
+
+    default_username = "stub-values-username"
+
+    path_username = "data.NATS_USERNAME"
+
+    def get_username(self, result):
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
+        return config_map.findone(self.path_username)
+
+    def assert_username_value(self, result, value):
+        username = self.get_username(result)
+        assert username == value
+
+    def test_auth_plain_values_provide_username(self, chart):
+        values = self.load_and_map(
+            """
+            nats:
+              auth:
+                username: "stub-username"
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        self.assert_username_value(result, "stub-username")
+
+    def test_auth_plain_values_username_is_templated(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              test: "stub-value"
+
+            nats:
+              auth:
+                username: "{{ .Values.global.test }}"
+                password: "stub-password"
+        """,
+        )
+        result = chart.helm_template(values)
+        self.assert_username_value(result, "stub-value")
+
+    def test_auth_username_is_required(self, chart):
+        values = self.load_and_map(
+            """
+            nats:
+              auth:
+                username: null
+                password: "stub-password"
+        """,
+        )
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            chart.helm_template(values)
+        assert "username has to be supplied" in error.value.stderr
+
+    def test_auth_username_has_default(self, chart):
+        values = self.load_and_map(
+            """
+            nats:
+              auth:
+                password: "stub-password"
+        """,
+        )
+        result = chart.helm_template(values)
+        self.assert_username_value(result, self.default_username)
+
+
+class Auth(AuthPassword, AuthUsername):
+    pass
 
 
 class UsernameViaEnv:
@@ -307,8 +325,6 @@ class Connection(BaseTest):
 
     See: https://docs.nats.io/running-a-nats-service/nats_docker
     """
-
-    path_main_container = "spec.template.spec.containers[?@.name=='main']"
 
     def test_connection_host_is_required(self, chart):
         values = self.load_and_map(
