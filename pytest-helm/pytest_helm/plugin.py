@@ -123,6 +123,9 @@ def pytest_runtest_makereport(item, call):
         helm_template_results = helm_fixture._helm_template_results
         content = []
         for helm_template_result in helm_template_results:
+            if helm_template_result._accessed_resources:
+                content.append("Values from test case:\n")
+                content.append(helm_template_result.values)
             for resource in helm_template_result._accessed_resources:
                 content.append(_resource_header(resource))
                 content.append("\n---")

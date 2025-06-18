@@ -70,6 +70,13 @@ class HelmTemplateResult(list):
     Internally used to generate a report of accessed resources.
     """
 
+    values: str = ""
+    """
+    Used values to render the chart as a YAML string.
+
+    Only includes the values passed into the call to `helm_template`.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._accessed_resources = []

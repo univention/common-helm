@@ -88,3 +88,9 @@ def test_helm_template_result_allows_to_get_single_resource(mocker):
     result = helm.helm_template("stub-chart")
     resource = result.get_resource(name="first")
     assert resource
+
+
+def test_helm_template_result_has_values_as_yaml_string():
+    helm = Helm()
+    result = helm.helm_template("stub-chart", {"stub": "value"})
+    assert result.values == "stub: value\n"

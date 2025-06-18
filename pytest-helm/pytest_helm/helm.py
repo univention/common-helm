@@ -56,9 +56,10 @@ class Helm:
             with os.fdopen(fd, "w") as tmp:
                 myyaml.dump(values, tmp)
 
+            dumped_values = Path(path).read_text()
             if self.debug:
                 print("Dumped Helm values:\n")
-                print(Path(path).read_text())
+                print(dumped_values)
 
             args = [self.helm_cmd, "template"]
 
@@ -87,6 +88,7 @@ class Helm:
         result = HelmTemplateResult(doc for doc in docs if doc)
         result.stdout = run_result.stdout
         result.stderr = run_result.stderr
+        result.values = dumped_values
         self._helm_template_results.append(result)
         return result
 
