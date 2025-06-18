@@ -242,6 +242,8 @@ class Auth(BaseTest):
         role. This is why the configuration `global.secrets.keep` shall not
         have any effect on Secrets in Client role.
         """
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             global:
@@ -299,6 +301,25 @@ class AuthOwner:
             """)
         result = chart.helm_template(values)
         self.assert_password_value(result, "751120bf3b933a18b7d637bfba5e9389939c4bbd")
+
+    def test_global_secrets_keep_is_respected(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                keep: true
+
+            ldap:
+              auth:
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        annotations = secret.findone("metadata.annotations", default={})
+        helm_resource_policy = annotations.get("helm.sh/resource-policy")
+        assert helm_resource_policy == "keep"
 
 
 class AuthViaEnv:

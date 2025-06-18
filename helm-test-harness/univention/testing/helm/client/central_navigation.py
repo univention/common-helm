@@ -190,6 +190,15 @@ class CentralNavigationClient(BaseTest):
         assert secret_central_navigation_volume.findone("secret.secretName") == "stub-secret-name"
 
     def test_global_secrets_keep_is_ignored(self, chart):
+        """
+        Keeping Secrets shall not be supported in Client role.
+
+        Random values for a password will never be generated when in Client
+        role. This is why the configuration `global.secrets.keep` shall not
+        have any effect on Secrets in Client role.
+        """
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             global:
@@ -240,3 +249,22 @@ class CentralNavigationOwner(CentralNavigationClient):
         result = chart.helm_template(values, template_file="templates/secret-central-navigation.yaml")
         shared_secret = self.get_shared_secret(result)
         assert shared_secret == "86075010802d028f417ff11774c136829be3c0a0"
+
+    def test_global_secrets_keep_is_respected(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                keep: true
+
+            centralNavigation:
+              auth:
+                sharedSecret: "stub-value"
+            """)
+        result = chart.helm_template(values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        annotations = secret.findone("metadata.annotations", default={})
+        helm_resource_policy = annotations.get("helm.sh/resource-policy")
+        assert helm_resource_policy == "keep"
