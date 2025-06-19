@@ -54,7 +54,7 @@ class DefaultAttributes:
     - The method `HelmTemplateResult.get_resources` in `pytest-helm`.
     """
 
-    path_container = "spec.template.spec.containers[?@.name=='main']"
+    path_container = "..spec.template.spec.containers[?@.name=='main']"
     """
     Path to find the container under test.
 
