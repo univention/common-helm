@@ -60,6 +60,8 @@ class AuthPassword(BaseTest):
         self.assert_password_value(result, "{{ value }}")
 
     def test_auth_plain_values_password_is_required(self, chart):
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             provisioningApi:
@@ -167,6 +169,8 @@ class AuthPassword(BaseTest):
         role. This is why the configuration `global.secrets.keep` shall not
         have any effect on Secrets in Client role.
         """
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
         values = self.load_and_map(
             """
             global:
@@ -182,6 +186,68 @@ class AuthPassword(BaseTest):
         annotations = secret.findone("metadata.annotations", default={})
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy != "keep"
+
+class AuthPasswordOwner:
+    """
+    Mixin to configure the test template class to own the checked Secret.
+
+    See: `DefaultAttributes.is_secret_owner`
+    """
+
+    is_secret_owner = True
+
+    derived_password = "stub-derived-value"
+
+    def test_auth_password_has_random_value(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            provisioningApi:
+              auth:
+                password: null
+            """)
+        result = chart.helm_template(values)
+        password = self.get_password(result)
+        result_2 = chart.helm_template(values)
+        password_2 = self.get_password(result_2)
+
+        assert password != password_2
+
+    def test_auth_password_is_derived_from_master_password(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                masterPassword: "stub-master-password"
+
+            provisioningApi:
+              auth:
+                password: null
+            """)
+        result = chart.helm_template(values)
+        self.assert_password_value(result, self.derived_password)
+
+    def test_global_secrets_keep_is_respected(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                keep: true
+
+            provisioningApi:
+              auth:
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        annotations = secret.findone("metadata.annotations", default={})
+        helm_resource_policy = annotations.get("helm.sh/resource-policy")
+        assert helm_resource_policy == "keep"
 
 class AuthUsername(BaseTest):
     """
