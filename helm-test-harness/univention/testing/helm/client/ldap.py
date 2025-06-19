@@ -27,9 +27,6 @@ class Auth(BaseTest):
     path_ldap_bind_dn = "data.LDAP_HOST_DN"
     path_password = "stringData.password"
     path_main_container = "..spec.template.spec.containers[?@.name=='main']"
-    path_volume = "..spec.template.spec.volumes[?@.name=='secret-ldap']"
-
-    sub_path_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
 
     def get_bind_dn(self, result: HelmTemplateResult):
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
@@ -48,16 +45,7 @@ class Auth(BaseTest):
         assert password == value
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        secret_volume = workload.findone(self.path_volume)
-        main_container = workload.findone(self.path_main_container)
-        secret_volume_mount = main_container.findone(self.sub_path_volume_mount)
-
-        if name:
-            assert secret_volume.findone("secret.secretName") == name
-
-        if key:
-            assert secret_volume_mount["subPath"] == key
+        raise NotImplementedError("Use one of the mixins or implement this method.")
 
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
@@ -340,6 +328,29 @@ class SecretViaEnv:
 
         if key:
             assert env_password.findone("valueFrom.secretKeyRef.key") == key
+
+
+class SecretViaVolume:
+    """
+    Mixin which implements the expected Secret usage via volume mounts.
+    """
+
+    path_volume= "..spec.template.spec.volumes[?@.name=='secret-ldap']"
+
+    sub_path_volume_mount = "volumeMounts[?@.name=='secret-ldap']"
+
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        secret_volume = workload.findone(self.path_volume)
+        container = workload.findone(self.path_container)
+        secret_volume_mount = container.findone(self.sub_path_volume_mount)
+
+        if name:
+            assert secret_volume.findone("secret.secretName") == name
+
+        if key:
+            assert secret_volume_mount["subPath"] == key
+
 
 class AuthViaEnv(SecretViaEnv):
     """
