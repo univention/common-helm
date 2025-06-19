@@ -10,20 +10,16 @@ from pytest_helm.models import HelmTemplateResult
 from .base import BaseTest
 
 
-class AuthPassword(BaseTest):
+class AuthPasswordSecret(BaseTest):
     """
-    Partial client test focused only on the password.
+    Partial client test focused only on the Secret generation.
 
     Checks the following values:
 
     - `provisioningApi.auth.password`
-    - `provisioningApi.auth.existingSecret`
     """
 
     secret_name = "release-name-test-nubus-common-provisioning-api"
-
-    secret_default_key = "password"
-
     path_password = "stringData.password"
 
     def get_password(self, result: HelmTemplateResult):
@@ -33,9 +29,6 @@ class AuthPassword(BaseTest):
     def assert_password_value(self, result: HelmTemplateResult, value: str):
         password = self.get_password(result)
         assert password == value
-
-    def assert_correct_secret_usage(self, result, *, name=None, key=None):
-        raise NotImplementedError("Use one of the mixins or implement this method.")
 
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
@@ -97,7 +90,64 @@ class AuthPassword(BaseTest):
         with does_not_raise():
             chart.helm_template(values)
 
-    def test_auth_existing_secret_uses_password(self, chart):
+    def test_auth_existing_secret_has_precedence_no_secret_generated(self, chart):
+        values = self.load_and_map(
+            """
+            provisioningApi:
+              auth:
+                password: "stub-password"
+                existingSecret:
+                  name: "stub-secret-name"
+                  keyMapping:
+                    password: "stub_password_key"
+            """)
+        result = chart.helm_template(values)
+        with pytest.raises(LookupError):
+            result.get_resource(kind="Secret", name=self.secret_name)
+
+    def test_global_secrets_keep_is_ignored(self, chart):
+        """
+        Keeping Secrets shall not be supported in Client role.
+
+        Random values for a password will never be generated when in Client
+        role. This is why the configuration `global.secrets.keep` shall not
+        have any effect on Secrets in Client role.
+        """
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                keep: true
+
+            provisioningApi:
+              auth:
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        annotations = secret.findone("metadata.annotations", default={})
+        helm_resource_policy = annotations.get("helm.sh/resource-policy")
+        assert helm_resource_policy != "keep"
+
+
+class AuthPasswordUsage(BaseTest):
+    """
+    Partial client test focused only on the Secret usage.
+
+    Checks the following values:
+
+    - `provisioningApi.auth.existingSecret`
+    """
+
+    secret_name = "release-name-test-nubus-common-provisioning-api"
+    secret_default_key = "password"
+
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        raise NotImplementedError("Use one of the mixins or implement this method.")
+
+    def test_auth_existing_secret_used(self, chart):
         values = self.load_and_map(
             """
             provisioningApi:
@@ -144,9 +194,6 @@ class AuthPassword(BaseTest):
                     password: "stub_password_key"
             """)
         result = chart.helm_template(values)
-        with pytest.raises(LookupError):
-            result.get_resource(kind="Secret", name=self.secret_name)
-
         self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
 
     def test_auth_disabling_existing_secret_by_setting_it_to_null(self, chart):
@@ -161,31 +208,10 @@ class AuthPassword(BaseTest):
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
 
-    def test_global_secrets_keep_is_ignored(self, chart):
-        """
-        Keeping Secrets shall not be supported in Client role.
 
-        Random values for a password will never be generated when in Client
-        role. This is why the configuration `global.secrets.keep` shall not
-        have any effect on Secrets in Client role.
-        """
-        if self.is_secret_owner:
-            pytest.skip(reason="Chart is Secret owner.")
-        values = self.load_and_map(
-            """
-            global:
-              secrets:
-                keep: true
+class AuthPassword(AuthPasswordSecret, AuthPasswordUsage):
+    pass
 
-            provisioningApi:
-              auth:
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        annotations = secret.findone("metadata.annotations", default={})
-        helm_resource_policy = annotations.get("helm.sh/resource-policy")
-        assert helm_resource_policy != "keep"
 
 class AuthPasswordOwner:
     """
