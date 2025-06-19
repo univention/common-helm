@@ -322,22 +322,11 @@ class AuthOwner:
         assert helm_resource_policy == "keep"
 
 
-class AuthViaEnv:
+class SecretViaEnv:
     """
-    Mixin to change the expected behavior to be based on env configuration.
-
-    Both the `bindDn` and the `password` out of `ldap.auth` are expected to be
-    used via the attribute `env` within the container configuration.
+    Mixin to change the expected behavior about the secret usage.
     """
-
-    sub_path_env_bind_dn = "env[?@.name=='LDAP_ADMIN_USER']"
     sub_path_env_password = "env[?@.name=='LDAP_ADMIN_PASSWORD']"
-
-    def get_bind_dn(self, result: HelmTemplateResult):
-        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
-        env_basn_dn = main_container.findone(self.sub_path_env_bind_dn)
-        return env_basn_dn["value"]
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
@@ -349,6 +338,22 @@ class AuthViaEnv:
 
         if key:
             assert env_password.findone("valueFrom.secretKeyRef.key") == key
+
+class AuthViaEnv(SecretViaEnv):
+    """
+    Mixin to change the expected behavior to be based on env configuration.
+
+    Both the `bindDn` and the `password` out of `ldap.auth` are expected to be
+    used via the attribute `env` within the container configuration.
+    """
+
+    sub_path_env_bind_dn = "env[?@.name=='LDAP_ADMIN_USER']"
+
+    def get_bind_dn(self, result: HelmTemplateResult):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        main_container = workload.findone(self.path_main_container)
+        env_basn_dn = main_container.findone(self.sub_path_env_bind_dn)
+        return env_basn_dn["value"]
 
 
 class ConnectionHostAndPort(BaseTest):
