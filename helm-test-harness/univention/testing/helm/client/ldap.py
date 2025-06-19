@@ -10,42 +10,25 @@ from pytest_helm.models import HelmTemplateResult
 from .base import BaseTest
 
 
-class Auth(BaseTest):
+class AuthPasswordSecret(BaseTest):
     """
-    Tests for the value `ldap.auth` of the LDAP client configuration.
+    Partial client test focused only on the Secret generation.
 
-    Per default the test template will assume the password to be mounted out of
-    a secret and the other parameters to be provided via the `envFrom`
-    attribute of the container configuration.
+    Checks the following values:
+
+    - `ldap.auth.password`
     """
 
-    config_map_name = None
     secret_name = "release-name-test-nubus-common-ldap"
-
-    default_bind_dn = "cn=admin,dc=univention-organization,dc=intranet"
-
-    path_ldap_bind_dn = "data.LDAP_HOST_DN"
     path_password = "stringData.password"
-    path_main_container = "..spec.template.spec.containers[?@.name=='main']"
-
-    def get_bind_dn(self, result: HelmTemplateResult):
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        return config_map.findone(self.path_ldap_bind_dn)
 
     def get_password(self, result: HelmTemplateResult):
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         return secret.findone(self.path_password)
 
-    def assert_bind_dn_value(self, result: HelmTemplateResult, value: str):
-        bind_dn = self.get_bind_dn(result)
-        assert bind_dn == value
-
     def assert_password_value(self, result: HelmTemplateResult, value: str):
         password = self.get_password(result)
         assert password == value
-
-    def assert_correct_secret_usage(self, result, *, name=None, key=None):
-        raise NotImplementedError("Use one of the mixins or implement this method.")
 
     def test_auth_plain_values_generate_secret(self, chart):
         values = self.load_and_map(
@@ -57,56 +40,6 @@ class Auth(BaseTest):
             """)
         result = chart.helm_template(values)
         self.assert_password_value(result, "stub-password")
-
-    def test_auth_plain_values_provide_bind_dn(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                bindDn: "stub-bind-dn"
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        self.assert_bind_dn_value(result, "stub-bind-dn")
-
-    def test_auth_plain_values_bind_dn_is_templated(self, chart):
-        values = self.load_and_map(
-            """
-            global:
-              test: "stub-value"
-            ldap:
-              auth:
-                bindDn: "{{ .Values.global.test }}"
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        self.assert_bind_dn_value(result, "stub-value")
-
-    @pytest.mark.parametrize("value", [
-        "null",
-        '""',
-    ])
-    def test_auth_bind_dn_is_required(self, chart, value):
-        values = self.load_and_map(
-            f"""
-            ldap:
-              auth:
-                bindDn: {value}
-                password: "stub-password"
-            """)
-        with pytest.raises(subprocess.CalledProcessError) as error:
-            chart.helm_template(values)
-        assert 'ldap.auth.bindDn" is required.' in error.value.stderr
-
-    def test_auth_bind_dn_has_default(self, chart):
-        values = self.load_and_map(
-            """
-            ldap:
-              auth:
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        self.assert_bind_dn_value(result, self.default_bind_dn)
 
     def test_auth_plain_values_password_is_not_templated(self, chart):
         values = self.load_and_map(
@@ -157,7 +90,67 @@ class Auth(BaseTest):
         with does_not_raise():
             chart.helm_template(values)
 
-    def test_auth_existing_secret_uses_password(self, chart):
+    def test_auth_existing_secret_has_precedence_no_secret_generated(self, chart):
+        values = self.load_and_map(
+            """
+            ldap:
+              auth:
+                password: stub-plain-password
+                existingSecret:
+                  name: "stub-secret-name"
+                  keyMapping:
+                    password: "stub_password_key"
+            """)
+        result = chart.helm_template(values)
+
+        with pytest.raises(LookupError):
+            result.get_resource(kind="Secret", name=self.secret_name)
+
+        self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
+
+    def test_global_secrets_keep_is_ignored(self, chart):
+        """
+        Keeping Secrets shall not be supported in Client role.
+
+        Random values for a password will never be generated when in Client
+        role. This is why the configuration `global.secrets.keep` shall not
+        have any effect on Secrets in Client role.
+        """
+        if self.is_secret_owner:
+            pytest.skip(reason="Chart is Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                keep: true
+
+            ldap:
+              auth:
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        secret = result.get_resource(kind="Secret", name=self.secret_name)
+        annotations = secret.findone("metadata.annotations", default={})
+        helm_resource_policy = annotations.get("helm.sh/resource-policy")
+        assert helm_resource_policy != "keep"
+
+
+class AuthPasswordUsage(BaseTest):
+    """
+    Partial client test focused only on the Secret usage.
+
+    Checks the following values:
+
+    - `ldap.auth.existingSecret`
+    """
+
+    secret_name = "release-name-test-nubus-common-ldap"
+    secret_default_key = "password"
+
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        raise NotImplementedError("Use one of the mixins or implement this method.")
+
+    def test_auth_existing_secret_used(self, chart):
         values = self.load_and_map(
             """
             ldap:
@@ -217,36 +210,89 @@ class Auth(BaseTest):
             """)
         result = chart.helm_template(values)
 
-        with pytest.raises(LookupError):
-            result.get_resource(kind="Secret", name=self.secret_name)
-
         self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
 
-    def test_global_secrets_keep_is_ignored(self, chart):
-        """
-        Keeping Secrets shall not be supported in Client role.
 
-        Random values for a password will never be generated when in Client
-        role. This is why the configuration `global.secrets.keep` shall not
-        have any effect on Secrets in Client role.
-        """
-        if self.is_secret_owner:
-            pytest.skip(reason="Chart is Secret owner.")
+class AuthPassword(AuthPasswordSecret, AuthPasswordUsage):
+    pass
+
+
+class AuthBindDn(BaseTest):
+    """
+    Partial client test focused on the bind dn configuration.
+
+    Checks the following values:
+
+    - `ldap.auth.bindDn`
+    """
+
+    config_map_name = None
+
+    default_bind_dn = "cn=admin,dc=univention-organization,dc=intranet"
+
+    path_ldap_bind_dn = "data.LDAP_HOST_DN"
+
+    def get_bind_dn(self, result: HelmTemplateResult):
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
+        return config_map.findone(self.path_ldap_bind_dn)
+
+    def assert_bind_dn_value(self, result: HelmTemplateResult, value: str):
+        bind_dn = self.get_bind_dn(result)
+        assert bind_dn == value
+
+    def test_auth_plain_values_provide_bind_dn(self, chart):
+        values = self.load_and_map(
+            """
+            ldap:
+              auth:
+                bindDn: "stub-bind-dn"
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        self.assert_bind_dn_value(result, "stub-bind-dn")
+
+    def test_auth_plain_values_bind_dn_is_templated(self, chart):
         values = self.load_and_map(
             """
             global:
-              secrets:
-                keep: true
+              test: "stub-value"
+            ldap:
+              auth:
+                bindDn: "{{ .Values.global.test }}"
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        self.assert_bind_dn_value(result, "stub-value")
 
+    @pytest.mark.parametrize("value", [
+        "null",
+        '""',
+    ])
+    def test_auth_bind_dn_is_required(self, chart, value):
+        values = self.load_and_map(
+            f"""
+            ldap:
+              auth:
+                bindDn: {value}
+                password: "stub-password"
+            """)
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            chart.helm_template(values)
+        assert 'ldap.auth.bindDn" is required.' in error.value.stderr
+
+    def test_auth_bind_dn_has_default(self, chart):
+        values = self.load_and_map(
+            """
             ldap:
               auth:
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        secret = result.get_resource(kind="Secret", name=self.secret_name)
-        annotations = secret.findone("metadata.annotations", default={})
-        helm_resource_policy = annotations.get("helm.sh/resource-policy")
-        assert helm_resource_policy != "keep"
+        self.assert_bind_dn_value(result, self.default_bind_dn)
+
+
+class Auth(AuthPassword, AuthBindDn):
+    pass
 
 
 class AuthOwner:
@@ -320,7 +366,7 @@ class SecretViaEnv:
 
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
+        main_container = workload.findone(self.path_container)
         env_password = main_container.findone(self.sub_path_env_password)
 
         if name:
@@ -364,7 +410,7 @@ class AuthViaEnv(SecretViaEnv):
 
     def get_bind_dn(self, result: HelmTemplateResult):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
+        main_container = workload.findone(self.path_container)
         env_basn_dn = main_container.findone(self.sub_path_env_bind_dn)
         return env_basn_dn["value"]
 
@@ -540,7 +586,7 @@ class ConnectionUri(BaseTest):
     Tests related to the usage of `ldap.connection.uri`.
     """
 
-    path_main_container = "spec.template.spec.containers[?@.name=='main']"
+    path_container = "spec.template.spec.containers[?@.name=='main']"
 
     sub_path_env_connection_uri = "env[?@name=='LDAP_URI']"
 
@@ -597,7 +643,7 @@ class ConnectionUri(BaseTest):
 
     def assert_connection_uri_value(self, result, value):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
-        main_container = workload.findone(self.path_main_container)
+        main_container = workload.findone(self.path_container)
         env_connection_uri = main_container.findone(self.sub_path_env_connection_uri)
 
         assert env_connection_uri["value"] == value
