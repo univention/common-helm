@@ -275,6 +275,7 @@ class AuthPasswordOwner:
         helm_resource_policy = annotations.get("helm.sh/resource-policy")
         assert helm_resource_policy == "keep"
 
+
 class AuthUsername(BaseTest):
     """
     Partial client test focused on the username configuration.
@@ -288,9 +289,17 @@ class AuthUsername(BaseTest):
 
     default_username = "stub-values-username"
 
-    path_provisioning_api_username = "data.PROVISIONING_API_USERNAME"
+    path_username = "data.PROVISIONING_API_USERNAME"
 
-    def test_auth_plain_values_provide_username_via_config_map(self, chart):
+    def get_username(self, result: HelmTemplateResult):
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
+        return config_map.findone(self.path_username)
+
+    def assert_username_value(self, result, value):
+        username = self.get_username(result)
+        assert username == value
+
+    def test_auth_plain_values_provide_username(self, chart):
         values = self.load_and_map(
             """
             provisioningApi:
@@ -299,8 +308,7 @@ class AuthUsername(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        assert config_map.findone(self.path_provisioning_api_username) == "stub-username"
+        self.assert_username_value(result, "stub-username")
 
     def test_auth_plain_values_username_is_templated(self, chart):
         values = self.load_and_map(
@@ -313,8 +321,7 @@ class AuthUsername(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        assert config_map.findone(self.path_provisioning_api_username) == "stub-value"
+        self.assert_username_value(result, "stub-value")
 
     def test_auth_username_is_required(self, chart):
         values = self.load_and_map(
@@ -336,8 +343,7 @@ class AuthUsername(BaseTest):
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        assert config_map.findone(self.path_provisioning_api_username) == self.default_username
+        self.assert_username_value(result, self.default_username)
 
 
 class Auth(AuthPassword, AuthUsername):
