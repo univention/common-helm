@@ -346,6 +346,20 @@ class AuthUsername(BaseTest):
         self.assert_username_value(result, self.default_username)
 
 
+class UsernameViaEnv:
+    """
+    Mixin which checks the username usage as embedded environment variable.
+    """
+
+    sub_path_env_username = "env[?@name=='PROVISIONING_API_USERNAME']"
+
+    def get_username(self, result: HelmTemplateResult):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        container = workload.findone(self.path_container)
+        username = container.findone(self.sub_path_env_username)
+        return username["value"]
+
+
 class Auth(AuthPassword, AuthUsername):
     pass
 
