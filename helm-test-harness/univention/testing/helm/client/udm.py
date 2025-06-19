@@ -10,32 +10,25 @@ from pytest_helm.models import HelmTemplateResult
 from .base import BaseTest
 
 
-class Auth(BaseTest):
+class AuthPassword(BaseTest):
     """
-    UDM Rest API Client configuration tests for `udm.auth`.
+    Partial client test focused only on the password.
+
+    Checks the following values:
+
+    - `udm.auth.password`
+    - `udm.auth.existingSecret`
     """
 
-    config_map_name = None
     secret_name = "release-name-test-nubus-common-udm"
 
-    default_username = "stub-values-username"
     secret_default_key = "password"
 
-    path_username = "data.UDM_API_USERNAME"
     path_password = "stringData.password"
-    path_main_container = "spec.template.spec.containers[?@.name=='main']"
-
-    def get_username(self, result: HelmTemplateResult):
-        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
-        return config_map.findone(self.path_username)
 
     def get_password(self, result: HelmTemplateResult):
         secret = result.get_resource(kind="Secret", name=self.secret_name)
         return secret.findone(self.path_password)
-
-    def assert_username_value(self, result, value):
-        username = self.get_username(result)
-        assert username == value
 
     def assert_password_value(self, result: HelmTemplateResult, value: str):
         password = self.get_password(result)
@@ -49,35 +42,10 @@ class Auth(BaseTest):
             """
             udm:
               auth:
-                username: "stub-username"
                 password: "stub-password"
             """)
         result = chart.helm_template(values)
         self.assert_password_value(result, "stub-password")
-
-    def test_auth_plain_values_provide_username(self, chart):
-        values = self.load_and_map(
-            """
-            udm:
-              auth:
-                username: "stub-username"
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        self.assert_username_value(result, "stub-username")
-
-    def test_auth_plain_values_username_is_templated(self, chart):
-        values = self.load_and_map(
-            """
-            global:
-              test: "stub-value"
-            udm:
-              auth:
-                username: "{{ .Values.global.test }}"
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        self.assert_username_value(result, "stub-value")
 
     def test_auth_plain_values_password_is_not_templated(self, chart):
         values = self.load_and_map(
@@ -101,28 +69,6 @@ class Auth(BaseTest):
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
         assert "password has to be supplied" in error.value.stderr
-
-    def test_auth_username_is_required(self, chart):
-        values = self.load_and_map(
-            """
-            udm:
-              auth:
-                username: null
-                password: "stub-password"
-            """)
-        with pytest.raises(subprocess.CalledProcessError) as error:
-            chart.helm_template(values)
-        assert "username has to be supplied" in error.value.stderr
-
-    def test_auth_username_has_default(self, chart):
-        values = self.load_and_map(
-            """
-            udm:
-              auth:
-                password: "stub-password"
-            """)
-        result = chart.helm_template(values)
-        self.assert_username_value(result, self.default_username)
 
     def test_auth_existing_secret_does_not_generate_a_secret(self, chart):
         values = self.load_and_map(
@@ -237,6 +183,99 @@ class Auth(BaseTest):
         assert helm_resource_policy != "keep"
 
 
+class AuthUsername(BaseTest):
+    """
+    Partial client test focused on the username configuration.
+
+    Checks the following values:
+
+    - `udm.auth.username`
+    """
+
+    config_map_name = None
+
+    default_username = "stub-values-username"
+
+    path_username = "data.UDM_API_USERNAME"
+
+    def get_username(self, result: HelmTemplateResult):
+        config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
+        return config_map.findone(self.path_username)
+
+    def assert_username_value(self, result, value):
+        username = self.get_username(result)
+        assert username == value
+
+    def test_auth_plain_values_provide_username(self, chart):
+        values = self.load_and_map(
+            """
+            udm:
+              auth:
+                username: "stub-username"
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        self.assert_username_value(result, "stub-username")
+
+    def test_auth_plain_values_username_is_templated(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              test: "stub-value"
+            udm:
+              auth:
+                username: "{{ .Values.global.test }}"
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        self.assert_username_value(result, "stub-value")
+
+    def test_auth_username_is_required(self, chart):
+        values = self.load_and_map(
+            """
+            udm:
+              auth:
+                username: null
+                password: "stub-password"
+            """)
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            chart.helm_template(values)
+        assert "username has to be supplied" in error.value.stderr
+
+    def test_auth_username_has_default(self, chart):
+        values = self.load_and_map(
+            """
+            udm:
+              auth:
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        self.assert_username_value(result, self.default_username)
+
+
+class Auth(AuthPassword, AuthUsername):
+    pass
+
+
+class SecretViaEnv:
+    """
+    Mixin which implements the expected Secret usage via environment variables.
+    """
+
+    sub_path_env_password = "env[?@name=='UDM_PASSWORD']"
+
+    def assert_correct_secret_usage(self, result, *, name=None, key=None):
+        workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
+        container = workload.findone(self.path_container)
+        password = container.findone(self.sub_path_env_password)
+
+        if name:
+            assert password.findone("valueFrom.secretKeyRef.name") == name
+
+        if key:
+            assert password.findone("valueFrom.secretKeyRef.key") == key
+
+
 class SecretViaVolume:
     """
     Mixin which implements the expected Secret usage via volume mounts.
@@ -249,8 +288,8 @@ class SecretViaVolume:
     def assert_correct_secret_usage(self, result, *, name=None, key=None):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)
         secret_volume = workload.findone(self.path_volume)
-        main_container = workload.findone(self.path_main_container)
-        secret_volume_mount = main_container.findone(self.sub_path_volume_mount)
+        container = workload.findone(self.path_container)
+        secret_volume_mount = container.findone(self.sub_path_volume_mount)
 
         if name:
             assert secret_volume.findone("secret.secretName") == name
