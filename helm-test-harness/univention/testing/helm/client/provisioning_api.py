@@ -117,7 +117,7 @@ class AuthPassword(BaseTest):
                   name: "stub-secret-name"
             """)
         result = chart.helm_template(values)
-        self.assert_correct_secret_usage(result, key="password")
+        self.assert_correct_secret_usage(result, key=self.secret_default_key)
 
     def test_auth_existing_secret_uses_correct_custom_key(self, chart):
         values = self.load_and_map(
