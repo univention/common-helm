@@ -270,6 +270,8 @@ class AuthOwner:
 
     is_secret_owner = True
 
+    derived_password = "stub-derived-value"
+
     def test_auth_password_has_random_value(self, chart):
         if not self.is_secret_owner:
             pytest.skip(reason="Chart is not the Secret owner.")
@@ -300,7 +302,7 @@ class AuthOwner:
                 password: null
             """)
         result = chart.helm_template(values)
-        self.assert_password_value(result, "751120bf3b933a18b7d637bfba5e9389939c4bbd")
+        self.assert_password_value(result, self.derived_password)
 
     def test_global_secrets_keep_is_respected(self, chart):
         if not self.is_secret_owner:
