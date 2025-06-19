@@ -270,7 +270,7 @@ class AuthOwner:
 
     is_secret_owner = True
 
-    def test_auth_shared_secret_has_random_value(self, chart):
+    def test_auth_password_has_random_value(self, chart):
         if not self.is_secret_owner:
             pytest.skip(reason="Chart is not the Secret owner.")
         values = self.load_and_map(
@@ -286,7 +286,7 @@ class AuthOwner:
 
         assert password != password_2
 
-    def test_auth_shared_secret_is_derived_from_master_password(self, chart):
+    def test_auth_password_is_derived_from_master_password(self, chart):
         if not self.is_secret_owner:
             pytest.skip(reason="Chart is not the Secret owner.")
         values = self.load_and_map(
