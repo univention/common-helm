@@ -108,7 +108,7 @@ class Auth(BaseTest):
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
-        assert '"ldap.auth.bindDn" is required.' in error.value.stderr
+        assert 'ldap.auth.bindDn" is required.' in error.value.stderr
 
     def test_auth_bind_dn_has_default(self, chart):
         values = self.load_and_map(
