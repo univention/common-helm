@@ -1,5 +1,48 @@
 # Usage of the Helm Test Harness
 
+## Running tests locally and development
+
+The intended way to work locally with the test harness is to use `uv`. Both
+`pytest-helm` and `helm-test-harness` will be available as a development
+installation, so that it is easy to co-develop your chart and the test harness.
+
+
+### One off run of the tests
+
+Using `uv run` it is possible to directly run `pytest`:
+
+```shell
+uv --project ../common-helm run pytest tests/chart
+```
+
+
+### Development shell
+
+The following commands will run a shell which has all Python dependencies
+available:
+
+```shell
+# Using bash
+uv --project ../common-helm run bash
+
+# Using zsh
+uv --project ../common-helm run zsh
+```
+
+Inside of the shell you can run `pytest` directly as the following examples
+based on the portal server show:
+
+```shell
+pytest portal-server/tests/chart -v
+pytest portal-server/tests/chart -v --helm-debug
+pytest portal-server/tests/chart -vsx --helm-debug
+```
+
+Hints:
+
+- `../common-helm` has to be replaced with the correct path to your local
+  clone of `common-helm`.
+
 
 ## Test a Helm chart
 
@@ -51,7 +94,7 @@ Hints:
   bind-mounted into the container.
 
 
-## Running tests via Docker manually
+## Running tests via in the testrunner container
 
 The following example is based on the portal server which has the configuration
 for Docker Compose in the subdirectory `docker`.
@@ -70,34 +113,6 @@ docker compose run -it --rm test-chart-portal-server pytest portal-server/tests/
 docker compose run -it --rm test-chart-portal-server bash
 pytest portal-server/tests/chart
 ```
-
-
-## Running tests in a local environment
-
-The dependencies are managed via `uv`. Starting a shell which has the needed
-Python dependencies available is possible in the following ways:
-
-```shell
-# Using bash
-uv --project ~/work/common-helm run bash
-
-# Using zsh
-uv --project ~/work/common-helm run zsh
-```
-
-Inside of the shell you can run `pytest` directly as the following examples
-based on the portal server show:
-
-```shell
-pytest portal-server/tests/chart -v
-pytest portal-server/tests/chart -v --helm-debug
-pytest portal-server/tests/chart -vsx --helm-debug
-```
-
-Hints:
-
-- `~/work/common-helm` has to be replaced with the correct path to your local
-  clone of `common-helm`.
 
 
 ## Chart specific tests
