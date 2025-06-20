@@ -1,5 +1,51 @@
 # Changelog
 
+## [0.21.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.20.0...v0.21.0) (2025-06-20)
+
+
+### Features
+
+* Add test chart "test-helm-values" ([14ac687](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/14ac687cd684e6378d349c2bc6af6529f94bb9b0))
+* Add utility script to run tests on many local clones ([ea9e700](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/ea9e7009378276ebf3dee66206b1a1743940f7e1))
+* **helm-test-harness:** Add a deprecated decorator ([9480a53](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/9480a53793a3e361718fad57f4a74c618bf9ad98))
+* **helm-test-harness:** Add attribute "path_container" into DefaultAttributes ([57362a6](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/57362a6dff97496653c88d5209e1be0fa72974b3))
+* **helm-test-harness:** Add AuthOwner into ldap related tests ([564492e](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/564492e0e1282f34a72ba2abe4905418bc724637))
+* **helm-test-harness:** Add checks for the Nats client ([486c043](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/486c043ca7a85ad4d133a3ac5d1e6136d4c5dad6))
+* **helm-test-harness:** Add checks for the SMTP client configuration ([de43208](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/de43208499f7dfe350be61a07bb74b0d7338f347))
+* **helm-test-harness:** Add class SecretViaVolume to ldap client checks ([2b81821](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/2b818211869b53891113e8757d055e320cd6a0a1))
+* **helm-test-harness:** Add client test template for memcached ([e2f3ff5](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/e2f3ff5b30293e3171d5146ada9439b50c6da256))
+* **helm-test-harness:** Add common utility methods into AuthUsername for provisioning api ([85e41a1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/85e41a12a600fc680535f43f40852d6b05e3c605))
+* **helm-test-harness:** Add owner role support into provisioning api related tests ([baf4030](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/baf403040148fad998c60b94b947a33a572756e0))
+* **helm-test-harness:** Add secret usage mixin for mount based usage into postgresql checks ([e7d4670](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/e7d4670c16d58b6704b69e3883460fd73a722b63))
+* **helm-test-harness:** Add simple test template for a solo plain password value ([0bc9a8a](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/0bc9a8a977d05bf9ae7256c4ac2b107b5ed3cf42))
+* **helm-test-harness:** Add test template for consumer registration in provisioning api ([06fcb78](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/06fcb78a305ea2f7fff7de241552007c7e572ad5))
+* **helm-test-harness:** Add umc client ([036fb21](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/036fb219a415ff9aac38117b879d4ca52c4ecaa7))
+* **helm-test-harness:** Add UsernameViaEnv into provisioning api related checks ([e4978b4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/e4978b4150f10cd42f73aa380c4e1eb284a8b3da))
+* **helm-test-harness:** Change to "image.pullPolicy" instead of "image.imagePullPolicy" ([67a3214](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/67a3214cce2d9c94589f5c38157fae8db2b48ff6))
+* **helm-test-harness:** Check nats connection parameters are quoted ([cf59b48](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/cf59b48ebb7d56a7f8ac34b9d73c4da90625ed1a))
+* **helm-test-harness:** Cover "keep" handling in ldap and centralNavigation cases ([9ea5a07](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/9ea5a07a21c73f0327101348fec3f6170c9f8109))
+* **helm-test-harness:** Ensure that image pull policy is not configured by default ([60ebc06](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/60ebc06855e1f5dbd92ec0aa737b52cc59710cf4))
+* **helm-test-harness:** Split nats client tests into AuthPassword and AuthUser ([34d644c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/34d644cd28a6ce23aab16df9c78278da6cd12ae7))
+* **helm-test-harness:** Split out secret usage for postgresql checks ([b52d6d2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/b52d6d226706116724952ddd7297f47702f3bc26))
+* **helm-test-harness:** Split the classes around ldap tests into smaller fragments ([c7dcaa6](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/c7dcaa6bf5fe0d3a44b8b813c2057e4b585c5020))
+* **helm-test-harness:** Trigger quoting errors in ldap connection tests ([c6dc041](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/c6dc04153973e5a06b4e2c2b342f82b45fff23e7))
+* **nubus-common:** Add nubus-common.images.renderPullSecrets ([4d5a3a4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/4d5a3a42437d6acc3fc91628111883b698be93ec))
+* **pytest-helm:** Report values of the call to helm_template ([fb2c961](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/fb2c961cdc8ca85a2aad56ec4a50ca584d0ca50c))
+
+
+### Bug Fixes
+
+* **helm-test-harness:** Adjust "path_container" default to work with CronJobs ([279598e](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/279598ea5fe4602de16f397adeda0d7dba1d8853))
+* **helm-test-harness:** Adjust username related smtp tests ([de06654](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/de066549ec422b0f0b4e86082319399a74da5970))
+* **helm-test-harness:** Allow for ldap configuration to be nested ([d2cec78](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/d2cec788264d9e846fde1e56fea9618fa9dbfc40))
+* **helm-test-harness:** Apply load_and_map in all image configuration related tests ([cbbc091](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/cbbc091dadb0d5ca1becce233ad7a5507a4b70bd))
+* **helm-test-harness:** Correct check to enforce no default pull policy is set ([a15563e](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/a15563e057d7f6402616700d2c33ba974dcb0df2))
+* **helm-test-harness:** Correct test values in check of image pull policy ([89c093a](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/89c093af0fe0e356830222813f852bab7655934f))
+* **helm-test-harness:** Handle wrong type in "keyMapping" gracefully ([9432e0f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/9432e0f9c7c2ae8a62d1906500dbfa44e8b8fec8))
+* **helm-test-harness:** Move derived password value into attribute in ldap tests ([f7b42b4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/f7b42b409cf3130e5784e55232d2881d1c9673fc))
+* **helm-test-harness:** Use secret_default_key in provisioning api related checks ([89e561f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/89e561f55ba184283f2db0211a1d886ad5ec72f4))
+* Update container base image to version 0.18.2-build-2025-06-12 ([04ead7c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/04ead7c20fc0d2d21666130cfd495ca34436b46b))
+
 ## [0.20.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.19.0...v0.20.0) (2025-06-12)
 
 
