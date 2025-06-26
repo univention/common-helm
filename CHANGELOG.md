@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.21.0...v0.21.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* **helm-test-harness:** Replace hardcoded value by attribute in central navigation tests ([85daa19](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/85daa194db412a90a6654bb35cb5083687f27a0e)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+
 ## [0.21.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.20.0...v0.21.0) (2025-06-20)
 
 
