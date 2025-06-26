@@ -216,6 +216,8 @@ class CentralNavigationOwner(CentralNavigationClient):
 
     is_secret_owner = True
 
+    derived_shared_secret = "stub-derived-value"
+
     def test_auth_shared_secret_has_random_value(self, chart):
         if not self.is_secret_owner:
             pytest.skip(reason="Chart is not the Secret owner.")
@@ -248,7 +250,7 @@ class CentralNavigationOwner(CentralNavigationClient):
             """)
         result = chart.helm_template(values, template_file="templates/secret-central-navigation.yaml")
         shared_secret = self.get_shared_secret(result)
-        assert shared_secret == "86075010802d028f417ff11774c136829be3c0a0"
+        assert shared_secret == self.derived_shared_secret
 
     def test_global_secrets_keep_is_respected(self, chart):
         if not self.is_secret_owner:
