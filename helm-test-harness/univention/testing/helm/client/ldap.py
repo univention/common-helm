@@ -290,6 +290,19 @@ class AuthBindDn(BaseTest):
         result = chart.helm_template(values)
         self.assert_bind_dn_value(result, self.default_bind_dn)
 
+    def test_auth_bind_dn_uses_global_base_dn_by_default(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              ldap:
+                baseDn: "dc=base"
+            ldap:
+              auth:
+                password: "stub-password"
+            """)
+        result = chart.helm_template(values)
+        self.assert_bind_dn_value(result, "cn=admin,dc=base")
+
 
 class Auth(AuthPassword, AuthBindDn):
     pass
