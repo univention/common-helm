@@ -26,9 +26,13 @@ Python packages:
 - `helm-test-harness` is a library of template classes. These classes can be
   used in test suites to define common expected behavior of a Helm chart.
 
+  Usage documentation: [`./helm-test-harness/docs/usage.md`](./helm-test-harness/docs/usage.md)
+
 - `pytest-helm` is a fork of the `pytest-helm` project from Github which seems
   to be unmaintained. We use this as a basis for our approach to test our Helm
   charts.
+
+  Usage documentation: [`./pytest-helm/docs/usage.md`](./pytest-helm/docs/usage.md)
 
 Test suites:
 
