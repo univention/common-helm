@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.21.1...v0.22.0) (2025-06-27)
+
+
+### Features
+
+* **helm-test-harness:** Verify that ldap.bindDn respects the global baseDn ([3ab5916](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/3ab59163d0788bd5203b8caca9d490c3112c8fa2)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+
 ## [0.21.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.21.0...v0.21.1) (2025-06-26)
 
 
