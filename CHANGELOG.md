@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.23.2...v0.24.0) (2025-08-26)
+
+
+### Features
+
+* upgrade bitnami charts ([cb6d1f7](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/cb6d1f7aab7840ffa4d68539669e0c1310266a8c)), closes [univention/dev/internal/team-nubus#1406](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1406)
+
 ## [0.23.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.23.1...v0.23.2) (2025-08-19)
 
 
