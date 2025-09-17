@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.24.9...v0.25.0) (2025-09-17)
+
+
+### Features
+
+* **helm-test-harness:** Add a generic secret test harness to test one-time configurations like the OIDC Client secret in UMC ([1cd3bf4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/1cd3bf4614b7df4189681a11dc6a11436cb24c35)), closes [univention/dev/internal/team-nubus#1435](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1435)
+
 ## [0.24.9](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.24.8...v0.24.9) (2025-09-16)
 
 
