@@ -34,6 +34,11 @@ Python packages:
 
   Usage documentation: [`./pytest-helm/docs/usage.md`](./pytest-helm/docs/usage.md)
 
+- `kyverno-test-pre-commit` provides automated Kyverno policy validation for Helm charts
+  via pre-commit hooks with auto-generated values and override support.
+
+  Repository: [`https://git.knut.univention.de/univention/dev/tooling/kyverno-test-pre-commit/`](https://git.knut.univention.de/univention/dev/tooling/kyverno-test-pre-commit/)
+
 Test suites:
 
 - `tests/common` are tests related to the Helm chart `common`.
