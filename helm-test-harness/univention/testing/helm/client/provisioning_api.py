@@ -229,6 +229,9 @@ class AuthPasswordOwner:
             pytest.skip(reason="Chart is not the Secret owner.")
         values = self.load_and_map(
             """
+            global:
+              secrets:
+                masterPassword: ""
             provisioningApi:
               auth:
                 password: null
