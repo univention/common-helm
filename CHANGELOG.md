@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.25.1...v0.26.0) (2025-09-24)
+
+
+### Features
+
+* add kyverno-test-pre-commit reference ([f9a5a89](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/f9a5a89710791a4fa4fe17dfa26640ccdbab77f8)), closes [univention/dev/internal/team-nubus#1426](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1426)
+
 ## [0.25.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.25.0...v0.25.1) (2025-09-24)
 
 
