@@ -4,6 +4,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from ruamel.yaml import sys
+
 from ._warnings import deprecated
 from ._yaml import CustomYAML
 from .models import HelmTemplateResult
@@ -23,7 +25,7 @@ class Helm:
     Used for reporting, tracks the subprocess call results
     """
 
-    def __init__(self, helm_cmd="helm", values=None, debug=False):
+    def __init__(self, helm_cmd="helm", values=None, debug=True):
         self.helm_cmd = helm_cmd
         self.debug = debug
         self.values = values or tuple()
@@ -80,7 +82,12 @@ class Helm:
             if helm_args:
                 args.extend(helm_args)
 
-            run_result = self._run_command(*args)
+            try:
+                run_result = self._run_command(*args)
+            except subprocess.CalledProcessError:
+                print("Dumped Helm values:\n", file=sys.stderr)
+                print(dumped_values, file=sys.stderr)
+                raise
         finally:
             os.remove(path)
 
