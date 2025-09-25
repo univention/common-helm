@@ -62,8 +62,22 @@ class DefaultAttributes:
     "main".
     """
 
+    """
+    Name of the volume in `volumes` and `volumeMounts`.
+
+    Used to template `path_volume` and `sub_path_volume_mount`.
+
+    Examples::
+        volume_name = "test-volume-name"
+    """
+
+    volume_name: str
+
     path_volume: str
     """
+    Overrides automatic path volume templating with volume_name.
+    For backwards-compatibility and edge-cases
+
     Path to the related volume when testing something in the context of a workload.
 
     When testing in the context of a Secret, then this path should point to the
@@ -81,6 +95,9 @@ class DefaultAttributes:
 
     sub_path_volume_mount: str
     """
+    Overrides automatic sub path volume mount templating with volume_name.
+    For backwards-compatibility and edge-cases
+
     Sub path to find a volume mount inside of a container.
 
     Examples::
