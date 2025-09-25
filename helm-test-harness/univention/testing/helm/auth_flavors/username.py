@@ -59,7 +59,7 @@ class AuthUsername(BaseTest):
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
-        assert "username has to be supplied" in error.value.stderr
+        assert "username is required" in error.value.stderr
 
     def test_auth_username_has_default(self, chart):
         values = self.load_and_map(
@@ -76,7 +76,7 @@ class AuthUsernameViaEnv(AuthUsername):
     Mixin which checks the username usage as embedded environment variable.
     """
 
-    sub_path_env_username = "env[?@name=='PROVISIONING_API_USERNAME']"
+    sub_path_env_username = "env[?@name=='USERNAME']"
 
     def get_username(self, result: HelmTemplateResult):
         workload = result.get_resource(kind=self.workload_kind, name=self.workload_name)

@@ -32,7 +32,7 @@ class AuthSecretGenerationUser(AuthSecretGeneration):
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
-        assert "password has to be supplied" in error.value.stderr
+        assert "password is required" in error.value.stderr
 
     def test_global_secrets_keep_is_ignored(self, chart):
         """

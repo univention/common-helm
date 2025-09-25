@@ -38,8 +38,8 @@ def _map(values: Mapping, target: JSONPath, source: JSONPath, *, op="pop") -> No
     source_path = source.split(".")
     try:
         value = _get_or_pop_value(values, source_path, op=op)
-    except KeyError:
-        # Source does not exist, there is nothing to map.
+    except (KeyError, TypeError):
+        # Source does not exist or contains null values, there is nothing to map.
         pass
     else:
         _set_value(values, target_path, value)

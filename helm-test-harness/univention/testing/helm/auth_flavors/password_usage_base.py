@@ -77,3 +77,17 @@ class AuthPasswordUsage(BaseTest):
             """)
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
+
+    def test_auth_existing_secret_is_templated(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              test: "global-stub-value"
+            auth:
+              username: "normal-user"
+              existingSecret:
+                name: "{{ .Values.global.test | quote }}"
+
+            """)
+        result = chart.helm_template(values)
+        self.assert_correct_secret_usage(result, name="global-stub-value")
