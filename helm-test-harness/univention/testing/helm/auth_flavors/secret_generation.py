@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from contextlib import nullcontext as does_not_raise
 import subprocess
+from contextlib import nullcontext as does_not_raise
 
 import pytest
 from pytest_helm.models import HelmTemplateResult
@@ -39,6 +39,8 @@ class AuthSecretGeneration(BaseTest):
             auth:
               username: "stub-username"
               password: "stub-password"
+              existingSecret:
+                name: null
             """)
         result = chart.helm_template(values)
         self.assert_password_value(result, "stub-password")
@@ -49,6 +51,8 @@ class AuthSecretGeneration(BaseTest):
             auth:
               username: "stub-username"
               password: "{{ value }}"
+              existingSecret:
+                name: null
             """)
         result = chart.helm_template(values)
         self.assert_password_value(result, "{{ value }}")
@@ -117,6 +121,8 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
                 masterPassword: ""
             auth:
               password: null
+              existingSecret:
+                name: null
             """)
         result = chart.helm_template(values)
         password = self.get_password(result)
@@ -136,6 +142,8 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
 
             auth:
               password: null
+              existingSecret:
+                name: null
             """)
         result = chart.helm_template(values)
         self.assert_password_value(result, self.derived_password)
@@ -151,6 +159,8 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
 
             auth:
               password: "stub-password"
+              existingSecret:
+                name: null
             """)
         result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
@@ -181,6 +191,8 @@ class AuthSecretGenerationUser(AuthSecretGeneration):
             auth:
               username: "stub-username"
               password: null
+              existingSecret:
+                name: null
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
@@ -202,6 +214,8 @@ class AuthSecretGenerationUser(AuthSecretGeneration):
 
             auth:
               password: "stub-password"
+              existingSecret:
+                name: null
             """)
         result = chart.helm_template(values)
         secret = result.get_resource(kind="Secret", name=self.secret_name)
