@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.26.0...v0.26.1) (2025-09-25)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency univention/dev/nubus-for-k8s/common-ci to v1.44.8 ([f3e0497](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/f3e0497da716187eaac6edc755f9de1275b805ee)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/issues/0)
+
 ## [0.26.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.25.1...v0.26.0) (2025-09-24)
 
 
