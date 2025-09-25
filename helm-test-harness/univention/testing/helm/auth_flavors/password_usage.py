@@ -44,25 +44,25 @@ class AuthPasswordUsage(BaseTest):
 
     def test_auth_existing_secret_uses_correct_custom_key(self, chart):
         values = self.load_and_map(
-            """
+            f"""
             auth:
               existingSecret:
                 name: "stub-secret-name"
                 keyMapping:
-                  password: "stub_password_key"
+                  {self.secret_default_key}: "stub_password_key"
             """)
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, key="stub_password_key")
 
     def test_auth_existing_secret_has_precedence(self, chart):
         values = self.load_and_map(
-            """
+            f"""
             auth:
               password: "stub-password"
               existingSecret:
                 name: "stub-secret-name"
                 keyMapping:
-                  password: "stub_password_key"
+                  {self.secret_default_key}: "stub_password_key"
             """)
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
@@ -76,7 +76,7 @@ class AuthPasswordUsage(BaseTest):
               existingSecret: null
             """)
         result = chart.helm_template(values)
-        self.assert_correct_secret_usage(result, name=self.secret_name, key="password")
+        self.assert_correct_secret_usage(result, name=self.secret_name, key=self.secret_default_key)
 
     def test_auth_existing_secret_is_templated(self, chart):
         values = self.load_and_map(
