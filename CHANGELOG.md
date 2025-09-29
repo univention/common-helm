@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.27.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.26.3...v0.27.0) (2025-09-29)
+
+
+### Features
+
+* **helm-test-harness:** Consolidate client-specific test harnesses into a few flavor-specific harnesses ([3d04ca4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/3d04ca48ceedee2eabee272bf92cae385e9d820f)), closes [univention/dev/internal/team-nubus#1399](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1399)
+
+
+### Bug Fixes
+
+* Add pytest-xdist to optionally run helm unittests in parallel ([a9012dd](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/a9012dd93e245d105ed258d67716ba918ab9b2c6)), closes [univention/dev/internal/team-nubus#1399](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1399)
+* **helm-test-harness:** secrets: enhance robustness against shape of linter values ([2e633ac](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/2e633ac1c0d4703ac799e2926f67e32b1ab1e66d)), closes [univention/dev/internal/team-nubus#1398](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1398)
+* **helm-test-harness:** Unset global.secrets.masterPassword before testing random password generation ([ef19dfb](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/ef19dfbebf8b72713bc68829b64de6f0f30e7855)), closes [univention/dev/internal/team-nubus#1399](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1399)
+* **helm-test-harness:** use secret_default_key in value template ([174506e](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/174506ed1085b9a2486766e369e2cd5a8ed70a3e)), closes [univention/dev/internal/team-nubus#1398](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1398)
+* **pytest-helm:** Gracefully handle mapping null values ([284822a](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/284822abab77be55854300251805a2ce8ceca932)), closes [univention/dev/internal/team-nubus#1399](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1399)
+
 ## [0.26.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.26.2...v0.26.3) (2025-09-28)
 
 
