@@ -28,7 +28,7 @@ spec:
           volumeMounts:
             - name: secret-client
               mountPath: /var/secrets/client_api_password
-              subPath: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.client.auth.existingSecret "key" "password") | quote }}
+              subPath: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.client.auth.existingSecret "key" "password" "context" .) | quote }}
       volumes:
         - name: secret-client
           secret:

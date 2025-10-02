@@ -47,7 +47,7 @@ or the empty string.
 
 Usage:
 
-{{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.path.to.the.existingSecret "key" "keyName") }}
+{{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.path.to.the.existingSecret "key" "keyName" "context" .) }}
 
 Params:
 
@@ -56,13 +56,20 @@ Params:
 
 - key - String - Required. Name of the key in the secret.
 
+- context - Dict - Required. The context for the template evaluation.
+
 */}}
 
 {{- define "nubus-common.secrets.key" -}}
 {{- $_ := required "Variable .key is required" .key -}}
-{{- default .key (get ( default dict (.existingSecret).keyMapping ) .key) -}}
+{{- $_ := required "Variable .context is required" .context -}}
+{{- $customKey := get ( default dict (.existingSecret).keyMapping ) .key -}}
+{{- if $customKey -}}
+{{- tpl $customKey .context -}}
+{{- else -}}
+{{- .key -}}
 {{- end -}}
-
+{{- end -}}
 
 
 {{/*
