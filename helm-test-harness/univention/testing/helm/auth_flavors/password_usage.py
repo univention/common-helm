@@ -67,6 +67,21 @@ class AuthPasswordUsage(BaseTest):
         result = chart.helm_template(values)
         self.assert_correct_secret_usage(result, name="stub-secret-name", key="stub_password_key")
 
+    def test_keymapping_is_templated(self, chart):
+        tpl_secret = "{{ .Values.global.test | quote }}"
+        values = self.load_and_map(
+            f"""
+            global:
+              test: "global-stub-value"
+            auth:
+              existingSecret:
+                name: "normal-secret"
+                keyMapping:
+                  {self.secret_default_key}: "{tpl_secret}"
+            """)
+        result = chart.helm_template(values)
+        self.assert_correct_secret_usage(result, name="normal-secret", key="global-stub-value")
+
     def test_auth_disabling_existing_secret_by_setting_it_to_null(self, chart):
         values = self.load_and_map(
             """
