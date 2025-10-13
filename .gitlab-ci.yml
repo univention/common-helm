@@ -45,15 +45,6 @@ package-helm-charts:
       echo "Public files generated:"
       ls -l packages/public
 
-test-chart-common:
-  stage: test
-  image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
-  before_script:
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - helm dep build helm/common
-  script:
-    - pytest -v tests/common
-
 test-chart-nubus-common:
   stage: test
   image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
