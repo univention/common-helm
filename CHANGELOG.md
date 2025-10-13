@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.28.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.27.0...v0.28.0) (2025-10-13)
+
+
+### Features
+
+* **nubus-common:** template keymapping ([a4e5f3b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/a4e5f3b7a16347a576c970c50f7ca8284339a99d)), closes [univention/dev/internal/team-nubus#1441](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1441)
+
+
+### Bug Fixes
+
+* **common:** remove obsolete common library chart ([cebc56b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/cebc56b04275f6c81c3e14dd6f66e4c7fda63867)), closes [univention/dev/internal/team-nubus#1441](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1441)
+
 ## [0.27.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.26.3...v0.27.0) (2025-09-29)
 
 
