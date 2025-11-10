@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.12](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.28.11...v0.28.12) (2025-11-10)
+
+
+### Bug Fixes
+
+* Add adjust_values functionality to all best_practices harnesses ([81fd22b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/81fd22bb873e33fddffa4f0bc63bc440a9303a4e)), closes [univention/dev/internal/team-nubus#1514](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1514)
+
 ## [0.28.11](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.28.10...v0.28.11) (2025-11-04)
 
 
