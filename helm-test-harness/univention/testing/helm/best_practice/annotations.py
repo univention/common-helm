@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-from pytest_helm.utils import load_yaml
+
+from univention.testing.helm.best_practice.base import BestPracticeBase
 
 
-class Annotations:
+class Annotations(BestPracticeBase):
     """
     Checks the common annotations behavior expected for all chart resources.
 
@@ -13,7 +14,7 @@ class Annotations:
     """
 
     def test_additional_annotations_add_another_annotation(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             additionalAnnotations:
               local.test/name: "value"
@@ -25,7 +26,7 @@ class Annotations:
                 assert annotations["local.test/name"] == "value"
 
     def test_additional_annotations_value_is_templated(self, chart, subtests):
-        values = load_yaml(
+        values = self._load_and_map(
             """
             global:
               test: "stub-value"

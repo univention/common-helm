@@ -23,7 +23,14 @@ class NatsCreateUserMixin:
         return match.group(1)
 
     def test_password_env_in_nats_conf(self, chart):
-        result = chart.helm_template()
+        values = self.load_and_map(
+            """
+            auth:
+              username: "normal-user"
+              existingSecret:
+                name: "stub-name"
+            """)
+        result = chart.helm_template(values)
         config_map = result.get_resource(kind="ConfigMap", name=self.config_map_name)
         config = config_map["data"]["nats.conf"]
         assert f"password: ${self.env_password}" in config

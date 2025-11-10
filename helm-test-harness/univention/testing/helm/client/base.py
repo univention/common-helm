@@ -163,4 +163,12 @@ class BaseTest(DefaultAttributes):
         '''
         values = load_yaml(values_yaml)
         apply_mapping(values, self.prefix_mapping)
+        return self.adjust_values(values)
+
+
+    def adjust_values(self, values: dict):
+        """
+        Intended to be overwritten in subclasses to adjust the values
+        structure for the chart under test.
+        """
         return values
