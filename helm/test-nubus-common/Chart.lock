@@ -1,0 +1,6 @@
+dependencies:
+- name: nubus-common
+  repository: ""
+  version: '*'
+digest: sha256:ffddc8c79b880483da04a90e3635f70900a2e61c1326a2ff604cd01c3c2e6833
+generated: "2025-11-21T10:56:41.351958318+03:00"
