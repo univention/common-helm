@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.28.19...v0.29.0) (2025-12-01)
+
+
+### Features
+
+* **helm:** Add component-specific extraEnvVars support ([853f647](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/853f6475961e3499a1b814ee783c074595eee9b8)), closes [univention/dev/internal/team-nubus#977](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/977)
+
 ## [0.28.19](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.28.18...v0.28.19) (2025-11-29)
 
 
