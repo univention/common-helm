@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.3...v0.29.4) (2025-12-17)
+
+
+### Bug Fixes
+
+* Align Renovate preset ([cbc3dac](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/cbc3dac2b7a4c76581fd3bce7d7f0c05e2d66b78)), closes [univention/dev/internal/team-nubus#1423](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1423)
+
 ## [0.29.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.2...v0.29.3) (2025-12-10)
 
 
