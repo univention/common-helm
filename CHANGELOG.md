@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.5](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.4...v0.29.5) (2026-01-13)
+
+
+### Bug Fixes
+
+* Bump image to errata 299 ([43c3458](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/43c3458d5b744499fed8c941fd2838b268309b83)), closes [univention/dev/internal/team-nubus#1518](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1518)
+
 ## [0.29.4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.3...v0.29.4) (2025-12-17)
 
 
