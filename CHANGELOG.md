@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.10](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.9...v0.29.10) (2026-02-23)
+
+
+### Bug Fixes
+
+* bump uv to 0.10.1 and helm to 4.1.1 ([5c19916](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/5c199160df8100b0bbf1de0a487cb45902c878ca)), closes [univention/dev/internal/team-nubus#1578](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1578)
+
 ## [0.29.9](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.8...v0.29.9) (2026-02-11)
 
 
