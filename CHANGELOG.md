@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.12](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.11...v0.29.12) (2026-02-25)
+
+
+### Bug Fixes
+
+* **deps:** Update gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base Docker tag to v5.2.4-build.20260224 ([dee026d](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/commit/dee026d053a8f4de2a2f286e6bff4ff0d44e2026)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/issues/0)
+
 ## [0.29.11](https://git.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/compare/v0.29.10...v0.29.11) (2026-02-24)
 
 
