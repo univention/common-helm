@@ -4,7 +4,7 @@
 
 # Inspired by: https://hynek.me/articles/docker-uv/
 
-ARG UCS_BASE_IMAGE_TAG=5.2.5-build.20260514@sha256:81b104694a78cf36043f84b5d9e4b3b0cbbe6777e46877239a44f08249379119
+ARG UCS_BASE_IMAGE_TAG=5.3.0-build.20260625@sha256:49a5d9290a1e493d7691039e73d7d275e89014f34b10626c29c79f4bee16f07d
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
@@ -12,8 +12,8 @@ SHELL ["/bin/bash", "-uxo", "pipefail", "-c"]
 
 RUN apt-get --assume-yes --verbose-versions --no-install-recommends install \
       ca-certificates \
-      python3.11 \
-      python3.11-venv
+      python3.13 \
+      python3.13-venv
 
 COPY --from=ghcr.io/astral-sh/uv:0.10.1@sha256:452e02b117acd2d4eb3ba81a607bed9733b101b6c49492e352b1973463389012 /uv /usr/local/bin/uv
 COPY --from=alpine/helm:4.1.1@sha256:e71af664cfcdf7cc32c94b0c700c7f9a95233686514656d1a25e2120a1ac9a0e /usr/bin/helm /usr/local/bin/helm
@@ -21,7 +21,7 @@ COPY --from=alpine/helm:4.1.1@sha256:e71af664cfcdf7cc32c94b0c700c7f9a95233686514
 ENV UV_LINK_MODE=copy \
   UV_COMPILE_BYTECODE=1 \
   UV_PYTHON_DOWNLOADS=never \
-  UV_PYTHON=python3.11 \
+  UV_PYTHON=python3.13 \
   PYTHONUNBUFFERED=1 \
   PATH=/opt/helm-test-harness/.venv/bin:$PATH
 
@@ -44,9 +44,9 @@ COPY ./helm-test-harness/univention /opt/helm-test-harness/univention
 RUN uv sync --locked --no-dev --no-editable
 
 RUN \
-  .venv/bin/python3.11 -V && \
-  .venv/bin/python3.11 -m site && \
-  .venv/bin/python3.11 -c 'import univention.testing.helm'
+  .venv/bin/python3.13 -V && \
+  .venv/bin/python3.13 -m site && \
+  .venv/bin/python3.13 -c 'import univention.testing.helm'
 
 RUN mkdir /app
 WORKDIR /app
