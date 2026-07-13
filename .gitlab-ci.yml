@@ -1,17 +1,16 @@
 ---
-
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 # SPDX-License-Identifier: AGPL-3.0-only
 
 include:
   - project: "univention/dev/nubus-for-k8s/common-ci"
-    ref: "v1.61.2"
+    ref: "v1.66.2"
     file:
       - "defaults/nubus-workflow.yaml"
       - "defaults/stages.yaml"
       - "jobs/lint-pre-commit.yaml"
       - "jobs/lint-commit-messages.yaml"
-      - "jobs/container-build.yaml"
+      - "jobs/container-build-buildkit.yaml"
       - "jobs/semantic-release-env.yaml"
       - "jobs/package-and-publish-helm-charts-external.yaml"
       - "templates/pip-package-and-publish.yaml"
@@ -23,7 +22,7 @@ include:
 container-build:
   variables:
     IMAGE_NAME: testrunner
-    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR
+    BUILD_CONTEXT: $CI_PROJECT_DIR
 
 package-helm-charts:
   variables:
