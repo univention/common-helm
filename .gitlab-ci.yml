@@ -13,7 +13,14 @@ include:
       - "jobs/container-build-buildkit.yaml"
       - "jobs/semantic-release-env.yaml"
       - "jobs/package-and-publish-helm-charts-external.yaml"
-      - "templates/pip-package-and-publish.yaml"
+  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/pip-package-and-publish-with-uv@v1.66.1"
+    inputs:
+      package_root: "pytest-helm"
+      job_name_suffix: "-pytest-helm"
+  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/pip-package-and-publish-with-uv@v1.66.1"
+    inputs:
+      package_root: "helm-test-harness"
+      job_name_suffix: "-helm-test-harness"
 
 .lint-pre-commit:
   before_script:
@@ -73,10 +80,3 @@ test-helm-test-harness:
   image: "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
   script:
     - pytest helm-test-harness/tests
-
-build-and-publish-pip:
-  extends: .build-and-publish-pip-package-with-uv
-  parallel:
-    matrix:
-      - PACKAGE_ROOT: "pytest-helm"
-      - PACKAGE_ROOT: "helm-test-harness"
