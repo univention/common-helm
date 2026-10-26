@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 Univention GmbH
+
+apiVersion: local.test/v1
+kind: Stub
+metadata:
+  name: ingress-path-type
+spec:
+  paths:
+    {{- range .Values.testPathTypes }}
+    - pathType: {{ include "nubus-common.compatibility.ingressPathType" (dict
+        "pathType" .
+        "context" $) }}
+    {{- end }}
+---

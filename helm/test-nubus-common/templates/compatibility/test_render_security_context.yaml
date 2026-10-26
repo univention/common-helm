@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 Univention GmbH
+
+apiVersion: local.test/v1
+kind: Stub
+metadata:
+  name: render-security-context
+spec:
+  template:
+    spec:
+      securityContext:
+        {{- include "nubus-common.compatibility.renderSecurityContext" (dict
+          "secContext" .Values.testSecurityContext
+          "context" .) | nindent 8 }}
+---
