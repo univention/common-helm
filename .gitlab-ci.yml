@@ -4,7 +4,7 @@
 
 include:
   - project: "univention/dev/nubus-for-k8s/common-ci"
-    ref: "v1.69.3"
+    ref: "v1.70.0"
     file:
       - "defaults/nubus-workflow.yaml"
       - "defaults/stages.yaml"
@@ -13,11 +13,11 @@ include:
       - "jobs/container-build-buildkit.yaml"
       - "jobs/semantic-release-env.yaml"
       - "jobs/package-and-publish-helm-charts-external.yaml"
-  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/pip-package-and-publish-with-uv@v1.66.1"
+  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/pip-package-and-publish-with-uv@v1.70.0"
     inputs:
       package_root: "pytest-helm"
       job_name_suffix: "-pytest-helm"
-  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/pip-package-and-publish-with-uv@v1.66.1"
+  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/pip-package-and-publish-with-uv@v1.70.0"
     inputs:
       package_root: "helm-test-harness"
       job_name_suffix: "-helm-test-harness"
