@@ -118,6 +118,7 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
             """
             global:
               secrets:
+                generatePasswords: true
                 masterPassword: ""
             auth:
               password: null
@@ -138,6 +139,7 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
             """
             global:
               secrets:
+                generatePasswords: true
                 masterPassword: "stub-master-password"
 
             auth:
@@ -147,6 +149,63 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
             """)
         result = chart.helm_template(values)
         self.assert_password_value(result, self.derived_password)
+
+    def test_generate_passwords_off_ignores_master_password(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                generatePasswords: false
+                masterPassword: "stub-master-password"
+
+            auth:
+              password: "stub-password"
+              existingSecret:
+                name: null
+            """)
+        result = chart.helm_template(values)
+        self.assert_password_value(result, "stub-password")
+
+    def test_generate_passwords_off_requires_a_password(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                generatePasswords: false
+                masterPassword: "stub-master-password"
+
+            auth:
+              password: null
+              existingSecret:
+                name: null
+            """)
+        with pytest.raises(subprocess.CalledProcessError) as error:
+            chart.helm_template(values)
+        assert "generatePasswords" in error.value.stderr
+        assert "stub-master-password" not in error.value.stderr
+
+    def test_generate_passwords_off_accepts_existing_secret(self, chart):
+        if not self.is_secret_owner:
+            pytest.skip(reason="Chart is not the Secret owner.")
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                generatePasswords: false
+
+            auth:
+              password: null
+              existingSecret:
+                name: "stub-secret-name"
+            """)
+        with does_not_raise():
+            result = chart.helm_template(values)
+        with pytest.raises(LookupError):
+            result.get_resource(kind="Secret", name=self.secret_name)
 
     def test_global_secrets_keep_is_respected(self, chart):
         if not self.is_secret_owner:
@@ -197,6 +256,22 @@ class AuthSecretGenerationUser(AuthSecretGeneration):
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
         assert "password is required" in error.value.stderr
+
+    def test_generate_passwords_off_does_not_change_the_requirement(self, chart):
+        values = self.load_and_map(
+            """
+            global:
+              secrets:
+                generatePasswords: false
+
+            auth:
+              username: "stub-username"
+              password: "stub-password"
+              existingSecret:
+                name: null
+            """)
+        result = chart.helm_template(values)
+        self.assert_password_value(result, "stub-password")
 
     def test_global_secrets_keep_is_ignored(self, chart):
         """
