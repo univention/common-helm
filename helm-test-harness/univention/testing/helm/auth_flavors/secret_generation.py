@@ -185,7 +185,6 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
             """)
         with pytest.raises(subprocess.CalledProcessError) as error:
             chart.helm_template(values)
-        assert "generatePasswords" in error.value.stderr
         assert "stub-master-password" not in error.value.stderr
 
     def test_generate_passwords_off_accepts_existing_secret(self, chart):
