@@ -73,6 +73,20 @@ Params:
 
 
 {{/*
+Render "true" only if "global.secrets.generatePasswords" is the boolean true.
+Unset or any other value turns generation off, so a typo fails the render.
+Usage: {{ if include "nubus-common.secrets.generatePasswords" . }}
+*/}}
+
+{{- define "nubus-common.secrets.generatePasswords" -}}
+{{- $value := ((.Values.global).secrets).generatePasswords -}}
+{{- if and (kindIs "bool" $value) $value -}}
+true
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Manage a password.
 
 The interface is kept similar to the one provided by
@@ -105,6 +119,9 @@ Params:
 
 Values which configure this template:
 
+- global.secrets.generatePasswords - Boolean - Required to be true to generate
+  passwords. Otherwise the master password is ignored and the template fails unless a value is provided.
+
 - global.secrets.masterPassword - String - Optional - If this value is configured,
   then the secret will be derived via "deriveSecret" from this master password.
   Otherwise it will be a random value.
@@ -115,7 +132,15 @@ Values which configure this template:
 {{- $passwordValue := "" }}
 {{- $username := required "Username must be provided" .username }}
 
-{{- if (.context.Values.global.secrets).masterPassword }}
+{{- if not (include "nubus-common.secrets.generatePasswords" .context) }}
+
+  {{- $providedPasswordKey := include "common.utils.getKeyFromList" (dict "keys" .providedValues "context" .context) }}
+  {{- $passwordValue = include "common.utils.getValueFromKey" (dict "key" $providedPasswordKey "context" .context) }}
+  {{- if not $passwordValue }}
+    {{- fail (printf "Password generation is disabled (global.secrets.generatePasswords=false). Set %s or configure an existing Secret to provide the key \"%s\" of the Secret \"%s\"." (first .providedValues) (default "password" .key) .secret) }}
+  {{- end }}
+
+{{- else if (.context.Values.global.secrets).masterPassword }}
 
   {{- $providedPasswordKey := include "common.utils.getKeyFromList" (dict "keys" .providedValues "context" .context) }}
   {{- $passwordValue = include "common.utils.getValueFromKey" (dict "key" $providedPasswordKey "context" .context) }}
