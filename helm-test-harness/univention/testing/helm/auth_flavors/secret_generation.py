@@ -118,7 +118,6 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
             """
             global:
               secrets:
-                generatePasswords: true
                 masterPassword: ""
             auth:
               password: null
@@ -139,7 +138,6 @@ class AuthSecretGenerationOwner(AuthSecretGeneration):
             """
             global:
               secrets:
-                generatePasswords: true
                 masterPassword: "stub-master-password"
 
             auth:
