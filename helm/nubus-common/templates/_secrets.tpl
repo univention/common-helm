@@ -73,14 +73,14 @@ Params:
 
 
 {{/*
-Render "true" only if "global.secrets.generatePasswords" is the boolean true.
-Unset or any other value turns generation off, so a typo fails the render.
+Render "true" if "global.secrets.generatePasswords" is unset or the boolean true.
+Any other value turns generation off, so a typo fails the render.
 Usage: {{ if include "nubus-common.secrets.generatePasswords" . }}
 */}}
 
 {{- define "nubus-common.secrets.generatePasswords" -}}
 {{- $value := ((.Values.global).secrets).generatePasswords -}}
-{{- if and (kindIs "bool" $value) $value -}}
+{{- if or (kindIs "invalid" $value) (and (kindIs "bool" $value) $value) -}}
 true
 {{- end -}}
 {{- end -}}
@@ -119,8 +119,8 @@ Params:
 
 Values which configure this template:
 
-- global.secrets.generatePasswords - Boolean - Required to be true to generate
-  passwords. Otherwise the master password is ignored and the template fails unless a value is provided.
+- global.secrets.generatePasswords - Boolean - Optional - Unset or true generates passwords. Any other
+  value ignores the master password and fails the template unless a value is provided.
 
 - global.secrets.masterPassword - String - Optional - If this value is configured,
   then the secret will be derived via "deriveSecret" from this master password.

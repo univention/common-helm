@@ -29,8 +29,8 @@ def test_generation_is_on_for_true(chart):
     assert data["password"] != ""
 
 
-@pytest.mark.parametrize("value", ["null", "false", '"true"', '"false"', "0", "1", "15", '""'])
-def test_generation_is_off_unless_boolean_true(chart, value):
+@pytest.mark.parametrize("value", ["false", '"true"', '"false"', "0", "1", "15", '""'])
+def test_generation_is_off_unless_unset_or_boolean_true(chart, value):
     data = render(chart, f"""
         global:
           secrets:
@@ -42,13 +42,25 @@ def test_generation_is_off_unless_boolean_true(chart, value):
     assert data["generate"] == ""
 
 
-def test_generation_is_off_when_unset(chart):
-    data = render(chart, """
-        client:
-          auth:
-            password: "stub-password"
-        """)
-    assert data["generate"] == ""
+@pytest.mark.parametrize(
+    "secrets",
+    [
+        """
+        masterPassword: "stub-master-password"
+        """,
+        """
+        generatePasswords: null
+        masterPassword: "stub-master-password"
+        """,
+    ],
+    ids=["unset", "null"],
+)
+def test_generation_is_on_when_unset(chart, secrets):
+    values = {"global": {"secrets": load_yaml(secrets)}}
+    result = chart.helm_template({**values, "testPasswordsManage": True}, template_file=TEMPLATE)
+    data = result.get_resource()["data"]
+    assert data["generate"] == "true"
+    assert data["password"] != ""
 
 
 def test_generation_off_ignores_master_password(chart):
