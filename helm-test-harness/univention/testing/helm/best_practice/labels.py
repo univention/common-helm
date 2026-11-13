@@ -7,13 +7,38 @@ from pytest_helm.utils import load_yaml
 from .base import BestPracticeBase
 
 
+POD_TEMPLATE_PATHS = {
+    "CronJob": "spec.jobTemplate.spec.template.metadata.labels",
+    "DaemonSet": "spec.template.metadata.labels",
+    "Deployment": "spec.template.metadata.labels",
+    "Job": "spec.template.metadata.labels",
+    "ReplicaSet": "spec.template.metadata.labels",
+    "StatefulSet": "spec.template.metadata.labels",
+}
+
+
 class Labels(BestPracticeBase):
     """
     Checks the common labels behavior expected for all chart resources.
 
     This is based on the suggestion from the best practices chart of openDesk:
     https://gitlab.opencode.de/bmi/opendesk/components/platform-development/charts/opendesk-best-practises
+
+    The pod template of a workload counts as a resource of its own,
+    because NetworkPolicies and Services select pods by these labels.
     """
+
+    def labels_to_check(self, result, subtests):
+        """
+        Yields the labels of every resource and of every workload's pod template, each inside its own subtest.
+        """
+        for resource in self.resources_to_check(result):
+            paths = ["metadata.labels"]
+            if resource["kind"] in POD_TEMPLATE_PATHS:
+                paths.append(POD_TEMPLATE_PATHS[resource["kind"]])
+            for path in paths:
+                with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
+                    yield resource.findone(path)
 
     def test_additional_labels_add_another_label(self, chart, subtests):
         values = load_yaml(
@@ -22,10 +47,8 @@ class Labels(BestPracticeBase):
               local.test/name: "value"
             """)
         result = chart.helm_template(values)
-        for resource in self.resources_to_check(result):
-            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
-                labels = resource.findone("metadata.labels")
-                assert labels["local.test/name"] == "value"
+        for labels in self.labels_to_check(result, subtests):
+            assert labels["local.test/name"] == "value"
 
     def test_additional_labels_modify_a_common_label(self, chart, subtests):
         values = load_yaml(
@@ -34,10 +57,8 @@ class Labels(BestPracticeBase):
               app.kubernetes.io/name: "replaced value"
             """)
         result = chart.helm_template(values)
-        for resource in self.resources_to_check(result):
-            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
-                labels = resource.findone("metadata.labels")
-                assert labels["app.kubernetes.io/name"] == "replaced value"
+        for labels in self.labels_to_check(result, subtests):
+            assert labels["app.kubernetes.io/name"] == "replaced value"
 
     def test_additional_labels_value_is_templated(self, chart, subtests):
         values = load_yaml(
@@ -48,7 +69,5 @@ class Labels(BestPracticeBase):
               local.test/name: "{{ .Values.global.test }}"
             """)
         result = chart.helm_template(values)
-        for resource in self.resources_to_check(result):
-            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"]):
-                labels = resource.findone("metadata.labels")
-                assert labels["local.test/name"] == "stub-value"
+        for labels in self.labels_to_check(result, subtests):
+            assert labels["local.test/name"] == "stub-value"

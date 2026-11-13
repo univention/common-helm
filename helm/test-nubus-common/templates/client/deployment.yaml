@@ -22,6 +22,9 @@ spec:
   # NOTE: The template is incomplete. It only contains the needed elements for
   # the test cases.
   template:
+    metadata:
+      labels:
+        {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 8 }}
     spec:
       containers:
         - name: "main"
