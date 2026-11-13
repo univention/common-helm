@@ -28,13 +28,13 @@ class Labels(BestPracticeBase):
     because NetworkPolicies and Services select pods by these labels.
     """
 
-    def labels_to_check(self, result):
+    def labels_to_check(self, result, pod_templates=True):
         """
         Yields the resource and the path of its labels, plus the pod template's labels of every workload.
         """
         for resource in self.resources_to_check(result):
             yield resource, "metadata.labels"
-            if resource["kind"] in POD_TEMPLATE_PATHS:
+            if pod_templates and resource["kind"] in POD_TEMPLATE_PATHS:
                 yield resource, POD_TEMPLATE_PATHS[resource["kind"]]
 
     def test_additional_labels_add_another_label(self, chart, subtests):
@@ -56,7 +56,8 @@ class Labels(BestPracticeBase):
               app.kubernetes.io/name: "replaced value"
             """)
         result = chart.helm_template(values)
-        for resource, path in self.labels_to_check(result):
+        # Selectors, Services and NetworkPolicies match pods by their name label, so pods keep it.
+        for resource, path in self.labels_to_check(result, pod_templates=False):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
                 labels = resource.findone(path)
                 assert labels["app.kubernetes.io/name"] == "replaced value"
