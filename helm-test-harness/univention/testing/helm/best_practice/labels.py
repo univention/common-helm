@@ -16,6 +16,8 @@ POD_TEMPLATE_PATHS = {
     "StatefulSet": "spec.template.metadata.labels",
 }
 
+SELECTOR_LABELS = ("app.kubernetes.io/name", "app.kubernetes.io/instance")
+
 
 class Labels(BestPracticeBase):
     """
@@ -75,3 +77,25 @@ class Labels(BestPracticeBase):
             with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
                 labels = resource.findone(path)
                 assert labels["local.test/name"] == "stub-value"
+
+    def test_additional_labels_keep_the_selector_labels_of_pods(self, chart, subtests):
+        # Selectors, Services and NetworkPolicies match pods by these, and a Deployment's selector is immutable.
+        default = {
+            (resource["kind"], resource["metadata"]["name"]): resource
+            for resource in self.resources_to_check(chart.helm_template())
+        }
+        values = load_yaml(
+            """
+            additionalLabels:
+              app.kubernetes.io/name: "replaced value"
+              app.kubernetes.io/instance: "replaced value"
+            """)
+        result = chart.helm_template(values)
+        for resource, path in self.labels_to_check(result):
+            if path == "metadata.labels":
+                continue
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
+                labels = resource.findone(path)
+                expected = default[(resource["kind"], resource["metadata"]["name"])].findone(path)
+                for key in SELECTOR_LABELS:
+                    assert labels[key] == expected[key]
