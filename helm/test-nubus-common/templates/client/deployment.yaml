@@ -24,7 +24,11 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 8 }}
+        {{- include "common.labels.standard" ( dict
+          "customLabels" ( merge
+            ( include "common.labels.matchLabels" . | fromYaml )
+            ( .Values.additionalLabels | default dict ) )
+          "context" . ) | nindent 8 }}
     spec:
       containers:
         - name: "main"

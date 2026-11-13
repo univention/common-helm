@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 Univention GmbH
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ printf "%s-cronjob" (include "common.names.fullname" .) | quote }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 4 }}
+spec:
+  schedule: "0 * * * *"
+
+  # NOTE: The template is incomplete. It only contains the needed elements for
+  # the test cases.
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "common.labels.standard" ( dict
+              "customLabels" ( merge
+                ( dict
+                  "app.kubernetes.io/name" ( printf "%s-cronjob" ( include "common.names.fullname" . ) )
+                  "app.kubernetes.io/instance" .Release.Name )
+                ( .Values.additionalLabels | default dict ) )
+              "context" . ) | nindent 12 }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: "main"
+              image: "stub-image"
