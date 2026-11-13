@@ -28,17 +28,14 @@ class Labels(BestPracticeBase):
     because NetworkPolicies and Services select pods by these labels.
     """
 
-    def labels_to_check(self, result, subtests):
+    def labels_to_check(self, result):
         """
-        Yields the labels of every resource and of every workload's pod template, each inside its own subtest.
+        Yields the resource and the path of its labels, plus the pod template's labels of every workload.
         """
         for resource in self.resources_to_check(result):
-            paths = ["metadata.labels"]
+            yield resource, "metadata.labels"
             if resource["kind"] in POD_TEMPLATE_PATHS:
-                paths.append(POD_TEMPLATE_PATHS[resource["kind"]])
-            for path in paths:
-                with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
-                    yield resource.findone(path)
+                yield resource, POD_TEMPLATE_PATHS[resource["kind"]]
 
     def test_additional_labels_add_another_label(self, chart, subtests):
         values = load_yaml(
@@ -47,8 +44,10 @@ class Labels(BestPracticeBase):
               local.test/name: "value"
             """)
         result = chart.helm_template(values)
-        for labels in self.labels_to_check(result, subtests):
-            assert labels["local.test/name"] == "value"
+        for resource, path in self.labels_to_check(result):
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
+                labels = resource.findone(path)
+                assert labels["local.test/name"] == "value"
 
     def test_additional_labels_modify_a_common_label(self, chart, subtests):
         values = load_yaml(
@@ -57,8 +56,10 @@ class Labels(BestPracticeBase):
               app.kubernetes.io/name: "replaced value"
             """)
         result = chart.helm_template(values)
-        for labels in self.labels_to_check(result, subtests):
-            assert labels["app.kubernetes.io/name"] == "replaced value"
+        for resource, path in self.labels_to_check(result):
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
+                labels = resource.findone(path)
+                assert labels["app.kubernetes.io/name"] == "replaced value"
 
     def test_additional_labels_value_is_templated(self, chart, subtests):
         values = load_yaml(
@@ -69,5 +70,7 @@ class Labels(BestPracticeBase):
               local.test/name: "{{ .Values.global.test }}"
             """)
         result = chart.helm_template(values)
-        for labels in self.labels_to_check(result, subtests):
-            assert labels["local.test/name"] == "stub-value"
+        for resource, path in self.labels_to_check(result):
+            with subtests.test(kind=resource["kind"], name=resource["metadata"]["name"], path=path):
+                labels = resource.findone(path)
+                assert labels["local.test/name"] == "stub-value"
