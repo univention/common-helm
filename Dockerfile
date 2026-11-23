@@ -15,7 +15,7 @@ RUN apt-get --assume-yes --verbose-versions --no-install-recommends install \
       python3.13 \
       python3.13-venv
 
-COPY --from=ghcr.io/astral-sh/uv:0.13.8@sha256:5cc1805e2426484abca4ad46ea783bab281fdb225fd82d8ce6d66a81254bac85 /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.13.9@sha256:d3b601f0c7b118bc1753febf7c41cc80981df678445e0254284eecf84db79a7d /uv /usr/local/bin/uv
 COPY --from=alpine/helm:4.1.1@sha256:e71af664cfcdf7cc32c94b0c700c7f9a95233686514656d1a25e2120a1ac9a0e /usr/bin/helm /usr/local/bin/helm
 
 ENV UV_LINK_MODE=copy \
